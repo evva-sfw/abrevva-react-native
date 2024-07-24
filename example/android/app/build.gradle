@@ -115,14 +115,14 @@ repositories {
     mavenLocal()
     maven {
         name = "evva-maven"
-        url = uri("https://nexus.evva.link/nexus/repository/evva-releases/")
+        url = url = uri("https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android")
     }
 }
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    implementation group: "com.evva.xesar", name: "abrevva-android-sdk", version: "1.0.15"
+    implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "1.0.15"
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
