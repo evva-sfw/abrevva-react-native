@@ -7,6 +7,9 @@ import {
   type EmitterSubscription,
 } from 'react-native';
 
+export type * from './interfaces';
+export * from './conversion';
+
 import type {
   InitializeOptions,
   BooleanResult,
@@ -40,7 +43,7 @@ class BleClient {
             get() {
               throw new Error('Linking Error AbrevvaBle');
             },
-          }
+          },
         );
     this.eventEmitter = Platform.select({
       ios: new NativeEventEmitter(this.abrevvaBle),
@@ -67,9 +70,7 @@ class BleClient {
     return await this.abrevvaBle.isLocationEnabled(options);
   }
 
-  async startEnabledNotifications(
-    callback: (result: BooleanResult) => void
-  ): Promise<void> {
+  async startEnabledNotifications(callback: (result: BooleanResult) => void): Promise<void> {
     if (this.eventEmitter === undefined) {
       console.error('unsupported platform');
       return;
@@ -79,7 +80,7 @@ class BleClient {
       'onEnabledChanged',
       this.eventEmitter.addListener('onEnabledChanged', (event: any) => {
         callback(event.value);
-      })
+      }),
     );
     return this.abrevvaBle.startEnabledNotifications();
   }
@@ -106,7 +107,7 @@ class BleClient {
 
   async requestLEScan(
     options: RequestBleDeviceOptions,
-    callback: (result: ScanResult) => void
+    callback: (result: ScanResult) => void,
   ): Promise<void> {
     if (this.eventEmitter === undefined) {
       console.error('unsupported platform');
@@ -126,7 +127,7 @@ class BleClient {
             : undefined,
         };
         callback(result);
-      }
+      },
     );
 
     this.listeners.set('onScanResult', listener);
@@ -175,7 +176,7 @@ class BleClient {
 
   async startNotifications(
     options: ReadOptions,
-    callback: (event: ReadResult) => void
+    callback: (event: ReadResult) => void,
   ): Promise<void> {
     if (this.eventEmitter === undefined) {
       console.error('unsupported platform');
@@ -217,7 +218,7 @@ export const AbrevvaNfc = NativeModules.AbrevvaNfc
         get() {
           throw new Error('Linking Error AbrevvaNfc');
         },
-      }
+      },
     );
 
 export const AbrevvaCrypto = NativeModules.AbrevvaCrypto
@@ -228,5 +229,5 @@ export const AbrevvaCrypto = NativeModules.AbrevvaCrypto
         get() {
           throw new Error('Linking Error AbrevvaNfc');
         },
-      }
+      },
     );

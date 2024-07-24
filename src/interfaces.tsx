@@ -7,7 +7,6 @@ export enum ScanMode {
   SCAN_MODE_BALANCED = 1,
   SCAN_MODE_LOW_LATENCY = 2,
 }
-
 export interface RequestBleDeviceOptions {
   services?: string[];
   name?: string;

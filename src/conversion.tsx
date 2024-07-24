@@ -1,8 +1,6 @@
 import type { Data } from './interfaces';
 
-export function mapToObject<V>(
-  map?: Map<string | number, V>
-): { [key: string]: V } | undefined {
+export function mapToObject<V>(map?: Map<string | number, V>): { [key: string]: V } | undefined {
   const obj: { [key: string]: V } = {};
   if (!map) {
     return undefined;

@@ -35,7 +35,7 @@
     "example": "yarn workspace react-native-example-app-example",
     "test": "jest",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "lint": "eslint \"**/*.{ts,tsx}\"",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build",
     "release": "release-it"
@@ -126,14 +126,23 @@
       "prettier"
     ],
     "rules": {
+        "max-len": "off",
+        "no-console": "off",
+        "no-bitwise": "off",
+        "no-underscore-dangle": "off",
+        "id-blacklist": "off",
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error",
+        "unused-imports/no-unused-imports": "error",
+        "unused-imports/no-unused-vars": ["warn"],
       "react/react-in-jsx-scope": "off",
       "prettier/prettier": [
         "error",
         {
-          "quoteProps": "consistent",
+          "printWidth": 100,
           "singleQuote": true,
           "tabWidth": 2,
-          "trailingComma": "es5",
+          "trailingComma": "all",
           "useTabs": false
         }
       ]

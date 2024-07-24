@@ -1,11 +1,4 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import RNFS from 'react-native-fs';
 import {
   StyleSheet,
@@ -41,22 +34,13 @@ const App = () => {
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('nfc')}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('nfc')}>
         <Text style={styles.buttonText}>NFC Test</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('crypto')}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('crypto')}>
         <Text style={styles.buttonText}>Crpto Test</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('ble')}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ble')}>
         <Text style={styles.buttonText}>Ble Test</Text>
       </TouchableOpacity>
     </View>
@@ -66,13 +50,11 @@ const HomeScreen = ({ navigation }) => {
 const NfcScreen = ({ navigation }) => {
   useEffect(() => {
     if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      RNFS.exists(
-        `${RNFS.DocumentDirectoryPath}/client-${Platform.OS}.p12`
-      ).then((exists) => {
+      RNFS.exists(`${RNFS.DocumentDirectoryPath}/client-${Platform.OS}.p12`).then((exists) => {
         if (!exists) {
           RNFS.copyFile(
             RNFS.MainBundlePath + `/client-${Platform.OS}.p12`,
-            `${RNFS.DocumentDirectoryPath}/client-${Platform.OS}.p12`
+            `${RNFS.DocumentDirectoryPath}/client-${Platform.OS}.p12`,
           );
         }
       });
@@ -82,10 +64,7 @@ const NfcScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Button text="connect" onPressFunction={() => AbrevvaNfc.connect()} />
       <Button text="read" onPressFunction={() => AbrevvaNfc.read()} />
-      <Button
-        text="disconnect"
-        onPressFunction={() => AbrevvaNfc.disconnect()}
-      />
+      <Button text="disconnect" onPressFunction={() => AbrevvaNfc.disconnect()} />
     </View>
   );
 };
@@ -102,9 +81,7 @@ const CryptoScreen = ({ navigation }) => {
           text="generateKeyPair"
           onPressFunction={() => {
             AbrevvaCrypto.generateKeyPair().then((ret) => {
-              setResult(
-                `Privat Key:\n${ret.privateKey}\n\nPublic Key\n:${ret.publicKey}`
-              );
+              setResult(`Privat Key:\n${ret.privateKey}\n\nPublic Key\n:${ret.publicKey}`);
             });
           }}
         />
