@@ -1289,7 +1289,7 @@ DEPENDENCIES:
   - Yoga (from `../../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://bach1.evva.com/bitbucket/scm/xm/abrevva-pod-specs.git:
+  https://github.com/evva-sfw/abrevva-sdk-ios-pod-specs.git:
     - AbrevvaSDK
   trunk:
     - CocoaMQTT

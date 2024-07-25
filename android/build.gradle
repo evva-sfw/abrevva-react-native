@@ -87,8 +87,8 @@ repositories {
   mavenCentral()
   mavenLocal()
   maven {
-    name = "evva-maven"
-    url = uri("https://nexus.evva.link/nexus/repository/evva-releases/")
+    name = "evva-github"
+    url = url = uri("https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android")
   }
 }
 
@@ -100,7 +100,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation group: "com.evva.xesar", name: "abrevva-android-sdk", version: "1.0.15"
+  implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "1.0.15"
 
 }
 

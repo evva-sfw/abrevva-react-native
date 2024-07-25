@@ -29,7 +29,7 @@ The EVVA React-Native Module is a collection of tools to work with electronical 
 ### IOS
     add the following to your Podfile:
     ```ruby
-        source 'https://bach1.evva.com/bitbucket/scm/xm/abrevva-pod-specs.git'
+        source 'https://github.com/evva-sfw/abrevva-sdk-ios-pod-specs.git'
         source 'https://cdn.cocoapods.org/'
     ```
     then execute `pod install` inside of your projects ios/ folder.
@@ -40,12 +40,12 @@ The EVVA React-Native Module is a collection of tools to work with electronical 
 ```ruby
     repositories {
         maven {
-            url = uri("https://nexus.evva.link/nexus/repository/evva-releases")
+            url = uri("https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android")
         }
     }
     ...
     dependencies {
-      implementation group: "com.evva.xesar", name: "abrevva-android-sdk", version: "1.0.0" <-- change to latest version. 
+      implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "1.0.19" <-- change to latest version. 
     }
 ```
     add Permissions to your `Manifest.xml` file as needed.
