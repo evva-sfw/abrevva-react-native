@@ -135,3 +135,8 @@ example/.bundle/
 example/ios/build/
 example/ios/Pods/
 **/*/.gradle/
+example/android/app/build/
+example/vendor/
+example/android/.idea/
+example/android/local.properties
+
