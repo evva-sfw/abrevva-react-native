@@ -1,19 +1,19 @@
-import { useEffect } from 'react';
-import RNFS from 'react-native-fs';
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Text,
-  ScrollView,
-  Dimensions,
-  Platform,
-} from 'react-native';
-
-import { AbrevvaCrypto, AbrevvaNfc } from 'react-native-example-app';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useEffect } from 'react';
 import { useState } from 'react';
+import {
+  Dimensions,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { AbrevvaCrypto, AbrevvaNfc } from 'react-native-example-app';
+import RNFS from 'react-native-fs';
+
 import { BleScreen } from './BleScreenComponents';
 
 const Stack = createNativeStackNavigator();
@@ -47,12 +47,12 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
-const NfcScreen = ({ navigation }) => {
+const NfcScreen = () => {
   useEffect(() => {
     if (Platform.OS === 'ios' || Platform.OS === 'android') {
       RNFS.exists(`${RNFS.DocumentDirectoryPath}/client-${Platform.OS}.p12`).then((exists) => {
         if (!exists) {
-          RNFS.copyFile(
+          void RNFS.copyFile(
             RNFS.MainBundlePath + `/client-${Platform.OS}.p12`,
             `${RNFS.DocumentDirectoryPath}/client-${Platform.OS}.p12`,
           );
@@ -69,7 +69,7 @@ const NfcScreen = ({ navigation }) => {
   );
 };
 
-const CryptoScreen = ({ navigation }) => {
+const CryptoScreen = () => {
   const [result, setResult] = useState('');
   return (
     <View style={styles.cryptoContainer}>
@@ -80,7 +80,7 @@ const CryptoScreen = ({ navigation }) => {
         <Button
           text="generateKeyPair"
           onPressFunction={() => {
-            AbrevvaCrypto.generateKeyPair().then((ret) => {
+            AbrevvaCrypto.generateKeyPair().then((ret: any) => {
               setResult(`Privat Key:\n${ret.privateKey}\n\nPublic Key\n:${ret.publicKey}`);
             });
           }}
@@ -88,7 +88,7 @@ const CryptoScreen = ({ navigation }) => {
         <Button
           text="random"
           onPressFunction={() => {
-            AbrevvaCrypto.random({ numBytes: 4 }).then((ret) => {
+            AbrevvaCrypto.random({ numBytes: 4 }).then((ret: any) => {
               setResult(`random:\n${ret.value}\n\n`);
             });
           }}
