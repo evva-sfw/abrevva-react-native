@@ -114,8 +114,12 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        name = "evva-maven"
-        url = url = uri("https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android")
+        name = 'evva-maven'
+        url = url = uri('https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android')
+        credentials {
+            username = project.findProperty('github.user') ?: System.getenv('USERNAME')
+            password = project.findProperty('github.key') ?: System.getenv('TOKEN')
+        }
     }
 }
 
