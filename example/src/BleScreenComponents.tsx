@@ -1,27 +1,27 @@
+import { hex } from '@scure/base';
+import { Parser } from 'binary-parser-encoder';
 import { useEffect } from 'react';
+import { useState } from 'react';
 import {
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  FlatList,
+  Alert,
   Dimensions,
+  FlatList,
   RefreshControl,
   SafeAreaView,
-  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
 } from 'react-native';
 import {
   AbrevvaBle,
   AbrevvaCrypto,
-  dataViewToNumbers,
-  numbersToDataView,
   dataViewToHexString,
+  dataViewToNumbers,
   hexStringToDataView,
-  type ScanResult,
+  numbersToDataView,
   type ReadResult,
+  type ScanResult,
 } from 'react-native-example-app';
-import { useState } from 'react';
-import { Parser } from 'binary-parser-encoder';
-import { hex } from '@scure/base';
 
 global.Buffer = require('buffer').Buffer;
 
@@ -29,7 +29,6 @@ const SCAN_TIMEOUT = 3000; // ms
 const SERVICE = '9DB2CA57-D890-46D5-A142-59F3C1164B10';
 
 enum CHARACTERISTICS {
-  MOBILE_GROUPS = '9DB2CA58-D890-46D5-A142-59F3C1164B10',
   MOBILE_ACCESS_DATA = '9DB2CA5A-D890-46D5-A142-59F3C1164B10',
   ACCESS_STATUS = '9DB2CA5B-D890-46D5-A142-59F3C1164B10',
   CHALLENGE = '9DB2CA59-D890-46D5-A142-59F3C1164B10',
@@ -79,7 +78,7 @@ const advManufacturerDataParser = new Parser()
     defaultChoice: advParseDone,
   });
 
-export const BleScreen = ({ navigation }) => {
+export const BleScreen = () => {
   const [statusCode, setStatusCode] = useState('none');
 
   return (
@@ -102,7 +101,7 @@ const ScanResults = ({ setStatus }) => {
     setdeviceList([]);
 
     AbrevvaBle.stopLEScan().then(() => {
-      AbrevvaBle.requestLEScan({ timeout: SCAN_TIMEOUT }, scanRequestCallback);
+      void AbrevvaBle.requestLEScan({ timeout: SCAN_TIMEOUT }, scanRequestCallback);
     });
     setTimeout(() => {
       setRefreshing(false);
@@ -114,7 +113,7 @@ const ScanResults = ({ setStatus }) => {
       const md = new Uint8Array(data.manufacturerData!['2153'].buffer);
       const mfData = advManufacturerDataParser.parse(md);
       if (mfData.identifier) {
-        const deviceId = mfData.identifier.reduce((t, x): string => {
+        const deviceId = mfData.identifier.reduce((t: any, x: any): string => {
           return t + x.toString(16).padStart(2, '0').toLowerCase();
         }, '');
         if (deviceId === '5464de1ac537') {
@@ -128,7 +127,7 @@ const ScanResults = ({ setStatus }) => {
 
   useEffect(() => {
     AbrevvaBle.initialize({ androidNeverForLocation: true }).then(() => {
-      AbrevvaBle.requestLEScan({ timeout: SCAN_TIMEOUT }, scanRequestCallback);
+      void AbrevvaBle.requestLEScan({ timeout: SCAN_TIMEOUT }, scanRequestCallback);
     });
   }, []);
 
@@ -141,7 +140,7 @@ const ScanResults = ({ setStatus }) => {
         <SafeAreaView style={bleStyles.BleScanResult}>
           <TouchableOpacity
             onPress={() => {
-              mobileIdentificationMediumService(item.item, setStatus);
+              void mobileIdentificationMediumService(item.item, setStatus);
             }}
           >
             <Text>{item.item.device.deviceId}</Text>
@@ -153,7 +152,7 @@ const ScanResults = ({ setStatus }) => {
   );
 };
 
-var serviceIsActive = false;
+let serviceIsActive = false;
 
 async function mobileIdentificationMediumService(data: ScanResult, setStatus: any) {
   if (serviceIsActive) {
@@ -170,24 +169,14 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
       timeout: 10000,
     });
 
-    const mobileGroupsData = (
-      await AbrevvaBle.read({
-        deviceId: data.device.deviceId,
-        service: SERVICE,
-        characteristic: CHARACTERISTICS.MOBILE_GROUPS,
-        timeout: 10000,
-      })
-    ).value;
-
     await AbrevvaBle.startNotifications(
       {
         deviceId: data.device.deviceId,
         service: SERVICE,
         characteristic: CHARACTERISTICS.ACCESS_STATUS,
-        timeout: 1000,
       },
       (event: ReadResult) => {
-        newStatus = event;
+        newStatus = event.value!;
       },
     );
 
@@ -198,7 +187,7 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
       timeout: 10000,
     });
 
-    const challengeDataView = hexStringToDataView(challenge.value);
+    const challengeDataView = hexStringToDataView(challenge.value!);
     const challengeBuffer = Buffer.from(dataViewToNumbers(challengeDataView));
     const challengeHex = challengeBuffer.toString('hex');
 
@@ -246,7 +235,7 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
       authTag: authTagBuffer,
     });
 
-    AbrevvaBle.write({
+    void AbrevvaBle.write({
       deviceId: data.device.deviceId,
       service: SERVICE,
       characteristic: CHARACTERISTICS.MOBILE_ACCESS_DATA,
@@ -254,7 +243,7 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
       timeout: 1000,
     });
   } catch (error: any) {
-    AbrevvaBle.disconnect({ deviceId: data.device.deviceId });
+    void AbrevvaBle.disconnect({ deviceId: data.device.deviceId });
     serviceIsActive = false;
     Alert.alert('Error', error.code, [
       {

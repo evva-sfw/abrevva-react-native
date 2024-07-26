@@ -1,32 +1,33 @@
 // https://stackoverflow.com/a/73382191
 // TODO: Verify that this works as intended
 import {
-  NativeEventEmitter,
-  NativeModules,
   DeviceEventEmitter,
   type EmitterSubscription,
+  NativeEventEmitter,
+  NativeModules,
 } from 'react-native';
 
-export type * from './interfaces';
 export * from './conversion';
+export type * from './interfaces';
 
-import type {
-  InitializeOptions,
-  BooleanResult,
-  RequestBleDeviceOptions,
-  ScanResultInternal,
-  ScanResult,
-  DeviceIdOptions,
-  TimeoutOptions,
-  ReadOptions,
-  WriteOptions,
-  DisengageOptions,
-  SignalizeOptions,
-  ReadResult,
-  StringResult,
-} from './interfaces';
 import { Platform } from 'react-native';
+
 import { convertObject, convertValue } from './conversion';
+import type {
+  BooleanResult,
+  DeviceIdOptions,
+  DisengageOptions,
+  InitializeOptions,
+  ReadOptions,
+  ReadResult,
+  RequestBleDeviceOptions,
+  ScanResult,
+  ScanResultInternal,
+  SignalizeOptions,
+  StringResult,
+  TimeoutOptions,
+  WriteOptions,
+} from './interfaces';
 
 class BleClient {
   private abrevvaBle: any;
