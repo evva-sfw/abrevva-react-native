@@ -420,7 +420,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-class-properties@npm:^7.13.0, @babel/plugin-proposal-class-properties@npm:^7.17.12, @babel/plugin-proposal-class-properties@npm:^7.18.0":
+"@babel/plugin-proposal-class-properties@npm:^7.13.0, @babel/plugin-proposal-class-properties@npm:^7.18.0":
   version: 7.18.6
   resolution: "@babel/plugin-proposal-class-properties@npm:7.18.6"
   dependencies:
@@ -1389,6 +1389,17 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 118fc7a7ebf7c20411b670c8a030535fdfe4a88bc5643bb625a584dbc4c8a468da46430a20e6bf78914246962b0f18f1b9d6a62561a7762c4f34a038a5a77179
+  languageName: node
+  linkType: hard
+
+"@babel/plugin-transform-strict-mode@npm:^7.24.7":
+  version: 7.24.7
+  resolution: "@babel/plugin-transform-strict-mode@npm:7.24.7"
+  dependencies:
+    "@babel/helper-plugin-utils": ^7.24.7
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 514e847f6ba4bac825eb0e9ae697c6ae632041d887f6cc1167f9cb989924b2f8735ec040607a02083c3a03e62f1c8973ba59a2b106ca3b55c2e2c416b51e2372
   languageName: node
   linkType: hard
 
@@ -4116,7 +4127,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-module-resolver@npm:^5.0.0":
+"babel-plugin-module-resolver@npm:^5.0.0, babel-plugin-module-resolver@npm:^5.0.2":
   version: 5.0.2
   resolution: "babel-plugin-module-resolver@npm:5.0.2"
   dependencies:
@@ -9546,7 +9557,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-config@npm:0.80.9, metro-config@npm:^0.80.3":
+"metro-config@npm:0.80.9, metro-config@npm:^0.80.3, metro-config@npm:^0.80.9":
   version: 0.80.9
   resolution: "metro-config@npm:0.80.9"
   dependencies:
@@ -11149,32 +11160,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-builder-bob@npm:^0.26.0":
-  version: 0.26.0
-  resolution: "react-native-builder-bob@npm:0.26.0"
+"react-native-builder-bob@npm:^0.28.0":
+  version: 0.28.0
+  resolution: "react-native-builder-bob@npm:0.28.0"
   dependencies:
     "@babel/core": ^7.18.5
-    "@babel/plugin-proposal-class-properties": ^7.17.12
+    "@babel/plugin-transform-strict-mode": ^7.24.7
     "@babel/preset-env": ^7.18.2
     "@babel/preset-flow": ^7.17.12
     "@babel/preset-react": ^7.17.12
     "@babel/preset-typescript": ^7.17.12
+    babel-plugin-module-resolver: ^5.0.2
     browserslist: ^4.20.4
     cosmiconfig: ^9.0.0
     cross-spawn: ^7.0.3
     dedent: ^0.7.0
     del: ^6.1.1
+    escape-string-regexp: ^4.0.0
     fs-extra: ^10.1.0
     glob: ^8.0.3
     is-git-dirty: ^2.0.1
     json5: ^2.2.1
     kleur: ^4.1.4
+    metro-config: ^0.80.9
     prompts: ^2.4.2
     which: ^2.0.2
     yargs: ^17.5.1
   bin:
     bob: bin/bob
-  checksum: 60b720ce74b5571ec293a10d00b26dc923d62a0c07222548499b90878e72be3ddd77fb33b62144ab0a0f405049a3747376742b9499cb73f9e851da0ce0e17204
+  checksum: 4992e7b6a5052a16ee8c9ef113df34fc6abcff9c27f40877fe283daae01513bc9a173bc3d11f3732a98a9f0ea72f1da20c4c05744e88fd10332ff864f0908fc2
   languageName: node
   linkType: hard
 
@@ -11224,7 +11238,7 @@ __metadata:
     prettier: ^3.0.3
     react: 18.2.0
     react-native: 0.74.3
-    react-native-builder-bob: ^0.26.0
+    react-native-builder-bob: ^0.28.0
     release-it: ^15.0.0
     turbo: ^1.10.7
     typescript: ^5.2.2
