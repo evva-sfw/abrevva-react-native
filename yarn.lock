@@ -1949,12 +1949,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@evilmartians/lefthook@npm:^1.5.0":
-  version: 1.7.7
-  resolution: "@evilmartians/lefthook@npm:1.7.7"
+"@evilmartians/lefthook@npm:^1.7.9":
+  version: 1.7.9
+  resolution: "@evilmartians/lefthook@npm:1.7.9"
   bin:
     lefthook: bin/index.js
-  checksum: bbdd05d54fa84a72f3b7de3d96b72899033e5070f63e7b8ae1054414f3e833cf1f925c091ec01b48731c5508639e9ee3e01ad985fa22a29fbb0bd7df0cc966a7
+  checksum: fa3a3d23a0ab3e9a59cc3e94175d92ea483e0d8c64387e64abd326ce43878491aba1bf82942546d466706e03d85e5ee1a80e2af8ac653e75ae6cba739b115002
   conditions: (os=darwin | os=linux | os=win32) & (cpu=x64 | cpu=arm64 | cpu=ia32)
   languageName: node
   linkType: hard
@@ -11207,7 +11207,7 @@ __metadata:
   resolution: "react-native-example-app@workspace:."
   dependencies:
     "@commitlint/config-conventional": ^17.0.2
-    "@evilmartians/lefthook": ^1.5.0
+    "@evilmartians/lefthook": ^1.7.9
     "@react-native/eslint-config": ^0.74.85
     "@release-it/conventional-changelog": ^5.0.0
     "@types/jest": ^29.5.5
