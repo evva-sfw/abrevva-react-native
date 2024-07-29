@@ -128,7 +128,7 @@ repositories {
     mavenLocal()
     maven {
         name = 'evva-maven'
-        url = url = uri('https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android')
+        url = uri('https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android')
         credentials {
             username = properties.getProperty('github.username') ?: System.getenv('GITHUB_USERNAME')
             password = properties.getProperty('github.token') ?: System.getenv('GITHUB_TOKEN')
