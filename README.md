@@ -24,37 +24,42 @@ The EVVA React-Native Module is a collection of tools to work with electronical 
 
 ## Installation
 ```
-    yarn add <git remote url>
+yarn add <git remote url>
 ```
 ### IOS
-    add the following to your Podfile:
-    ```ruby
-        source 'https://github.com/evva-sfw/abrevva-sdk-ios-pod-specs.git'
-        source 'https://cdn.cocoapods.org/'
-    ```
-    then execute `pod install` inside of your projects ios/ folder.
+
+Add the following to your Podfile:
+
+```ruby
+source 'https://github.com/evva-sfw/abrevva-sdk-ios-pod-specs.git'
+source 'https://cdn.cocoapods.org/'
+```
+
+then execute `pod install` inside of your projects ios/ folder.
 
 ### Android
 
-    add this to your `build.gradle` file:
+Add this to your `build.gradle` file:
+
 ```ruby
-    repositories {
-        maven {
-            url = uri("https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android")
-        }
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android")
     }
-    ...
-    dependencies {
-      implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "1.0.19" <-- change to latest version. 
-    }
+}
+...
+dependencies {
+  implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "1.0.19" <-- change to latest version. 
+}
 ```
-    add Permissions to your `Manifest.xml` file as needed.
+
+Add Permissions to your `Manifest.xml` file as needed.
+
 ```ruby
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 ```
-
 
 ## Examples
 
