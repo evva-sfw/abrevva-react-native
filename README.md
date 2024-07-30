@@ -20,7 +20,7 @@ The EVVA React-Native Module is a collection of tools to work with electronical 
 
     Java 17+
     Android SDK
-    xCode
+    Xcode 15+
     react-native < 0.74.3
     iOS 15.0+ 
     Android 10+ (API level 29) 
