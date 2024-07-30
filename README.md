@@ -66,12 +66,12 @@ To start off first import `AbrevvaBle` from this module
 import {AbrevvaBle} from 'react-natice-example-app';
 
 async function scanForBleDevices(androidNeverForLocation: Boolean, timeout: Number){
-    await AbrevvaBle.initialize({
-        androidNeverForLocation: true,
-    });
+    const androidNeverForLocation = true;
+    await AbrevvaBle.initialize(androidNeverForLocation);
 
+    const timeout = 10_000
     AbrevvaBle.requestLEScan(
-        { timeout: 10_000 }, 
+        timeout, 
         (data: ScanResult) => {
             console.log(`found device: ${data.name}`);
         },
@@ -91,7 +91,7 @@ With the signalize method you can localize EVVA components. On a successful sign
 
 ```typescript
     AbrevvaBle.signalize(
-        {'deviceID': deviceID},
+        deviceID,
         () => {
         console.log(`Signalized /w success=${it}`)
         }    
@@ -102,12 +102,12 @@ With the signalize method you can localize EVVA components. On a successful sign
 For the component disengage you have to provide access credentials to the EVVA component. Those are generally acquired in the form of access media metadata from the Xesar software.
 
 ```typescript
-    AbrevvaBle.disengage({
+    AbrevvaBle.disengage(
         mobileId: '',
         mobileDeviceKey:: '',
         mobileGroupId: '',
         mobileAccessData: '',
         isPermanentRelease: '',
         timeout: 10_000
-    });
+    );
 ```
