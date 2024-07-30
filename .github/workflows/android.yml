@@ -20,10 +20,10 @@ jobs:
       uses: android-actions/setup-android@v3
 
     - name: Setup Nodejs
-    - uses: actions/setup-node@v4
+      uses: actions/setup-node@v4
       with:
         node-version: 'lts'
-      run: |
+    - run: |
         corepack yarn
         cd example && yarn install
 
