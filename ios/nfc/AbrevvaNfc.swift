@@ -7,8 +7,7 @@ import CoreNFC
 import AbrevvaSDK
 
 @objc(AbrevvaNfc)
-class AbrevvaNfc: NSObject {
-
+class AbrevvaNfc: NSObject, NFCSessionDelegate {
 
     let HOST =  "172.16.2.91" //"172.16.158.30" //
     let PORT: UInt16 = 1883
@@ -18,6 +17,11 @@ class AbrevvaNfc: NSObject {
     private var mqtt5Client: MQTT5Client?
     private var nfcSession = NFCSession()
     
+    override init() {
+        super.init()
+        nfcSession.delegate = self
+    }
+    
     @objc func connect() {
         var clientCertArray = getClientCertFromP12File(certName: "client-ios.p12", certPassword: "123")
         self.clientID = CLIENTID
@@ -25,10 +29,10 @@ class AbrevvaNfc: NSObject {
         mqtt5Client = MQTT5Client(clientID: clientID, host: HOST, port: PORT, clientCertArray:clientCertArray)
         mqtt5Client?.setOnMessageRecieveHandler(handler: onMessageRecieveHandler)
         mqtt5Client?.setDidStateChangeToHandler(handler: didStateChangeToHandler)
-        mqtt5Client?.connect()
         
-        // nfcSession.setPublishKyOnHandler(handler: mqtt5Client!.publishKyOn)
-        // nfcSession.setPublishKeyOffHander(handler: mqtt5Client!.publishKyOff)
+        
+        mqtt5Client?.connect()
+
     }
     
     @objc func disconnect() {
@@ -102,5 +106,21 @@ class AbrevvaNfc: NSObject {
         self.mqtt5Client?.publishMessage(topic: "readers/1", message: Message(t: "cr", e: "off", oid: self.clientID, atr: nil))
         self.mqtt5Client?.disconnect()
         self.nfcSession.invalidateSession()
+    }
+    
+    func sessionDidStart(_ withSuccess: Bool) {
+    
+    }
+    
+    func sessionDidClose(_ withError: (any Error)?) {
+        
+    }
+    
+    func sessionDidReceiveKeyOnEvent(_ tagID: Data, _ historicalBytes: Data) {
+        mqtt5Client?.publishKyOn(identifier: tagID.toHexString(), historicalBytes: historicalBytes.toHexString())
+    }
+    
+    func sessionDidReceiveKeyOffEvent(_ tagID: Data, _ historicalBytes: Data) {
+        mqtt5Client?.publishKyOff(identifier: tagID.toHexString(), historicalBytes: historicalBytes.toHexString())
     }
 }

@@ -245,6 +245,11 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
     }
 
     override fun getName(): String {
-        return ("AbrevvaCrypto")
+        return NAME
     }
+
+    companion object {
+        const val NAME = "AbrevvaCrypto"
+    }
+    
 }

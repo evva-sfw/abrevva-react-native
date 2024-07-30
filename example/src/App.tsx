@@ -88,7 +88,7 @@ const CryptoScreen = () => {
         <Button
           text="random"
           onPressFunction={() => {
-            AbrevvaCrypto.random({ numBytes: 4 }).then((ret: any) => {
+            AbrevvaCrypto.random(4).then((ret: any) => {
               setResult(`random:\n${ret.value}\n\n`);
             });
           }}

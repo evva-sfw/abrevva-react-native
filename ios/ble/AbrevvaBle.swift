@@ -112,11 +112,9 @@ public class AbrevvaBle: RCTEventEmitter {
                 let data = self.getScanResultDict(device, advertisementData, rssi)
                 self.sendEvent(withName: "onScanResult", body: data)
             },{ address in
-                self.sendEvent(withName: "connected|\(address)", body: nil)
-
+                self.sendEvent(withName: "onConnect", body: address)
             },{ address in
-                self.sendEvent(withName: "disconnected|\(address)", body: nil)
-
+                self.sendEvent(withName: "onDisconnect", body: address)
             },
             timeout
         )

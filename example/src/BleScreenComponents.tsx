@@ -95,19 +95,6 @@ const ScanResults = ({ setStatus }) => {
   const [deviceList, setdeviceList] = useState<ScanResult[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const onRefresh = () => {
-    setStatus('none');
-    setRefreshing(true);
-    setdeviceList([]);
-
-    AbrevvaBle.stopLEScan().then(() => {
-      void AbrevvaBle.requestLEScan({ timeout: SCAN_TIMEOUT }, scanRequestCallback);
-    });
-    setTimeout(() => {
-      setRefreshing(false);
-    }, SCAN_TIMEOUT);
-  };
-
   const scanRequestCallback = (data: ScanResult) => {
     if (data.manufacturerData !== undefined && '2153' in data.manufacturerData) {
       const md = new Uint8Array(data.manufacturerData!['2153'].buffer);
@@ -125,9 +112,43 @@ const ScanResults = ({ setStatus }) => {
     }
   };
 
+  const onRefresh = () => {
+    setStatus('none');
+    setRefreshing(true);
+    setdeviceList([]);
+
+    const timeout: NodeJS.Timeout = setTimeout(() => {
+      setRefreshing(false);
+    }, SCAN_TIMEOUT);
+    AbrevvaBle.stopLEScan()
+      .then(() => {
+        void AbrevvaBle.requestLEScan(
+          scanRequestCallback,
+          (address: string) => {
+            console.log(`connected to Device =${address}`);
+          },
+          (address: string) => {
+            console.log(`disconnected from Device =${address}`);
+          },
+        );
+      })
+      .catch((e) => {
+        console.log(e);
+        clearTimeout(timeout);
+      });
+  };
+
   useEffect(() => {
-    AbrevvaBle.initialize({ androidNeverForLocation: true }).then(() => {
-      void AbrevvaBle.requestLEScan({ timeout: SCAN_TIMEOUT }, scanRequestCallback);
+    AbrevvaBle.initialize(true).then(() => {
+      void AbrevvaBle.requestLEScan(
+        scanRequestCallback,
+        (address: string) => {
+          console.log(`connected to Device =${address}`);
+        },
+        (address: string) => {
+          console.log(`disconnected from Device =${address}`);
+        },
+      );
     });
   }, []);
 
@@ -170,11 +191,9 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
     });
 
     await AbrevvaBle.startNotifications(
-      {
-        deviceId: data.device.deviceId,
-        service: SERVICE,
-        characteristic: CHARACTERISTICS.ACCESS_STATUS,
-      },
+      data.device.deviceId,
+      SERVICE,
+      CHARACTERISTICS.ACCESS_STATUS,
       (event: ReadResult) => {
         newStatus = event.value!;
       },
