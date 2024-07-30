@@ -1,4 +1,4 @@
-name: Node.js lint
+name: Android
 on:
   push:
     branches: [ "main" ]
