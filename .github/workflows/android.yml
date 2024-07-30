@@ -30,4 +30,5 @@ jobs:
     - name: Build android example app
       run: yarn build:android
       env:
-        GITHUB_USERNAME: ${{ github.actor }}
+        GH_USERNAME: ${{ vars.USERNAME }}
+        GH_TOKEN: ${{ secrets.TOKEN }}
