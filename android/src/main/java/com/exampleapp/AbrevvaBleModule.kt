@@ -461,12 +461,16 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
 
     // not needed for Android
     @ReactMethod
-    fun setSupportedEvents(options: ReadableArray, promise: Promise) {
+    fun setSupportedEvents(options: ReadableMap, promise: Promise) {
         promise.resolve(null)
     }
 
     override fun getName(): String {
-        return ("AbrevvaBle")
+        return NAME
+    }
+
+    companion object {
+        const val NAME = "AbrevvaBle"
     }
 
     @ReactMethod

@@ -8,7 +8,7 @@ import com.facebook.react.uimanager.ViewManager
 
 class ExampleAppPackage : ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return listOf(ReactNativeAbrevvaModule(reactContext)) + listOf(AbrevvaBleModule(reactContext)) + listOf(AbrevvaCryptoModule(reactContext))
+    return listOf(AbrevvaCryptoModule(reactContext)) + listOf(AbrevvaNfcModule(reactContext)) + listOf(AbrevvaBleModule(reactContext))
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
