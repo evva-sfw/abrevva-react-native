@@ -6,6 +6,11 @@
   "main": "./lib/commonjs/index.js",
   "module": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
+  "engines": {
+    "npm": "please-use-yarn",
+    "yarn": ">= 3.6.1"
+  },
+  "packageManager": "yarn@3.6.1",
   "exports": {
     ".": {
       "types": "./lib/typescript/src/index.d.ts",
@@ -92,7 +97,6 @@
   "workspaces": [
     "example"
   ],
-  "packageManager": "yarn@3.6.1",
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
