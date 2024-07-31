@@ -52,14 +52,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mhochstoeger/react-native-example-app.git"
+    "url": "git+https://github.com/evva-sfw/abrevva-react-native.git"
   },
-  "author": "HOCHSTÖGER Matthias  / EVVA Wien <m.hochstoeger@evva.com> (https://github.com/mhochstoeger)",
-  "license": "MIT",
+  "author": "HOCHSTÖGER Matthias  / EVVA Wien <m.hochstoeger@evva.com>",
+  "license": "SEE LICENSE IN <LICENSE>",
   "bugs": {
-    "url": "https://github.com/mhochstoeger/react-native-example-app/issues"
+    "url": "https://github.com/evva-sfw/abrevva-react-native/issues"
   },
-  "homepage": "https://github.com/mhochstoeger/react-native-example-app#readme",
+  "homepage": "https://github.com/evva-sfw/abrevva-react-native",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
