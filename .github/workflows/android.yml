@@ -1,0 +1,35 @@
+name: Android
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Setup Nodejs
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - run: |
+        corepack yarn
+        cd example && yarn install
+
+    - name: Build android example app
+      run: yarn build:android
+      env:
+        GH_USERNAME: ${{ vars.USERNAME }}
+        # PAT has read:packages permissions
+        GH_TOKEN: ${{ secrets.TOKEN }}

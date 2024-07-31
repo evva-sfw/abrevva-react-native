@@ -18,6 +18,9 @@ The EVVA React-Native Module is a collection of tools to work with electronical 
 
 ## Requirements
 
+    Java 17+
+    Android SDK
+    Xcode 15+
     react-native < 0.74.3
     iOS 15.0+ 
     Android 10+ (API level 29) 
@@ -26,6 +29,11 @@ The EVVA React-Native Module is a collection of tools to work with electronical 
 ```
 yarn add <git remote url>
 ```
+
+### Setup Github auth to load package
+
+Create a copy of [local.properties.template](example/android/local.properties.template) and rename it to local.properties in the same directory. Paste your github username and [classic PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+
 ### IOS
 
 Add the following to your Podfile:

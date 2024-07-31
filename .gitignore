@@ -139,4 +139,4 @@ example/android/app/build/
 example/vendor/
 example/android/.idea/
 example/android/local.properties
-
+android/build
