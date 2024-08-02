@@ -1,5 +1,3 @@
-// https://stackoverflow.com/a/73382191
-// TODO: Verify that this works as intended
 import {
   DeviceEventEmitter,
   type EmitterSubscription,
@@ -30,7 +28,7 @@ import type {
   WriteOptions,
 } from './interfaces';
 
-const NativeModuleNfc: AbrevvaNfcInterface = NativeModules.AbrevvaNfc
+const NativeModuleNfc = NativeModules.AbrevvaNfc
   ? NativeModules.AbrevvaNfc
   : new Proxy(
       {},
@@ -47,7 +45,7 @@ const NativeModuleCrypto = NativeModules.AbrevvaCrypto
       {},
       {
         get() {
-          throw new Error('Linking Error AbrevvaNfc');
+          throw new Error('Linking Error AbrevvaCrypto');
         },
       },
     );
@@ -72,6 +70,9 @@ class AbrevvaBleModule implements AbrevvaBLEInterface {
       ios: new NativeEventEmitter(NativeModuleBle),
       android: DeviceEventEmitter,
     });
+    if (this.eventEmitter === undefined) {
+      throw new Error('this platform is not supported');
+    }
 
     this.listeners = new Map<String, EmitterSubscription | undefined>([
       ['onEnabledChanged', undefined],
@@ -80,7 +81,7 @@ class AbrevvaBleModule implements AbrevvaBLEInterface {
       ['onDisconnect', undefined],
     ]);
 
-    NativeModuleBle.setSupportedEvents({ events: [...this.listeners.keys()] });
+    NativeModuleBle?.setSupportedEvents({ events: [...this.listeners.keys()] });
   }
 
   async initialize(androidNeverForLocation?: boolean): Promise<void> {
@@ -98,13 +99,9 @@ class AbrevvaBleModule implements AbrevvaBLEInterface {
   }
 
   async startEnabledNotifications(callback: (result: boolean) => void): Promise<void> {
-    if (this.eventEmitter === undefined) {
-      return Promise.reject('unsupported platform');
-    }
-
     this.listeners.set(
       'onEnabledChanged',
-      this.eventEmitter.addListener('onEnabledChanged', (event: any) => {
+      this.eventEmitter!.addListener('onEnabledChanged', (event: any) => {
         callback(event.value);
       }),
     );
@@ -147,9 +144,6 @@ class AbrevvaBleModule implements AbrevvaBLEInterface {
     scanMode?: ScanMode,
     timeout?: number,
   ): Promise<void> {
-    if (this.eventEmitter === undefined) {
-      return Promise.reject('unsupported platform');
-    }
     if (this.listeners.get('onScanResult') !== undefined) {
       return Promise.reject('scan already in progress');
     }
@@ -218,23 +212,23 @@ class AbrevvaBleModule implements AbrevvaBLEInterface {
       ['onDisconnect', undefined],
     ]);
     NativeModuleBle.setSupportedEvents({ events: [...this.listeners.keys()] });
-    return await NativeModuleBle.disconnect(options);
+    return NativeModuleBle.disconnect(options);
   }
 
   async read(options: ReadOptions & TimeoutOptions): Promise<ReadResult> {
-    return await NativeModuleBle.read(options);
+    return NativeModuleBle.read(options);
   }
 
   async write(options: WriteOptions & TimeoutOptions): Promise<void> {
-    return await NativeModuleBle.write(options);
+    return NativeModuleBle.write(options);
   }
 
   async signalize(options: SignalizeOptions): Promise<void> {
-    return await NativeModuleBle.signalize(options);
+    return NativeModuleBle.signalize(options);
   }
 
   async disengage(options: DisengageOptions): Promise<StringResult> {
-    return await NativeModuleBle.disengage(options);
+    return NativeModuleBle.disengage(options);
   }
 
   async startNotifications(
@@ -243,15 +237,11 @@ class AbrevvaBleModule implements AbrevvaBLEInterface {
     characteristic: string,
     callback: (event: ReadResult) => void,
   ): Promise<void> {
-    if (this.eventEmitter === undefined) {
-      console.error('unsupported platform');
-      return;
-    }
     const key = `notification|${deviceId}|${service}|${characteristic}`.toLowerCase();
-    const listener = this.eventEmitter.addListener(key, callback);
+    const listener = this.eventEmitter!.addListener(key, callback);
     this.listeners.set(key, listener);
     await NativeModuleBle.setSupportedEvents({ events: [...this.listeners.keys()] });
-    return await NativeModuleBle.startNotifications(
+    return NativeModuleBle.startNotifications(
       this.removeUndefinedField({
         deviceId: deviceId,
         service: service,
@@ -269,7 +259,7 @@ class AbrevvaBleModule implements AbrevvaBLEInterface {
         events: [...this.listeners.keys()],
       });
     }
-    return await NativeModuleBle.stopNotifications(options);
+    return NativeModuleBle.stopNotifications(options);
   }
 }
 
@@ -313,7 +303,7 @@ class AbrevvaCryptoModule implements AbrevvaCryptoInterface {
   }
 
   encryptFile(sharedSecret: string, ptPath: string, ctPath: string) {
-    return NativeModuleCrypto.encrypt({
+    return NativeModuleCrypto.encryptFile({
       sharedSecret: sharedSecret,
       ptPath: ptPath,
       ctPath: ctPath,
@@ -348,3 +338,7 @@ class AbrevvaCryptoModule implements AbrevvaCryptoInterface {
 export const AbrevvaBle = new AbrevvaBleModule();
 export const AbrevvaCrypto = new AbrevvaCryptoModule();
 export const AbrevvaNfc = new AbrevvaNfcModule();
+
+export function createAbrevvaBleInstance() {
+  return new AbrevvaBleModule();
+}
