@@ -298,7 +298,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             isPermanentRelease
         ) { status: Any ->
             val result = Arguments.createMap()
-            result.putString("value", status as String) // TODO: Check if this works
+            result.putString("value", status as String)
 
             promise.resolve(result)
         }

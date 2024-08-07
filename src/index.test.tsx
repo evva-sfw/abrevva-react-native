@@ -1,6 +1,6 @@
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
-import { AbrevvaCrypto, AbrevvaNfc, createAbrevvaBleInstance } from '../index';
+import { AbrevvaCrypto, AbrevvaNfc, createAbrevvaBleInstance } from './index';
 
 describe('AbrevvaBleModule', () => {
   const AbrevvaBleMock = NativeModules.AbrevvaBle;
@@ -8,7 +8,7 @@ describe('AbrevvaBleModule', () => {
   var AbrevvaBle;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.useFakeTimers();
 
     Platform.OS = 'ios';
     Platform.select.mockImplementation(() => {
@@ -17,6 +17,7 @@ describe('AbrevvaBleModule', () => {
 
     mockEmitter = new NativeEventEmitter();
     AbrevvaBle = createAbrevvaBleInstance();
+    jest.clearAllMocks();
   });
 
   it('constructor should throw if Platform is not Supported', () => {
@@ -68,7 +69,30 @@ describe('AbrevvaBleModule', () => {
     expect(AbrevvaBleMock.openAppSettings).toHaveBeenCalledTimes(1);
   });
 
-  it('should run requestLEScan()', async () => {});
+  describe('requestLEScan()', () => {
+    it('should reject if a scan is already in progress', async () => {
+      AbrevvaBle.requestLEScan();
+      await expect(AbrevvaBle.requestLEScan).rejects.toThrow();
+    });
+    it('should add the expected eventlisteners and discard them after the timeout', async () => {
+      const addListenerSpy = jest.spyOn(mockEmitter, 'addListener');
+
+      const emitterSubscriptionMock = { remove: jest.fn() };
+      mockEmitter.addListener.mockImplementation(() => {
+        return emitterSubscriptionMock;
+      });
+      AbrevvaBle.requestLEScan(jest.fn(), jest.fn(), jest.fn());
+
+      jest.advanceTimersByTime(20000);
+
+      expect(addListenerSpy).toHaveBeenCalledWith('onScanResult', expect.any(Function));
+      expect(addListenerSpy).toHaveBeenCalledWith('onConnect', expect.any(Function));
+      expect(addListenerSpy).toHaveBeenCalledWith('onDisconnect', expect.any(Function));
+      expect(addListenerSpy).toHaveBeenCalledTimes(3);
+      expect(AbrevvaBleMock.requestLEScan).toHaveBeenCalledTimes(1);
+      expect(emitterSubscriptionMock.remove).toHaveBeenCalledTimes(3);
+    });
+  });
   it('should run stopLEScan()', async () => {
     await AbrevvaBle.stopLEScan();
     expect(AbrevvaBleMock.stopLEScan).toHaveBeenCalledTimes(1);
@@ -77,7 +101,11 @@ describe('AbrevvaBleModule', () => {
     await AbrevvaBle.connect();
     expect(AbrevvaBleMock.connect).toHaveBeenCalledTimes(1);
   });
-  it('should run disconnect()', async () => {});
+  it('should run disconnect()', async () => {
+    await AbrevvaBle.disconnect();
+    expect(AbrevvaBleMock.disconnect).toHaveBeenCalledTimes(1);
+    expect(AbrevvaBleMock.setSupportedEvents).toHaveBeenCalledTimes(1);
+  });
   it('should run read()', async () => {
     await AbrevvaBle.read();
     expect(AbrevvaBleMock.read).toHaveBeenCalledTimes(1);
@@ -94,7 +122,34 @@ describe('AbrevvaBleModule', () => {
     await AbrevvaBle.disengage();
     expect(AbrevvaBleMock.disengage).toHaveBeenCalledTimes(1);
   });
-  it('should run stopNotifications()', async () => {});
+  describe('startNotifications()', () => {});
+  describe('stopNotifications()', () => {
+    const deviceId = 'deviceId';
+    const service = 'service';
+    const characteristic = 'characteristic';
+
+    var emitterSubscriptionMock;
+    beforeEach(() => {
+      emitterSubscriptionMock = { remove: jest.fn() };
+      void jest.spyOn(mockEmitter, 'addListener').mockImplementation(() => {
+        return emitterSubscriptionMock;
+      });
+    });
+    it('should delete the Eventlistener if it was previously added', async () => {
+      await AbrevvaBle.startNotifications(deviceId, service, characteristic);
+      expect(emitterSubscriptionMock.remove).toHaveBeenCalledTimes(0);
+      expect(AbrevvaBleMock.stopNotifications).toHaveBeenCalledTimes(0);
+      expect(AbrevvaBleMock.startNotifications).toHaveBeenCalledTimes(1);
+      await AbrevvaBle.stopNotifications(deviceId, service, characteristic);
+      expect(emitterSubscriptionMock.remove).toHaveBeenCalledTimes(1);
+      expect(AbrevvaBleMock.stopNotifications).toHaveBeenCalledTimes(1);
+    });
+    it("shouldn't remove any key if it wasn't previously added", async () => {
+      await AbrevvaBle.stopNotifications(deviceId, service, characteristic);
+      expect(emitterSubscriptionMock.remove).toHaveBeenCalledTimes(0);
+      expect(AbrevvaBleMock.stopNotifications).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 describe('AbrevvaNfcModule', () => {

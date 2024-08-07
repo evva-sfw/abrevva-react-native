@@ -139,7 +139,7 @@ repositories {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "1.0.15"
+    implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "1.0.19"
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
