@@ -161,14 +161,14 @@ class AbrevvaBleModule implements AbrevvaBLEInterface {
     };
 
     const listeners = new Map<string, any>([
-      ['onScanResult', { callback: onScanResultHelper, listener: undefined }],
-      ['onConnect', { callback: onConnectCallback, listener: undefined }],
-      ['onDisconnect', { callback: onDisconnectCallback, listener: undefined }],
+      ['onScanResult', onScanResultHelper],
+      ['onConnect', onConnectCallback],
+      ['onDisconnect', onDisconnectCallback],
     ]);
 
-    listeners.forEach((callbackObj: any, listenerName: string) => {
-      callbackObj.listener = this.eventEmitter!.addListener(listenerName, callbackObj.callback);
-      this.listeners.set(listenerName, callbackObj.listener);
+    listeners.forEach((callback: any, listenerName: string) => {
+      const listener = this.eventEmitter!.addListener(listenerName, callback);
+      this.listeners.set(listenerName, listener);
     });
 
     NativeModuleBle.requestLEScan(
@@ -182,12 +182,11 @@ class AbrevvaBleModule implements AbrevvaBLEInterface {
         timeout: timeout,
       }),
     );
-
     setTimeout(
       () => {
-        listeners.forEach((callbackObj: any, listenerName: string) => {
+        this.listeners.forEach((listener, listenerName) => {
+          listener?.remove();
           this.listeners.set(listenerName, undefined);
-          callbackObj.listener.remove();
         });
         Promise.resolve();
       },
@@ -250,16 +249,24 @@ class AbrevvaBleModule implements AbrevvaBLEInterface {
     );
   }
 
-  async stopNotifications(options: ReadOptions): Promise<void> {
-    const key =
-      `notification|${options.deviceId}|${options.service}|${options.characteristic}`.toLowerCase();
-    if (key in this.listeners) {
+  async stopNotifications(
+    deviceId: string,
+    service: string,
+    characteristic: string,
+  ): Promise<void> {
+    const key = `notification|${deviceId}|${service}|${characteristic}`.toLowerCase();
+    if (this.listeners.get(key)) {
+      this.listeners.get(key)?.remove();
       this.listeners.delete(key);
       NativeModuleBle.setSupportedEvents({
         events: [...this.listeners.keys()],
       });
     }
-    return NativeModuleBle.stopNotifications(options);
+    return NativeModuleBle.stopNotifications({
+      deviceId: deviceId,
+      service: service,
+      characteristic: characteristic,
+    });
   }
 }
 

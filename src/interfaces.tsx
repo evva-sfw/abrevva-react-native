@@ -151,5 +151,5 @@ export interface AbrevvaBLEInterface {
     characteristic: string,
     callback: (event: ReadResult) => void,
   ): Promise<void>;
-  stopNotifications(options: ReadOptions): Promise<void>;
+  stopNotifications(deviceId: string, service: string, characteristic: string): Promise<void>;
 }

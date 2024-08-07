@@ -37,6 +37,7 @@ jest.mock('react-native', () => {
     write: jest.fn(),
     signalize: jest.fn(),
     disengage: jest.fn(),
+    startNotifications: jest.fn(),
     stopNotifications: jest.fn(),
     addListener: jest.fn(),
     removeListeners: jest.fn(),
