@@ -1,5 +1,5 @@
 {
-  "name": "react-native-example-app",
+  "name": "@evva-sfw/abrevva-react-native",
   "version": "0.1.0",
   "description": "evva",
   "source": "./src/index.tsx",
