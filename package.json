@@ -1,7 +1,7 @@
 {
   "name": "@evva-sfw/abrevva-react-native",
   "version": "0.1.0",
-  "description": "evva",
+  "description": "The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
   "module": "./lib/module/index.js",
@@ -54,7 +54,6 @@
     "type": "git",
     "url": "git+https://github.com/evva-sfw/abrevva-react-native.git"
   },
-  "author": "HOCHSTÖGER Matthias  / EVVA Wien <m.hochstoeger@evva.com>",
   "license": "SEE LICENSE IN <LICENSE>",
   "bugs": {
     "url": "https://github.com/evva-sfw/abrevva-react-native/issues"
@@ -108,23 +107,6 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "release-it": {
-    "git": {
-      "commitMessage": "chore: release ${version}",
-      "tagName": "v${version}"
-    },
-    "npm": {
-      "publish": true
-    },
-    "github": {
-      "release": true
-    },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": "angular"
-      }
-    }
   },
   "eslintConfig": {
     "root": true,
