@@ -96,11 +96,6 @@
   "workspaces": [
     "example"
   ],
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
   "prettier": {
     "quoteProps": "consistent",
     "singleQuote": true,
