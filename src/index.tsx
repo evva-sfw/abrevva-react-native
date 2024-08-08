@@ -14,13 +14,14 @@ import { Platform } from 'react-native';
 
 import { convertObject, convertValue } from './conversion';
 import type {
-  BooleanResult,
+  AbrevvaBLEInterface,
+  AbrevvaCryptoInterface,
+  AbrevvaNfcInterface,
   DeviceIdOptions,
   DisengageOptions,
-  InitializeOptions,
   ReadOptions,
   ReadResult,
-  RequestBleDeviceOptions,
+  ScanMode,
   ScanResult,
   ScanResultInternal,
   SignalizeOptions,
@@ -29,189 +30,7 @@ import type {
   WriteOptions,
 } from './interfaces';
 
-class BleClient {
-  private abrevvaBle: any;
-
-  private listeners: Map<String, EmitterSubscription | undefined>;
-  private eventEmitter: NativeEventEmitter | undefined;
-
-  constructor() {
-    this.abrevvaBle = NativeModules.AbrevvaBle
-      ? NativeModules.AbrevvaBle
-      : new Proxy(
-          {},
-          {
-            get() {
-              throw new Error('Linking Error AbrevvaBle');
-            },
-          },
-        );
-    this.eventEmitter = Platform.select({
-      ios: new NativeEventEmitter(this.abrevvaBle),
-      android: DeviceEventEmitter,
-    });
-
-    this.listeners = new Map<String, EmitterSubscription | undefined>([
-      ['onEnabledChanged', undefined],
-      ['onScanResult', undefined],
-    ]);
-
-    this.abrevvaBle.setSupportedEvents({ events: [...this.listeners.keys()] });
-  }
-
-  async initialize(options: InitializeOptions): Promise<void> {
-    return await this.abrevvaBle.initialize(options);
-  }
-
-  async isEnabled(): Promise<BooleanResult> {
-    return await this.abrevvaBle.isEnabled();
-  }
-
-  async isLocationEnabled(options: InitializeOptions): Promise<void> {
-    return await this.abrevvaBle.isLocationEnabled(options);
-  }
-
-  async startEnabledNotifications(callback: (result: BooleanResult) => void): Promise<void> {
-    if (this.eventEmitter === undefined) {
-      console.error('unsupported platform');
-      return;
-    }
-    this.listeners.get('onEnabledChanged')?.remove();
-    this.listeners.set(
-      'onEnabledChanged',
-      this.eventEmitter.addListener('onEnabledChanged', (event: any) => {
-        callback(event.value);
-      }),
-    );
-    return this.abrevvaBle.startEnabledNotifications();
-  }
-
-  async stopEnabledNotifications(): Promise<void> {
-    if (this.listeners.get('onEnabledChanged') !== undefined) {
-      this.listeners.get('onEnabledChanged')?.remove();
-      this.listeners.set('onEnabledChanged', undefined);
-    }
-    return await this.abrevvaBle.stopEnabledNotifications();
-  }
-
-  async openLocationSettings(): Promise<void> {
-    return await this.abrevvaBle.openLocationSettings();
-  }
-
-  async openBluetoothSettings(): Promise<void> {
-    return await this.abrevvaBle.openBluetoothSettings();
-  }
-
-  async openAppSettings(): Promise<void> {
-    return await this.abrevvaBle.openAppSettings();
-  }
-
-  async requestLEScan(
-    options: RequestBleDeviceOptions,
-    callback: (result: ScanResult) => void,
-  ): Promise<void> {
-    if (this.eventEmitter === undefined) {
-      console.error('unsupported platform');
-      return;
-    }
-    this.listeners.get('onScanResult')?.remove();
-
-    const listener = this.eventEmitter.addListener(
-      'onScanResult',
-      (resultInternal: ScanResultInternal) => {
-        const result: ScanResult = {
-          ...resultInternal,
-          manufacturerData: convertObject(resultInternal.manufacturerData),
-          serviceData: convertObject(resultInternal.serviceData),
-          rawAdvertisement: resultInternal.rawAdvertisement
-            ? convertValue(resultInternal.rawAdvertisement)
-            : undefined,
-        };
-        callback(result);
-      },
-    );
-
-    this.listeners.set('onScanResult', listener);
-    this.abrevvaBle.requestLEScan(options);
-    const timeout = options.timeout ? options.timeout : 10000;
-    setTimeout(() => {
-      listener.remove();
-      this.listeners.set('onScanResult', undefined);
-      Promise.resolve();
-    }, timeout + 500);
-  }
-
-  async stopLEScan(): Promise<void> {
-    return await this.abrevvaBle.stopLEScan();
-  }
-
-  async connect(options: DeviceIdOptions & TimeoutOptions): Promise<void> {
-    return await this.abrevvaBle.connect(options);
-  }
-
-  async disconnect(options: DeviceIdOptions): Promise<void> {
-    this.listeners.forEach((listener) => listener?.remove());
-    this.listeners = new Map<String, EmitterSubscription | undefined>([
-      ['onEnabledChanged', undefined],
-      ['onScanResult', undefined],
-    ]);
-    this.abrevvaBle.setSupportedEvents({ events: [...this.listeners.keys()] });
-    return await this.abrevvaBle.disconnect(options);
-  }
-
-  async read(options: ReadOptions & TimeoutOptions): Promise<ReadResult> {
-    return await this.abrevvaBle.read(options);
-  }
-
-  async write(options: WriteOptions & TimeoutOptions): Promise<void> {
-    return await this.abrevvaBle.write(options);
-  }
-
-  async signalize(options: SignalizeOptions): Promise<void> {
-    return await this.abrevvaBle.signalize(options);
-  }
-
-  async disengage(options: DisengageOptions): Promise<StringResult> {
-    return await this.abrevvaBle.disengage(options);
-  }
-
-  async startNotifications(
-    options: ReadOptions,
-    callback: (event: ReadResult) => void,
-  ): Promise<void> {
-    if (this.eventEmitter === undefined) {
-      console.error('unsupported platform');
-      return;
-    }
-    const key =
-      `notification|${options.deviceId}|${options.service}|${options.characteristic}`.toLowerCase();
-    this.listeners.get(key)?.remove();
-    this.listeners.set(key, undefined);
-    this.abrevvaBle.setSupportedEvents({ events: [...this.listeners.keys()] });
-    const listener = this.eventEmitter.addListener(key, (event: any) => {
-      callback(event.value);
-    });
-    this.listeners.set(key, listener);
-    return await this.abrevvaBle.startNotifications(options);
-  }
-
-  async stopNotifications(options: ReadOptions): Promise<void> {
-    const key =
-      `notification|${options.deviceId}|${options.service}|${options.characteristic}`.toLowerCase();
-    if (key in this.listeners) {
-      this.listeners.get(key)?.remove();
-      this.listeners.delete(key);
-      this.abrevvaBle.setSupportedEvents({
-        events: [...this.listeners.keys()],
-      });
-    }
-    return await this.abrevvaBle.stopNotifications(options);
-  }
-}
-
-export const AbrevvaBle = new BleClient();
-
-export const AbrevvaNfc = NativeModules.AbrevvaNfc
+const NativeModuleNfc: AbrevvaNfcInterface = NativeModules.AbrevvaNfc
   ? NativeModules.AbrevvaNfc
   : new Proxy(
       {},
@@ -222,7 +41,7 @@ export const AbrevvaNfc = NativeModules.AbrevvaNfc
       },
     );
 
-export const AbrevvaCrypto = NativeModules.AbrevvaCrypto
+const NativeModuleCrypto = NativeModules.AbrevvaCrypto
   ? NativeModules.AbrevvaCrypto
   : new Proxy(
       {},
@@ -232,3 +51,300 @@ export const AbrevvaCrypto = NativeModules.AbrevvaCrypto
         },
       },
     );
+
+const NativeModuleBle = NativeModules.AbrevvaBle
+  ? NativeModules.AbrevvaBle
+  : new Proxy(
+      {},
+      {
+        get() {
+          throw new Error('Linking Error AbrevvaBle');
+        },
+      },
+    );
+
+class AbrevvaBleModule implements AbrevvaBLEInterface {
+  private listeners: Map<String, EmitterSubscription | undefined>;
+  private eventEmitter: NativeEventEmitter | undefined;
+
+  constructor() {
+    this.eventEmitter = Platform.select({
+      ios: new NativeEventEmitter(NativeModuleBle),
+      android: DeviceEventEmitter,
+    });
+
+    this.listeners = new Map<String, EmitterSubscription | undefined>([
+      ['onEnabledChanged', undefined],
+      ['onScanResult', undefined],
+      ['onConnect', undefined],
+      ['onDisconnect', undefined],
+    ]);
+
+    NativeModuleBle.setSupportedEvents({ events: [...this.listeners.keys()] });
+  }
+
+  async initialize(androidNeverForLocation?: boolean): Promise<void> {
+    return NativeModuleBle.initialize(
+      this.removeUndefinedField({ androidNeverForLocation: androidNeverForLocation }),
+    );
+  }
+
+  async isEnabled(): Promise<boolean> {
+    return NativeModuleBle.isEnabled();
+  }
+
+  async isLocationEnabled(): Promise<boolean> {
+    return NativeModuleBle.isLocationEnabled();
+  }
+
+  async startEnabledNotifications(callback: (result: boolean) => void): Promise<void> {
+    if (this.eventEmitter === undefined) {
+      return Promise.reject('unsupported platform');
+    }
+
+    this.listeners.set(
+      'onEnabledChanged',
+      this.eventEmitter.addListener('onEnabledChanged', (event: any) => {
+        callback(event.value);
+      }),
+    );
+    return NativeModuleBle.startEnabledNotifications();
+  }
+
+  async stopEnabledNotifications(): Promise<void> {
+    this.listeners.set('onEnabledChanged', undefined);
+    return await NativeModuleBle.stopEnabledNotifications();
+  }
+
+  async openLocationSettings(): Promise<void> {
+    return await NativeModuleBle.openLocationSettings();
+  }
+
+  async openBluetoothSettings(): Promise<void> {
+    return await NativeModuleBle.openBluetoothSettings();
+  }
+
+  async openAppSettings(): Promise<void> {
+    return await NativeModuleBle.openAppSettings();
+  }
+
+  private removeUndefinedField(obj: any) {
+    for (let propName in obj) {
+      obj[propName] ?? delete obj[propName];
+    }
+    return obj;
+  }
+
+  async requestLEScan(
+    onScanResultCallback: (result: ScanResult) => void,
+    onConnectCallback: (address: string) => void,
+    onDisconnectCallback: (address: string) => void,
+    services?: string[],
+    name?: string,
+    namePrefix?: string,
+    optionalServices?: string[],
+    allowDuplicates?: boolean,
+    scanMode?: ScanMode,
+    timeout?: number,
+  ): Promise<void> {
+    if (this.eventEmitter === undefined) {
+      return Promise.reject('unsupported platform');
+    }
+    if (this.listeners.get('onScanResult') !== undefined) {
+      return Promise.reject('scan already in progress');
+    }
+
+    const onScanResultHelper = (resultInternal: ScanResultInternal) => {
+      const result: ScanResult = {
+        ...resultInternal,
+        manufacturerData: convertObject(resultInternal.manufacturerData),
+        serviceData: convertObject(resultInternal.serviceData),
+        rawAdvertisement: resultInternal.rawAdvertisement
+          ? convertValue(resultInternal.rawAdvertisement)
+          : undefined,
+      };
+      onScanResultCallback(result);
+    };
+
+    const listeners = new Map<string, any>([
+      ['onScanResult', { callback: onScanResultHelper, listener: undefined }],
+      ['onConnect', { callback: onConnectCallback, listener: undefined }],
+      ['onDisconnect', { callback: onDisconnectCallback, listener: undefined }],
+    ]);
+
+    listeners.forEach((callbackObj: any, listenerName: string) => {
+      callbackObj.listener = this.eventEmitter!.addListener(listenerName, callbackObj.callback);
+      this.listeners.set(listenerName, callbackObj.listener);
+    });
+
+    NativeModuleBle.requestLEScan(
+      this.removeUndefinedField({
+        services: services,
+        name: name,
+        namePrefix: namePrefix,
+        optionalServices: optionalServices,
+        allowDuplicates: allowDuplicates,
+        scanMode: scanMode,
+        timeout: timeout,
+      }),
+    );
+
+    setTimeout(
+      () => {
+        listeners.forEach((callbackObj: any, listenerName: string) => {
+          this.listeners.set(listenerName, undefined);
+          callbackObj.listener.remove();
+        });
+        Promise.resolve();
+      },
+      (timeout ? timeout : 10000) + 500,
+    );
+  }
+
+  async stopLEScan(): Promise<void> {
+    return await NativeModuleBle.stopLEScan();
+  }
+
+  async connect(options: DeviceIdOptions & TimeoutOptions): Promise<void> {
+    return await NativeModuleBle.connect(options);
+  }
+
+  async disconnect(options: DeviceIdOptions): Promise<void> {
+    this.listeners.forEach((listener) => listener?.remove);
+    this.listeners = new Map<String, EmitterSubscription | undefined>([
+      ['onEnabledChanged', undefined],
+      ['onScanResult', undefined],
+      ['onConnect', undefined],
+      ['onDisconnect', undefined],
+    ]);
+    NativeModuleBle.setSupportedEvents({ events: [...this.listeners.keys()] });
+    return await NativeModuleBle.disconnect(options);
+  }
+
+  async read(options: ReadOptions & TimeoutOptions): Promise<ReadResult> {
+    return await NativeModuleBle.read(options);
+  }
+
+  async write(options: WriteOptions & TimeoutOptions): Promise<void> {
+    return await NativeModuleBle.write(options);
+  }
+
+  async signalize(options: SignalizeOptions): Promise<void> {
+    return await NativeModuleBle.signalize(options);
+  }
+
+  async disengage(options: DisengageOptions): Promise<StringResult> {
+    return await NativeModuleBle.disengage(options);
+  }
+
+  async startNotifications(
+    deviceId: string,
+    service: string,
+    characteristic: string,
+    callback: (event: ReadResult) => void,
+  ): Promise<void> {
+    if (this.eventEmitter === undefined) {
+      console.error('unsupported platform');
+      return;
+    }
+    const key = `notification|${deviceId}|${service}|${characteristic}`.toLowerCase();
+    const listener = this.eventEmitter.addListener(key, callback);
+    this.listeners.set(key, listener);
+    await NativeModuleBle.setSupportedEvents({ events: [...this.listeners.keys()] });
+    return await NativeModuleBle.startNotifications(
+      this.removeUndefinedField({
+        deviceId: deviceId,
+        service: service,
+        characteristic: characteristic,
+      }),
+    );
+  }
+
+  async stopNotifications(options: ReadOptions): Promise<void> {
+    const key =
+      `notification|${options.deviceId}|${options.service}|${options.characteristic}`.toLowerCase();
+    if (key in this.listeners) {
+      this.listeners.delete(key);
+      NativeModuleBle.setSupportedEvents({
+        events: [...this.listeners.keys()],
+      });
+    }
+    return await NativeModuleBle.stopNotifications(options);
+  }
+}
+
+class AbrevvaNfcModule implements AbrevvaNfcInterface {
+  connect() {
+    return NativeModuleNfc.connect();
+  }
+  disconnect() {
+    return NativeModuleNfc.disconnect();
+  }
+  read() {
+    return NativeModuleNfc.read();
+  }
+}
+
+class AbrevvaCryptoModule implements AbrevvaCryptoInterface {
+  encrypt(key: string, iv: string, adata: string, pt: string, tagLength?: number) {
+    return NativeModuleCrypto.encrypt({
+      key: key,
+      iv: iv,
+      adata: adata,
+      pt: pt,
+      tagLength: tagLength,
+    });
+  }
+  decrypt(key: string, iv: string, adata: string, ct: string, tagLength?: number) {
+    return NativeModuleCrypto.decrypt({
+      key: key,
+      iv: iv,
+      adata: adata,
+      ct: ct,
+      tagLength: tagLength,
+    });
+  }
+  generateKeyPair() {
+    return NativeModuleCrypto.generateKeyPair();
+  }
+
+  computeSharedSecret(key: string, peerPublicKey: string) {
+    return NativeModuleCrypto.computeSharedSecret({ key: key, peerPublicKey: peerPublicKey });
+  }
+
+  encryptFile(sharedSecret: string, ptPath: string, ctPath: string) {
+    return NativeModuleCrypto.encrypt({
+      sharedSecret: sharedSecret,
+      ptPath: ptPath,
+      ctPath: ctPath,
+    });
+  }
+
+  decryptFile(sharedSecret: string, ptPath: string, ctPath: string) {
+    return NativeModuleCrypto.decryptFile({
+      sharedSecret: sharedSecret,
+      ptPath: ptPath,
+      ctPath: ctPath,
+    });
+  }
+
+  decryptFileFromURL(sharedSecret: string, ptPath: string, url: string) {
+    return NativeModuleCrypto.decryptFileFromURL({
+      sharedSecret: sharedSecret,
+      ptPath: ptPath,
+      url: url,
+    });
+  }
+
+  random(numBytes: number) {
+    return NativeModuleCrypto.random({ numBytes: numBytes });
+  }
+
+  derive(key: string, salt: string, info: string, length: number) {
+    return NativeModuleCrypto.derive({ key: key, salt: salt, info: info, length: length });
+  }
+}
+
+export const AbrevvaBle = new AbrevvaBleModule();
+export const AbrevvaCrypto = new AbrevvaCryptoModule();
+export const AbrevvaNfc = new AbrevvaNfcModule();

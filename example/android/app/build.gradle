@@ -109,13 +109,30 @@ android {
     }
 }
 
+Properties properties = new Properties()
+try {
+    def propertiesFile = new File(rootProject.rootDir, "local.properties")
+    if (propertiesFile.exists()) {
+        properties.load(new FileInputStream(propertiesFile))
+        println("Properties loaded successfully.")
+    } else {
+        println("local.properties file does not exist.")
+    }
+} catch (Exception e) {
+    println("Failed to load properties: ${e.message}")
+}
+
 repositories {
     google()
     mavenCentral()
     mavenLocal()
     maven {
-        name = "evva-maven"
-        url = url = uri("https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android")
+        name = 'evva-maven'
+        url = uri('https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android')
+        credentials {
+            username = properties.getProperty('github.username') ?: System.getenv('GH_USERNAME')
+            password = properties.getProperty('github.token') ?: System.getenv('GH_TOKEN')
+        }
     }
 }
 

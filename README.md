@@ -18,43 +18,56 @@ The EVVA React-Native Module is a collection of tools to work with electronical 
 
 ## Requirements
 
+    Java 17+
+    Android SDK
+    Xcode 15+
     react-native < 0.74.3
     iOS 15.0+ 
     Android 10+ (API level 29) 
 
 ## Installation
 ```
-    yarn add <git remote url>
+yarn add <git remote url>
 ```
+
+### Setup Github auth to load package
+
+Create a copy of [local.properties.template](example/android/local.properties.template) and rename it to local.properties in the same directory. Paste your github username and [classic PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+
 ### IOS
-    add the following to your Podfile:
-    ```ruby
-        source 'https://github.com/evva-sfw/abrevva-sdk-ios-pod-specs.git'
-        source 'https://cdn.cocoapods.org/'
-    ```
-    then execute `pod install` inside of your projects ios/ folder.
+
+Add the following to your Podfile:
+
+```ruby
+source 'https://github.com/evva-sfw/abrevva-sdk-ios-pod-specs.git'
+source 'https://cdn.cocoapods.org/'
+```
+
+then execute `pod install` inside of your projects ios/ folder.
 
 ### Android
 
-    add this to your `build.gradle` file:
+Add this to your `build.gradle` file:
+
 ```ruby
-    repositories {
-        maven {
-            url = uri("https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android")
-        }
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android")
     }
-    ...
-    dependencies {
-      implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "1.0.19" <-- change to latest version. 
-    }
+}
+...
+dependencies {
+  implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "1.0.19" <-- change to latest version. 
+}
 ```
-    add Permissions to your `Manifest.xml` file as needed.
+
+Add Permissions to your `Manifest.xml` file as needed.
+
 ```ruby
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 ```
-
 
 ## Examples
 
@@ -66,12 +79,12 @@ To start off first import `AbrevvaBle` from this module
 import {AbrevvaBle} from 'react-natice-example-app';
 
 async function scanForBleDevices(androidNeverForLocation: Boolean, timeout: Number){
-    await AbrevvaBle.initialize({
-        androidNeverForLocation: true,
-    });
+    const androidNeverForLocation = true;
+    await AbrevvaBle.initialize(androidNeverForLocation);
 
+    const timeout = 10_000
     AbrevvaBle.requestLEScan(
-        { timeout: 10_000 }, 
+        timeout, 
         (data: ScanResult) => {
             console.log(`found device: ${data.name}`);
         },
@@ -90,24 +103,24 @@ async function scanForBleDevices(androidNeverForLocation: Boolean, timeout: Numb
 With the signalize method you can localize EVVA components. On a successful signalization the component will emit a melody indicating its location.
 
 ```typescript
-    AbrevvaBle.signalize(
-        {'deviceID': deviceID},
-        () => {
-        console.log(`Signalized /w success=${it}`)
-        }    
-    );
+AbrevvaBle.signalize(
+    deviceID,
+    () => {
+    console.log(`Signalized /w success=${it}`)
+    }    
+);
 ```
 ### Perform disengage for EVVA components
 
 For the component disengage you have to provide access credentials to the EVVA component. Those are generally acquired in the form of access media metadata from the Xesar software.
 
 ```typescript
-    AbrevvaBle.disengage({
-        mobileId: '',
-        mobileDeviceKey:: '',
-        mobileGroupId: '',
-        mobileAccessData: '',
-        isPermanentRelease: '',
-        timeout: 10_000
-    });
+AbrevvaBle.disengage(
+    mobileId: '',
+    mobileDeviceKey:: '',
+    mobileGroupId: '',
+    mobileAccessData: '',
+    isPermanentRelease: '',
+    timeout: 10_000
+);
 ```

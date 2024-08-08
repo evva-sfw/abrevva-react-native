@@ -22,7 +22,7 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish
 import java.util.Timer
 import java.util.TimerTask
 
-class ReactNativeAbrevvaModule(reactContext: ReactApplicationContext) :
+class AbrevvaNfcModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
 
   private val host = "172.16.2.91"
