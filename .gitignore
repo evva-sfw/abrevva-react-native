@@ -140,3 +140,6 @@ example/vendor/
 example/android/.idea/
 example/android/local.properties
 android/build
+
+# Exclude because this repo forces to use yarn instead of npm
+package-lock.json
