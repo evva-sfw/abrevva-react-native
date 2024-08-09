@@ -1,8 +1,5 @@
-package com.exampleapp
+package com.evva.xesar.abrevva.reactnative
 
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
 import com.evva.xesar.abrevva.crypto.AesCCM
 import com.evva.xesar.abrevva.crypto.AesGCM
 import com.evva.xesar.abrevva.crypto.HKDF
@@ -10,14 +7,14 @@ import com.evva.xesar.abrevva.crypto.SimpleSecureRandom
 import com.evva.xesar.abrevva.crypto.X25519Wrapper
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient.Mqtt3SubscribeAndCallbackBuilder.Call.Ex
 import org.bouncycastle.util.encoders.Base64
 import org.bouncycastle.util.encoders.Hex
 import java.io.BufferedInputStream
 import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
 import java.net.URL
 import java.nio.file.Paths
 
@@ -26,10 +23,10 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun encrypt(options: ReadableMap, promise: Promise) {
-        val key = Hex.decode(options.getString("key")?: "")
-        val iv = Hex.decode(options.getString("iv")?: "")
-        val adata = Hex.decode(options.getString("adata")?: "")
-        val pt = Hex.decode(options.getString("pt")?: "")
+        val key = Hex.decode(options.getString("key") ?: "")
+        val iv = Hex.decode(options.getString("iv") ?: "")
+        val adata = Hex.decode(options.getString("adata") ?: "")
+        val pt = Hex.decode(options.getString("pt") ?: "")
         val tagLength = options.getInt("tagLength")
 
         val ct: ByteArray = AesCCM.encrypt(key, iv, adata, pt, tagLength)
@@ -51,10 +48,10 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun decrypt(options: ReadableMap, promise: Promise) {
-        val key = Hex.decode(options.getString("key")?: "")
-        val iv = Hex.decode(options.getString("iv")?: "")
-        val adata = Hex.decode(options.getString("adata")?: "")
-        val ct = Hex.decode(options.getString("ct")?: "")
+        val key = Hex.decode(options.getString("key") ?: "")
+        val iv = Hex.decode(options.getString("iv") ?: "")
+        val adata = Hex.decode(options.getString("adata") ?: "")
+        val ct = Hex.decode(options.getString("ct") ?: "")
         val tagLength = options.getInt("tagLength")
 
         val pt: ByteArray = AesCCM.decrypt(key, iv, adata, ct, tagLength)
@@ -168,6 +165,7 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
             promise.reject(e)
         }
     }
+
     fun writeToFile(ctPath: String, url: String) {
 
         BufferedInputStream(URL(url).openStream()).use { `in` ->
@@ -257,5 +255,5 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
     companion object {
         const val NAME = "AbrevvaCrypto"
     }
-    
+
 }

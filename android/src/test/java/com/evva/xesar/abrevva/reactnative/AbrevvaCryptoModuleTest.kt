@@ -1,20 +1,14 @@
-package com.test.exampleapp
+package com.evva.xesar.abrevva.reactnative
 
-import android.graphics.Color
 import com.evva.xesar.abrevva.crypto.AesCCM
 import com.evva.xesar.abrevva.crypto.AesGCM
 import com.evva.xesar.abrevva.crypto.HKDF
 import com.evva.xesar.abrevva.crypto.SimpleSecureRandom
 import com.evva.xesar.abrevva.crypto.X25519Wrapper
-import com.exampleapp.AbrevvaCryptoModule
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.ReadableMapKeySetIterator
-import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -40,7 +34,7 @@ import org.junit.jupiter.params.provider.Arguments as JunitArguments
 
 class AbrevvaCryptoModuleTest {
 
-    private lateinit var abrevvaCryptoModule: AbrevvaCryptoModule
+    private lateinit var abrevvaCryptoModule: com.evva.xesar.abrevva.reactnative.AbrevvaCryptoModule
 
     private lateinit var testMap: WritableMapTestImplementation
 
@@ -66,19 +60,20 @@ class AbrevvaCryptoModuleTest {
         testMap = WritableMapTestImplementation()
         every { Arguments.createMap() } returns testMap
         every { Hex.decode(any<String>()) } returns byteArrayOf(1)
-        abrevvaCryptoModule = AbrevvaCryptoModule(contextMock)
+        abrevvaCryptoModule = com.evva.xesar.abrevva.reactnative.AbrevvaCryptoModule(contextMock)
     }
 
     @AfterEach
-    fun afterEach(){
+    fun afterEach() {
         unmockkAll()
     }
+
     @Nested
     @DisplayName("encrypt()")
     inner class EncryptTests {
         @Test
         fun `should reject if ct is empty`() {
-            every { Hex.decode(any<String>()) } answers { callOriginal()}
+            every { Hex.decode(any<String>()) } answers { callOriginal() }
             every { AesCCM.encrypt(any(), any(), any(), any(), any()) } returns ByteArray(0)
 
             abrevvaCryptoModule.encrypt(readableMapMock, promiseMock)
@@ -159,14 +154,15 @@ class AbrevvaCryptoModuleTest {
 
             verify { promiseMock.reject(any<Throwable>()) }
         }
-        fun parameterizedArgs_encrypt(): Stream<JunitArguments>{
+
+        fun parameterizedArgs_encrypt(): Stream<JunitArguments> {
             return Stream.of(
-        JunitArguments.of("", "ptPath", "sharedSecret"),
-        JunitArguments.of("ctPath", "", "sharedSecret"),
-        JunitArguments.of("ctPath", "sharedSecret", ""),
-        JunitArguments.of(null, "ptPath", "sharedSecret"),
-        JunitArguments.of("ctPath", null, "sharedSecret"),
-        JunitArguments.of("ctPath", "ptPath", null),
+                JunitArguments.of("", "ptPath", "sharedSecret"),
+                JunitArguments.of("ctPath", "", "sharedSecret"),
+                JunitArguments.of("ctPath", "sharedSecret", ""),
+                JunitArguments.of(null, "ptPath", "sharedSecret"),
+                JunitArguments.of("ctPath", null, "sharedSecret"),
+                JunitArguments.of("ctPath", "ptPath", null),
             )
         }
 
@@ -219,7 +215,7 @@ class AbrevvaCryptoModuleTest {
             verify { promiseMock.reject(any<Throwable>()) }
         }
 
-        fun parameterizedArgs_decrypt(): Stream<JunitArguments>{
+        fun parameterizedArgs_decrypt(): Stream<JunitArguments> {
             return Stream.of(
                 JunitArguments.of("", "ptPath", "sharedSecret"),
                 JunitArguments.of("ctPath", "", "sharedSecret"),
@@ -298,9 +294,15 @@ class AbrevvaCryptoModuleTest {
         @Test
         fun `decryptFileFromURL() should reject if ctPath-File is not accessible`() {
             val mockMap = mockk<ReadableMap>(relaxed = true)
-            val moduleSpy = spyk(AbrevvaCryptoModule(contextMock))
+            val moduleSpy =
+                spyk(com.evva.xesar.abrevva.reactnative.AbrevvaCryptoModule(contextMock))
             every { mockMap.getString(any()) } returns "notEmpty"
-            every { moduleSpy.writeToFile(any(), any()) } throws Exception("decryptFileFromURL() Fail Exception")
+            every {
+                moduleSpy.writeToFile(
+                    any(),
+                    any()
+                )
+            } throws Exception("decryptFileFromURL() Fail Exception")
 
             moduleSpy.decryptFileFromURL(mockMap, promiseMock)
 
@@ -310,7 +312,8 @@ class AbrevvaCryptoModuleTest {
         @Test
         fun `decryptFileFromURL() should reject if decode fails`() {
             val mockMap = mockk<ReadableMap>(relaxed = true)
-            val moduleSpy = spyk(AbrevvaCryptoModule(contextMock))
+            val moduleSpy =
+                spyk(com.evva.xesar.abrevva.reactnative.AbrevvaCryptoModule(contextMock))
             every { mockMap.getString(any()) } returns "notEmpty"
             every { moduleSpy.writeToFile(any(), any()) } returns Unit
             every { Hex.decode(any<String>()) } throws Exception("decryptFileFromURL() Fail Exception")
@@ -323,7 +326,8 @@ class AbrevvaCryptoModuleTest {
         @Test
         fun `decryptFileFromURL() should resolve if everything works as intended`() {
             val mockMap = mockk<ReadableMap>(relaxed = true)
-            val moduleSpy = spyk(AbrevvaCryptoModule(contextMock))
+            val moduleSpy =
+                spyk(com.evva.xesar.abrevva.reactnative.AbrevvaCryptoModule(contextMock))
             every { mockMap.getString(any()) } returns "notEmpty"
             every { moduleSpy.writeToFile(any(), any()) } returns Unit
             every { AesGCM.decryptFile(any(), any(), any()) } returns true
@@ -352,7 +356,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `should reject if bytes cannot be generated`(){
+        fun `should reject if bytes cannot be generated`() {
             every { SimpleSecureRandom.getSecureRandomBytes(any()) } returns ByteArray(0)
             testMap.putInt("numBytes", 10)
 
@@ -361,6 +365,7 @@ class AbrevvaCryptoModuleTest {
             verify { promiseMock.reject(any<Exception>()) }
         }
     }
+
     @Nested
     @DisplayName("derive()")
     inner class DeriveTests {
@@ -374,6 +379,7 @@ class AbrevvaCryptoModuleTest {
 
             verify { promiseMock.reject(any<Exception>()) }
         }
+
         @Test
         fun `should reject if unsuccessful`() {
             testMap.putInt("length", 10)

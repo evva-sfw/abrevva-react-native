@@ -1,37 +1,25 @@
-package com.exampleapp
+package com.evva.xesar.abrevva.reactnative
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.evva.xesar.abrevva.ble.BleManager
+import com.evva.xesar.abrevva.nfc.toHexString
+import com.evva.xesar.abrevva.util.bytesToString
+import com.evva.xesar.abrevva.util.stringToBytes
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
-import java.util.UUID
-import com.evva.xesar.abrevva.ble.BleManager
-import com.evva.xesar.abrevva.util.bytesToString
-import com.evva.xesar.abrevva.util.stringToBytes
-import com.evva.xesar.abrevva.nfc.toHexString
-
-import com.facebook.react.ReactActivity
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReactContext.RCTDeviceEventEmitter
-import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.facebook.react.modules.core.PermissionListener
-import com.facebook.react.modules.core.RCTNativeAppEventEmitter
-import com.facebook.react.uimanager.events.RCTModernEventEmitter
-import io.reactivex.annotations.NonNull
 import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanResult
-import org.json.JSONArray
+import java.util.UUID
 
 class AbrevvaBleModule(reactContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactContext) {
@@ -49,7 +37,8 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             var neverForLocation = false
             try {
                 neverForLocation = options.getBoolean("androidNeverForLocation")
-            } catch (_: Exception){}
+            } catch (_: Exception) {
+            }
 
             this.aliases = if (neverForLocation) {
                 arrayOf(
@@ -66,14 +55,18 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         } else {
             this.aliases = arrayOf(
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.BLUETOOTH,
-                        android.Manifest.permission.BLUETOOTH_ADMIN,
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.BLUETOOTH,
+                android.Manifest.permission.BLUETOOTH_ADMIN,
             )
         }
 
         this.aliases.forEach {
-            if (ContextCompat.checkSelfPermission(reactApplicationContext, it) == PackageManager.PERMISSION_DENIED){
+            if (ContextCompat.checkSelfPermission(
+                    reactApplicationContext,
+                    it
+                ) == PackageManager.PERMISSION_DENIED
+            ) {
                 ActivityCompat.requestPermissions(
                     currentActivity!!,
                     this.aliases,
@@ -105,7 +98,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun isLocationEnabled( promise: Promise) {
+    fun isLocationEnabled(promise: Promise) {
         val result = Arguments.createMap()
         result.putBoolean("value", manager.isLocationEnabled())
 
@@ -165,7 +158,8 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         var timeout: Long = 10000
         try {
             timeout = options.getDouble("timeout").toLong()
-        } catch (_:Exception){}
+        } catch (_: Exception) {
+        }
 
         this.manager.startScan({ success: Boolean ->
             if (success) {
@@ -198,7 +192,8 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         var timeout: Long = 10000
         try {
             timeout = options.getDouble("timeout").toLong()
-        } catch (_:Exception){}
+        } catch (_: Exception) {
+        }
 
         manager.connect(deviceId, { success: Boolean ->
             if (success) {
@@ -230,20 +225,27 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         var timeout: Long = 10000
         try {
             timeout = options.getDouble("timeout").toLong()
-        } catch (_:Exception) {}
+        } catch (_: Exception) {
+        }
 
         val characteristic = getCharacteristic(options, promise)
             ?: return promise.reject("read(): bad characteristic")
 
-        manager.read(deviceId, characteristic.first, characteristic.second, { success: Boolean, data: ByteArray? ->
-            if (success) {
-                val ret = Arguments.createMap()
-                ret.putString("value", bytesToString(data!!))
-                promise.resolve(ret)
-            } else {
-                promise.reject("read(): failed to read from device")
-            }
-        }, timeout)
+        manager.read(
+            deviceId,
+            characteristic.first,
+            characteristic.second,
+            { success: Boolean, data: ByteArray? ->
+                if (success) {
+                    val ret = Arguments.createMap()
+                    ret.putString("value", bytesToString(data!!))
+                    promise.resolve(ret)
+                } else {
+                    promise.reject("read(): failed to read from device")
+                }
+            },
+            timeout
+        )
     }
 
     @ReactMethod
@@ -253,10 +255,12 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         var timeout: Long = 10000
         try {
             timeout = options.getDouble("timeout").toLong()
-        }catch (_:Exception){}
+        } catch (_: Exception) {
+        }
 
         val characteristic =
-            getCharacteristic(options, promise) ?: return promise.reject("read(): bad characteristic")
+            getCharacteristic(options, promise)
+                ?: return promise.reject("read(): bad characteristic")
         val value =
             options.getString("value") ?: return promise.reject("write(): missing value for write")
 
@@ -287,7 +291,8 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         var isPermanentRelease = false
         try {
             isPermanentRelease = options.getBoolean("isPermanentRelease")
-        } catch (_:Exception){}
+        } catch (_: Exception) {
+        }
 
         manager.disengage(
             deviceId,
@@ -316,20 +321,20 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             deviceId,
             characteristic.first,
             characteristic.second,
-            { success:Boolean ->
+            { success: Boolean ->
                 if (success) {
                     promise.resolve("success")
                 } else {
                     promise.reject("startNotifications(): failed to set notifications")
                 }
             }, { data: ByteArray ->
-            val key =
-                "notification|${deviceId}|${(characteristic.first)}|${(characteristic.second)}"
+                val key =
+                    "notification|${deviceId}|${(characteristic.first)}|${(characteristic.second)}"
 
-            val ret = Arguments.createMap()
-            ret.putString("value", bytesToString(data))
-            reactApplicationContext.emitDeviceEvent(key, ret)
-        })
+                val ret = Arguments.createMap()
+                ret.putString("value", bytesToString(data))
+                reactApplicationContext.emitDeviceEvent(key, ret)
+            })
     }
 
     @ReactMethod
@@ -340,7 +345,11 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             getCharacteristic(options, promise)
                 ?: return promise.reject("stopNotifications(): bad characteristic")
 
-        manager.stopNotifications(deviceId, characteristic.first, characteristic.second) { success: Boolean ->
+        manager.stopNotifications(
+            deviceId,
+            characteristic.first,
+            characteristic.second
+        ) { success: Boolean ->
             if (success) {
                 promise.resolve("success")
             } else {
@@ -427,7 +436,9 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
                 // Extract EVVA manufacturer-id
                 var arr = byteArrayOf(0x01)
                 arr.toHexString()
-                val keyHex = byteArrayOf(scanRecordBytes.getByte(6)!!).toHexString() + byteArrayOf(scanRecordBytes.getByte(5)!!).toHexString()
+                val keyHex = byteArrayOf(scanRecordBytes.getByte(6)!!).toHexString() + byteArrayOf(
+                    scanRecordBytes.getByte(5)!!
+                ).toHexString()
                 val keyDec = keyHex.toInt(16)
 
                 // Slice out manufacturer data
