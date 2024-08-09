@@ -125,21 +125,11 @@ try {
 repositories {
     google()
     mavenCentral()
-    mavenLocal()
-    maven {
-        name = 'evva-maven'
-        url = uri('https://maven.pkg.github.com/evva-sfw/abrevva-sdk-android')
-        credentials {
-            username = properties.getProperty('github.username') ?: System.getenv('GH_USERNAME')
-            password = properties.getProperty('github.token') ?: System.getenv('GH_TOKEN')
-        }
-    }
 }
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "1.0.19"
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
