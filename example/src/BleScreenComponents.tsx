@@ -230,13 +230,13 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
 
     const outerADataHex = hex.encode(outerAData);
 
-    const outerCT = await AbrevvaCrypto.encrypt({
-      key: xsMobileDerivedKey,
-      iv: challengeHex,
-      pt: mediumDataFrame,
-      adata: outerADataHex,
-      tagLength: 16,
-    });
+    const outerCT = await AbrevvaCrypto.encrypt(
+      xsMobileDerivedKey,
+      challengeHex,
+      mediumDataFrame,
+      outerADataHex,
+      16,
+    );
 
     const mdfSchema = new Parser()
       .buffer('outerIV', { length: 13 })
