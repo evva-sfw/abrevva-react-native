@@ -61,9 +61,9 @@ const NativeModuleBle = NativeModules.AbrevvaBle
       },
     );
 
-class AbrevvaBleModule implements AbrevvaBLEInterface {
+export class AbrevvaBleModule implements AbrevvaBLEInterface {
   private listeners: Map<String, EmitterSubscription | undefined>;
-  private eventEmitter: NativeEventEmitter | undefined;
+  private readonly eventEmitter: NativeEventEmitter | undefined;
 
   constructor() {
     this.eventEmitter = Platform.select({
