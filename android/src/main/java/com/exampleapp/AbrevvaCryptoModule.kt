@@ -75,8 +75,8 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
             val keyPair: X25519Wrapper.KeyPair = X25519Wrapper.generateKeyPair()
 
             val ret = Arguments.createMap()
-            ret.putString("privateKey", Base64.toBase64String(keyPair.privateKey))
-            ret.putString("publicKey", Base64.toBase64String(keyPair.publicKey))
+            ret.putString("privateKey", Hex.toHexString(keyPair.privateKey))
+            ret.putString("publicKey", Hex.toHexString(keyPair.publicKey))
             promise.resolve(ret)
         } catch (e: Exception) {
             promise.reject(Exception("generateKeyPair(): private key creation failed"))
@@ -97,8 +97,8 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
                 return
             }
             val sharedSecret: ByteArray = X25519Wrapper.computeSharedSecret(
-                Base64.decode(privateKey),
-                Base64.decode(peerPublicKey)
+               Hex.decode(privateKey),
+               Hex.decode(peerPublicKey)
             )
 
             val ret = Arguments.createMap()

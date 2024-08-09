@@ -117,10 +117,10 @@ class AbrevvaNfc: NSObject, NFCSessionDelegate {
     }
     
     func sessionDidReceiveKeyOnEvent(_ tagID: Data, _ historicalBytes: Data) {
-        mqtt5Client?.publishKyOn(identifier: tagID.toHexString(), historicalBytes: historicalBytes.toHexString())
+        mqtt5Client?.publishKyOn(identifier: tagID, historicalBytes: historicalBytes)
     }
     
     func sessionDidReceiveKeyOffEvent(_ tagID: Data, _ historicalBytes: Data) {
-        mqtt5Client?.publishKyOff(identifier: tagID.toHexString(), historicalBytes: historicalBytes.toHexString())
+        mqtt5Client?.publishKyOff(identifier: tagID, historicalBytes: historicalBytes)
     }
 }

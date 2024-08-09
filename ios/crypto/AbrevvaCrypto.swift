@@ -2,13 +2,6 @@ import Foundation
 import CryptoKit
 import AbrevvaSDK
 
-/**
- * Please read the Capacitor iOS Plugin Development Guide
- * here: https://capacitorjs.com/docs/plugins/ios
- */
-
-
-
 @objc(AbrevvaCrypto)
 public class AbrevvaCrypto: NSObject {
     private let X25519Impl = X25519()
@@ -67,8 +60,8 @@ public class AbrevvaCrypto: NSObject {
         let keyPair = X25519Impl.generateKeyPair()
         
         resolve([
-            "privateKey": keyPair[0].base64EncodedString(),
-            "publicKey": keyPair[1].base64EncodedString()
+            "privateKey": keyPair[0].toHexString(),
+            "publicKey": keyPair[1].toHexString()
         ])
     }
 
@@ -78,9 +71,9 @@ public class AbrevvaCrypto: NSObject {
             return
         }
         
-        let privateKeyData = Data(base64Encoded: optionsSwift["key"] as? String ?? "")
-        let publicKeyData = Data(base64Encoded: optionsSwift["peerPublicKey"] as? String ?? "")
-        let sharedSecret = X25519Impl.computeSharedSecret(privateKeyData: privateKeyData!, publicKeyData: publicKeyData!)
+        let privateKeyData = Data(hex: "0x" + (optionsSwift["key"] as? String ?? ""))
+        let publicKeyData = Data(hex: "0x" + (optionsSwift["peerPublicKey"] as? String ?? ""))
+        let sharedSecret = X25519Impl.computeSharedSecret(privateKeyData: privateKeyData, publicKeyData: publicKeyData)
 
         resolve([
             "sharedSecret": sharedSecret?.toHexString()

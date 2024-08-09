@@ -44,7 +44,9 @@ target 'ExampleAppExample' do
 
   target 'ExampleAppExampleTests' do
     inherit! :complete
-    # Pods for testing
+    pod 'Quick'
+    pod 'Nimble'
+    pod 'MockingbirdFramework', '~> 0.20'
   end
 
   pre_install do |installer|
