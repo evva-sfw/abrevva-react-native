@@ -129,11 +129,11 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-
 lib/
 example/.bundle/
 example/ios/build/
 example/ios/Pods/
+example/ios/ExampleAppExample.xcworkspace/xcuserdata/*
 **/*/.gradle/
 example/android/app/build/
 example/vendor/

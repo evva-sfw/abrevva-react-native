@@ -1,24 +1,24 @@
 module.exports = {
-  "source": "src",
-  "output": "lib",
-  "targets": [
+  source: 'src',
+  output: 'lib',
+  targets: [
     [
-      "commonjs",
+      'commonjs',
       {
-        "esm": true
-      }
+        esm: true,
+      },
     ],
     [
-      "module",
+      'module',
       {
-        "esm": true
-      }
+        esm: true,
+      },
     ],
     [
-      "typescript",
+      'typescript',
       {
-        "project": "tsconfig.build.json"
-      }
-    ]
-  ]
+        project: 'tsconfig.build.json',
+      },
+    ],
+  ],
 };

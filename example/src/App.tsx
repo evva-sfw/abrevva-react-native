@@ -1,3 +1,4 @@
+import { AbrevvaCrypto, AbrevvaNfc } from '@evva-sfw/abrevva-react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect } from 'react';
@@ -11,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { AbrevvaCrypto, AbrevvaNfc } from 'react-native-example-app';
 import RNFS from 'react-native-fs';
 
 import { BleScreen } from './BleScreenComponents';

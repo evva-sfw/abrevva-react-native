@@ -44,6 +44,7 @@ public class AbrevvaBle: RCTEventEmitter {
         bleManager.registerStateReceiver { enabled in
             self.sendEvent(withName: "onEnabledChanged", body: ["value": enabled])
         }
+        resolve(nil)
     }
 
     @objc

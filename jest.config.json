@@ -3,5 +3,8 @@
   "modulePathIgnorePatterns": [
     "<rootDir>/example/node_modules",
     "<rootDir>/lib/"
+  ],
+  "setupFilesAfterEnv": [
+    "<rootDir>/src/setup.tsx"
   ]
 }

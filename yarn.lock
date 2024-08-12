@@ -1938,11 +1938,11 @@ __metadata:
   linkType: hard
 
 "@evilmartians/lefthook@npm:^1.7.11":
-  version: 1.7.11
-  resolution: "@evilmartians/lefthook@npm:1.7.11"
+  version: 1.7.12
+  resolution: "@evilmartians/lefthook@npm:1.7.12"
   bin:
     lefthook: bin/index.js
-  checksum: aedc85150bcdddf9b1a8cefe7883794e95b9441854393aeaba662c1cb396ca79ba5995fd225921565a0b7068a7b5ff13909e3f509d9ab317d19095909f6cd1ad
+  checksum: 2c2e19b298ca40dca6d87482e997bb559f4a481d39453dd8893b60b5e9cff8b8db89917eee38e9f8c482e91d26040ea1aa5a1da11cec6c93a6501a1c6cb8ce6a
   conditions: (os=darwin | os=linux | os=win32) & (cpu=x64 | cpu=arm64 | cpu=ia32)
   languageName: node
   linkType: hard
@@ -2600,13 +2600,13 @@ __metadata:
   linkType: hard
 
 "@pnpm/npm-conf@npm:^2.1.0":
-  version: 2.3.0
-  resolution: "@pnpm/npm-conf@npm:2.3.0"
+  version: 2.3.1
+  resolution: "@pnpm/npm-conf@npm:2.3.1"
   dependencies:
     "@pnpm/config.env-replace": ^1.1.0
     "@pnpm/network.ca-file": ^1.0.1
     config-chain: ^1.1.11
-  checksum: df071050bad2c7f750a349330428d5e681047fbe65ce043d30fa3c75a6cb02e16eb08c56d310d1bc6bb6c5606d70d95bc5e30529424c35c78505449eb9bd8e2c
+  checksum: 9e1e1ce5faa64719e866b02d10e28d727d809365eb3692ccfdc420ab6d2073b93abe403994691868f265e34a5601a8eee18ffff6562b27124d971418ba6bb815
   languageName: node
   linkType: hard
 
@@ -3340,20 +3340,20 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 22.1.0
-  resolution: "@types/node@npm:22.1.0"
+  version: 22.2.0
+  resolution: "@types/node@npm:22.2.0"
   dependencies:
     undici-types: ~6.13.0
-  checksum: 3544c35da06009790a2e07742a7dfa0ac0f0d64ec47d9e6d3edf0ff6dcfc1a7cc2efdc5e524e80f8ed80aa37154513b2c1c724f95146ff89fc5aefb8e33575f2
+  checksum: 63724799337bfb57719a1992690e738341d824e1744a2ac52c5278a008fbfadf99765519c19858feb80418cc7da0d5c8bdf7ea4d82973869b3882bd602c48ade
   languageName: node
   linkType: hard
 
 "@types/node@npm:^18.0.0":
-  version: 18.19.43
-  resolution: "@types/node@npm:18.19.43"
+  version: 18.19.44
+  resolution: "@types/node@npm:18.19.44"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 5eb9045aae6da86e8ad297381f93d29d2e7fcd4ed0c53670d9dff1e7b714920f8bbe5ee456289c19fc69c510ac197bdbacc7a785eaeba0afb9cb5d634a64bcd3
+  checksum: 008f89b04afc9fdb4cd5ea71072ca64a08ef0453cbfc012863991959aa3ce2cf99c1e73cbcb5e0e67b37a81f88673e97ac180f56eec396ce1b68d5881aac2ce4
   languageName: node
   linkType: hard
 
@@ -3635,6 +3635,30 @@ __metadata:
   checksum: 170bdba9b47b7e65906a28c8ce4f38a7a369d78e2271706f020849c1bfe0ee2067d4261df8bbb66eb84f79208fd5b710df759d64191db58cfba7ce8ef9c54b75
   languageName: node
   linkType: hard
+
+"abrevva-react-native-example@workspace:example":
+  version: 0.0.0-use.local
+  resolution: "abrevva-react-native-example@workspace:example"
+  dependencies:
+    "@babel/core": ^7.20.0
+    "@babel/preset-env": ^7.20.0
+    "@babel/runtime": ^7.20.0
+    "@react-native/babel-preset": 0.74.85
+    "@react-native/metro-config": 0.74.85
+    "@react-native/typescript-config": 0.74.85
+    "@react-navigation/native": ^6.1.18
+    "@react-navigation/native-stack": ^6.10.1
+    "@scure/base": ^1.1.7
+    babel-plugin-module-resolver: ^5.0.0
+    binary-parser-encoder: ^1.5.3
+    react: 18.2.0
+    react-native: 0.74.3
+    react-native-fs: ^2.20.0
+    react-native-safe-area-context: ^4.10.8
+    react-native-screens: ^3.32.0
+    util: ^0.12.5
+  languageName: unknown
+  linkType: soft
 
 "accepts@npm:^1.3.7, accepts@npm:~1.3.5, accepts@npm:~1.3.7":
   version: 1.3.8
@@ -5480,9 +5504,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.4":
-  version: 1.5.5
-  resolution: "electron-to-chromium@npm:1.5.5"
-  checksum: fcdd2797ece1ece6764b88b5fc36cfc6a571e08b832c6777d8bbefa19cae22a36614411aacc5687d9fea7e1db86469f53c3952ca2579c5fe705dea7ed270d8cc
+  version: 1.5.6
+  resolution: "electron-to-chromium@npm:1.5.6"
+  checksum: 09ca45c781e3e3ef87de87fb74019228f41e1a4abd2e703319aa7d942866815f3df89cc4bf61af81a4cac81271992d4f59a5eca7a093c07322ae0608bf98a427
   languageName: node
   linkType: hard
 
@@ -7224,9 +7248,9 @@ __metadata:
   linkType: hard
 
 "ignore@npm:^5.0.5, ignore@npm:^5.2.0, ignore@npm:^5.2.4, ignore@npm:^5.3.1":
-  version: 5.3.1
-  resolution: "ignore@npm:5.3.1"
-  checksum: 71d7bb4c1dbe020f915fd881108cbe85a0db3d636a0ea3ba911393c53946711d13a9b1143c7e70db06d571a5822c0a324a6bcde5c9904e7ca5047f01f1bf8cd3
+  version: 5.3.2
+  resolution: "ignore@npm:5.3.2"
+  checksum: 2acfd32a573260ea522ea0bfeff880af426d68f6831f973129e2ba7363f422923cf53aab62f8369cbf4667c7b25b6f8a3761b34ecdb284ea18e87a5262a865be
   languageName: node
   linkType: hard
 
@@ -10821,30 +10845,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-example-app-example@workspace:example":
-  version: 0.0.0-use.local
-  resolution: "react-native-example-app-example@workspace:example"
-  dependencies:
-    "@babel/core": ^7.20.0
-    "@babel/preset-env": ^7.20.0
-    "@babel/runtime": ^7.20.0
-    "@react-native/babel-preset": 0.74.85
-    "@react-native/metro-config": 0.74.85
-    "@react-native/typescript-config": 0.74.85
-    "@react-navigation/native": ^6.1.18
-    "@react-navigation/native-stack": ^6.10.1
-    "@scure/base": ^1.1.7
-    babel-plugin-module-resolver: ^5.0.0
-    binary-parser-encoder: ^1.5.3
-    react: 18.2.0
-    react-native: 0.74.3
-    react-native-fs: ^2.20.0
-    react-native-safe-area-context: ^4.10.8
-    react-native-screens: ^3.32.0
-    util: ^0.12.5
-  languageName: unknown
-  linkType: soft
-
 "react-native-fs@npm:^2.20.0":
   version: 2.20.0
   resolution: "react-native-fs@npm:2.20.0"
@@ -12624,11 +12624,11 @@ __metadata:
   linkType: hard
 
 "uglify-js@npm:^3.1.4":
-  version: 3.19.1
-  resolution: "uglify-js@npm:3.19.1"
+  version: 3.19.2
+  resolution: "uglify-js@npm:3.19.2"
   bin:
     uglifyjs: bin/uglifyjs
-  checksum: c71e455b0adcc75631effbcc8fa868e3e906c97b73be034ccdb1373babfa30c3378356febec6bd9abe756dad80ba156af9654b9540244ab9950b56d2543cd54b
+  checksum: 2236220638223f72340d770daa46704a6f54bcd3022e04510a55bb693a40c32e38a9a439333703f16c9880226cc9952c0dddfe67e7b870c287d915b54757ab51
   languageName: node
   linkType: hard
 
