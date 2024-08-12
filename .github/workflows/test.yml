@@ -7,7 +7,7 @@ on:
   pull_request:
     branches: [ "main" ]
 jobs:
-  lint_typecheck:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
