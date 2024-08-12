@@ -1,3 +1,13 @@
+import {
+  AbrevvaBle,
+  AbrevvaCrypto,
+  dataViewToHexString,
+  dataViewToNumbers,
+  hexStringToDataView,
+  numbersToDataView,
+  type ReadResult,
+  type ScanResult,
+} from '@evva-sfw/abrevva-react-native';
 import { hex } from '@scure/base';
 import { Parser } from 'binary-parser-encoder';
 import { useEffect } from 'react';
@@ -12,16 +22,6 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import {
-  AbrevvaBle,
-  AbrevvaCrypto,
-  dataViewToHexString,
-  dataViewToNumbers,
-  hexStringToDataView,
-  numbersToDataView,
-  type ReadResult,
-  type ScanResult,
-} from 'react-native-example-app';
 
 global.Buffer = require('buffer').Buffer;
 
