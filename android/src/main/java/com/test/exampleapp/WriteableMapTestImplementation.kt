@@ -7,10 +7,25 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
 import io.mockk.mockk
+import kotlin.reflect.typeOf
 
-class WritableMapTestImplementation : WritableMap {
-    private val map = mutableMapOf<String, Any?>()
+class WritableMapTestImplementation(args: MutableMap<String ,Any?> = mutableMapOf<String, Any?>()) : WritableMap {
+    private var map = mutableMapOf<String, Any?>()
+    init {
+        map = args
+    }
 
+    fun print() {
+        map.forEach { key, value ->
+            println("${key}: ${value}")
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return map == (other as WritableMapTestImplementation).getMap()
+    }
+    fun getSize(): Int {return map.size}
+    fun getMap(): MutableMap<String, Any?> { return map }
     override fun hasKey(p0: String): Boolean { return map.containsKey(p0) }
     override fun isNull(p0: String): Boolean { return map[p0] == null }
     override fun getBoolean(p0: String): Boolean { return map[p0] as Boolean }

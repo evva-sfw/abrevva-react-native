@@ -87,11 +87,11 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
 
     private fun runInitialization(options: ReadableMap, promise: Promise) {
         if (!currentActivity!!.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            return promise.reject("runInitialization(): BLE is not supported")
+            return promise.reject(Exception("runInitialization(): BLE is not supported"))
         }
 
         if (!manager.isBleEnabled()) {
-            return promise.reject("runInitialization(): BLE is not available")
+            return promise.reject(Exception("runInitialization(): BLE is not available"))
         }
         promise.resolve("success")
     }
@@ -121,8 +121,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         }
 
         if (!success) {
-            promise.reject("startEnabledNotifications(): Failed to set handler")
-            return
+            return promise.reject(Exception("startEnabledNotifications(): Failed to set handler"))
         }
         promise.resolve("success")
     }
@@ -171,7 +170,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             if (success) {
                 promise.resolve("success")
             } else {
-                promise.reject("requestLEScan(): failed to start")
+                promise.reject(Exception("requestLEScan(): failed to start"))
             }
         }, { result: BleScanResult ->
             val scanResult = getScanResultFromNordic(result)
@@ -204,7 +203,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             if (success) {
                 promise.resolve("success")
             } else {
-                promise.reject("connect(): failed to connect")
+                promise.reject(Exception("connect(): failed to connect"))
             }
         }, timeout)
     }
@@ -218,7 +217,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             if (success) {
                 promise.resolve("success")
             } else {
-                promise.reject("disconnect(): failed to disconnect")
+                promise.reject(Exception("disconnect(): failed to disconnect"))
             }
         }
     }
@@ -233,7 +232,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         } catch (_:Exception) {}
 
         val characteristic = getCharacteristic(options, promise)
-            ?: return promise.reject("read(): bad characteristic")
+            ?: return promise.reject(Exception("read(): bad characteristic"))
 
         manager.read(deviceId, characteristic.first, characteristic.second, { success: Boolean, data: ByteArray? ->
             if (success) {
@@ -241,7 +240,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
                 ret.putString("value", bytesToString(data!!))
                 promise.resolve(ret)
             } else {
-                promise.reject("read(): failed to read from device")
+                promise.reject(Exception("read(): failed to read from device"))
             }
         }, timeout)
     }
@@ -256,9 +255,9 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         }catch (_:Exception){}
 
         val characteristic =
-            getCharacteristic(options, promise) ?: return promise.reject("read(): bad characteristic")
+            getCharacteristic(options, promise) ?: return promise.reject(Exception("read(): bad characteristic"))
         val value =
-            options.getString("value") ?: return promise.reject("write(): missing value for write")
+            options.getString("value") ?: return promise.reject(Exception("write(): missing value for write"))
 
         manager.write(
             deviceId,
@@ -269,7 +268,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
                 if (success) {
                     promise.resolve("success")
                 } else {
-                    promise.reject("write(): failed to write to device")
+                    promise.reject(Exception("write(): failed to write to device"))
                 }
             },
             timeout
@@ -310,7 +309,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         val deviceId = options.getString("deviceId") ?: ""
         val characteristic =
             getCharacteristic(options, promise)
-                ?: return promise.reject("startNotifications(): bad characteristic")
+                ?: return promise.reject(Exception("startNotifications(): bad characteristic"))
 
         manager.startNotifications(
             deviceId,
@@ -320,7 +319,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
                 if (success) {
                     promise.resolve("success")
                 } else {
-                    promise.reject("startNotifications(): failed to set notifications")
+                    promise.reject(Exception("startNotifications(): failed to set notifications"))
                 }
             }, { data: ByteArray ->
             val key =
@@ -338,13 +337,13 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         val deviceId = options.getString("deviceId") ?: ""
         val characteristic =
             getCharacteristic(options, promise)
-                ?: return promise.reject("stopNotifications(): bad characteristic")
+                ?: return promise.reject(Exception("stopNotifications(): bad characteristic"))
 
         manager.stopNotifications(deviceId, characteristic.first, characteristic.second) { success: Boolean ->
             if (success) {
                 promise.resolve("success")
             } else {
-                promise.reject("stopNotifications(): failed to unset notifications")
+                promise.reject(Exception("stopNotifications(): failed to unset notifications"))
             }
         }
     }
@@ -356,12 +355,12 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         try {
             serviceUUID = UUID.fromString(serviceString)
         } catch (e: IllegalArgumentException) {
-            promise.reject("getCharacteristic(): invalid service uuid")
+            promise.reject(Exception("getCharacteristic(): invalid service uuid"))
             return null
         }
 
         if (serviceUUID == null) {
-            promise.reject("getCharacteristic(): service uuid required")
+            promise.reject(Exception("getCharacteristic(): service uuid required"))
             return null
         }
 
@@ -371,19 +370,19 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         try {
             characteristicUUID = UUID.fromString(characteristicString)
         } catch (e: IllegalArgumentException) {
-            promise.reject("getCharacteristic(): invalid characteristic uuid")
+            promise.reject(Exception("getCharacteristic(): invalid characteristic uuid"))
             return null
         }
 
         if (characteristicUUID == null) {
-            promise.reject("getCharacteristic(): characteristic uuid required")
+            promise.reject(Exception("getCharacteristic(): characteristic uuid required"))
             return null
         }
 
         return Pair(serviceUUID, characteristicUUID)
     }
 
-    private fun getBleDeviceFromNordic(result: BleScanResult): ReadableMap {
+    fun getBleDeviceFromNordic(result: BleScanResult): ReadableMap {
         val bleDevice = Arguments.createMap()
 
         bleDevice.putString("deviceId", result.device.address)
@@ -401,7 +400,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         return bleDevice
     }
 
-    private fun getScanResultFromNordic(result: BleScanResult): ReadableMap {
+    fun getScanResultFromNordic(result: BleScanResult): ReadableMap {
         val scanResult = Arguments.createMap()
         val bleDevice = getBleDeviceFromNordic(result)
 

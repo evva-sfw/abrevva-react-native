@@ -1,17 +1,34 @@
 package com.test.exampleapp
 
+import android.bluetooth.BluetoothManager
+import android.content.Context
+import android.os.ParcelUuid
 import com.exampleapp.AbrevvaBleModule
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableArray
+import com.facebook.react.bridge.WritableNativeMap
 import io.mockk.MockKAnnotations
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.spyk
 import io.mockk.unmockkAll
+import no.nordicsemi.android.common.core.DataByteArray
+import no.nordicsemi.android.kotlin.ble.core.ServerDevice
+import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanRecord
+import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanResult
+import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanResultData
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class AbrevvaBleModuleTest {
     private lateinit var abrevvaBleModule: AbrevvaBleModule
@@ -27,14 +44,92 @@ class AbrevvaBleModuleTest {
     @MockK(relaxed = true)
     private lateinit var readableMapMock: ReadableMap
 
+    @MockK(relaxed = true)
+    private  lateinit var writeableArrayMock: WritableArray
     @BeforeEach
     fun beforeEach(){
         MockKAnnotations.init(this)
+        mockkStatic(Arguments::class)
+        testMap = WritableMapTestImplementation()
+        every { Arguments.createMap() } returns testMap
+        every { Arguments.createArray() } returns writeableArrayMock
+        every { contextMock.getSystemService(Context.BLUETOOTH_SERVICE) } returns mockk<BluetoothManager>(relaxed = true)
         abrevvaBleModule = AbrevvaBleModule(contextMock)
     }
 
     @AfterEach
     fun afterEach(){
         unmockkAll()
+    }
+
+
+    @Test
+    fun `getBleDeviceFromNordic() should save data from BleScanResult in new map`() {
+        val name = "name"
+        val address = "deviceAddress"
+        val bleDevice = WritableMapTestImplementation()
+        every {Arguments.createMap()} returns bleDevice
+        val bleScanResult = mockk<BleScanResult>(relaxed = true)
+        val device = mockk<ServerDevice>()
+        every { bleScanResult.device } returns device
+        every { device.hasName } returns true
+        every { device.name } returns name
+        every { device.address } returns address
+        every { writeableArrayMock.size() } returns 0
+
+        abrevvaBleModule.getBleDeviceFromNordic(bleScanResult)
+
+        val ref = WritableMapTestImplementation(mutableMapOf(
+            "deviceId" to address,
+            "name" to name,
+        ))
+        assert(ref == bleDevice)
+    }
+
+    @Test
+    fun `getScanResultFromNordic() should construct ReadableMap from ScanResult`(){
+        val name = "name"
+        val deviceId = "deviceId"
+        val txPower = 10
+        val bleSpy = spyk(AbrevvaBleModule(contextMock))
+        val result = mockk<BleScanResult>()
+        val data = mockk<BleScanResultData>()
+        val device = mockk<ServerDevice>()
+        val scanRecord = mockk<BleScanRecord>()
+        val bytes = DataByteArray(byteArrayOf(0x01, 0x02, 0x03, 0x04, 0x05, 0x07, 0x08, 0x09, 0x10))
+        val parcelUuid = mockk<ParcelUuid>(relaxed = true)
+        val serviceData =  mapOf( parcelUuid to DataByteArray(byteArrayOf(0x01, 0x02, 0x03, 0x04, 0x05, 0x07, 0x08, 0x09, 0x10)))
+        val bleDevice = WritableMapTestImplementation(mutableMapOf(
+            "deviceId" to deviceId,
+            "name" to name
+        ))
+        val scanResult = WritableMapTestImplementation()
+        val manufacturerData = WritableMapTestImplementation()
+        val serviceDataMap = WritableMapTestImplementation()
+        every { result.data } returns null andThen data
+        every { result.device } returns device
+        every { result.device.hasName } returns true
+        every { result.device.name } returns "name"
+        every { data.txPower } returns txPower
+        every { data.scanRecord } returns scanRecord
+        every { scanRecord.bytes } returns bytes
+        every { scanRecord.serviceData } returns serviceData
+        every { scanRecord.serviceUuids } returns  null
+        every { bleSpy.getBleDeviceFromNordic(any()) } returns bleDevice
+        every { Arguments.createMap() } returns scanResult andThen manufacturerData andThen serviceDataMap
+
+        bleSpy.getScanResultFromNordic(result)
+
+        val ref = WritableMapTestImplementation(mutableMapOf(
+            "device" to bleDevice,
+            "localName" to name,
+            "txPower" to txPower,
+            "manufacturerData" to WritableMapTestImplementation(mutableMapOf("2055" to "09 10")),
+            "rawAdvertisement" to "(0x) 01:02:03:04:05:07:08:09:10",
+            "uuids" to writeableArrayMock,
+            "serviceData"  to serviceDataMap
+        ))
+        assert(ref == scanResult)
+
     }
 }
