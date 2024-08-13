@@ -7,18 +7,19 @@ on:
   pull_request:
     branches: [ "main" ]
 jobs:
-  build:
+  lint_typecheck:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x, 22.x]
+        node-version: [lts/*]
         # See supported Node.js release schedule at https://nodejs.org/en/about/previous-releases
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        cache: 'yarn'
     - run: yarn
-    - run: yarn run lint
+    - run: yarn lint
+    - run: yarn typecheck

@@ -1,11 +1,17 @@
 {
-  "name": "react-native-example-app",
+  "name": "@evva-sfw/abrevva-react-native",
   "version": "0.1.0",
-  "description": "evva",
+  "author": "EVVA Sicherheitstechnologie GmbH",
+  "description": "The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
   "module": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
+  "engines": {
+    "npm": "please-use-yarn",
+    "yarn": ">= 3.6.1"
+  },
+  "packageManager": "yarn@3.6.1",
   "exports": {
     ".": {
       "types": "./lib/typescript/src/index.d.ts",
@@ -32,7 +38,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace react-native-example-app-example",
+    "example": "yarn workspace abrevva-react-native-example",
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{ts,tsx}\"",
@@ -47,14 +53,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mhochstoeger/react-native-example-app.git"
+    "url": "git+https://github.com/evva-sfw/abrevva-react-native.git"
   },
-  "author": "HOCHSTÖGER Matthias  / EVVA Wien <m.hochstoeger@evva.com> (https://github.com/mhochstoeger)",
-  "license": "MIT",
+  "license": "SEE LICENSE IN <LICENSE>",
   "bugs": {
-    "url": "https://github.com/mhochstoeger/react-native-example-app/issues"
+    "url": "https://github.com/evva-sfw/abrevva-react-native/issues"
   },
-  "homepage": "https://github.com/mhochstoeger/react-native-example-app#readme",
+  "homepage": "https://github.com/evva-sfw/abrevva-react-native",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
@@ -78,7 +83,7 @@
     "react": "18.2.0",
     "react-native": "0.74.3",
     "react-native-builder-bob": "^0.29.0",
-    "release-it": "^15.0.0",
+    "release-it": "^17.6.0",
     "turbo": "^1.10.7",
     "typescript": "^5.2.2"
   },
@@ -92,39 +97,6 @@
   "workspaces": [
     "example"
   ],
-  "packageManager": "yarn@3.6.1",
-  "jest": {
-    "preset": "react-native",
-    "modulePathIgnorePatterns": [
-      "<rootDir>/example/node_modules",
-      "<rootDir>/lib/"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setup.tsx"
-    ]
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
-  "release-it": {
-    "git": {
-      "commitMessage": "chore: release ${version}",
-      "tagName": "v${version}"
-    },
-    "npm": {
-      "publish": true
-    },
-    "github": {
-      "release": true
-    },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": "angular"
-      }
-    }
-  },
   "eslintConfig": {
     "root": true,
     "extends": [
@@ -172,34 +144,5 @@
     "tabWidth": 2,
     "trailingComma": "es5",
     "useTabs": false
-  },
-  "react-native-builder-bob": {
-    "source": "src",
-    "output": "lib",
-    "targets": [
-      [
-        "commonjs",
-        {
-          "esm": true
-        }
-      ],
-      [
-        "module",
-        {
-          "esm": true
-        }
-      ],
-      [
-        "typescript",
-        {
-          "project": "tsconfig.build.json"
-        }
-      ]
-    ]
-  },
-  "create-react-native-library": {
-    "type": "module-legacy",
-    "languages": "kotlin-swift",
-    "version": "0.38.2"
   }
 }

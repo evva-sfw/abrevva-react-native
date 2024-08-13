@@ -129,14 +129,17 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-
 lib/
 example/.bundle/
 example/ios/build/
 example/ios/Pods/
+example/ios/ExampleAppExample.xcworkspace/xcuserdata/*
 **/*/.gradle/
 example/android/app/build/
 example/vendor/
 example/android/.idea/
 example/android/local.properties
 android/build
+
+# Exclude because this repo forces to use yarn instead of npm
+package-lock.json

@@ -3,7 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-example-app": ["./src/index"]
+      "@evva-sfw/abrevva-react-native": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
