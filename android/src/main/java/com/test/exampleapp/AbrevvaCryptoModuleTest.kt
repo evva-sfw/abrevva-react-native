@@ -77,7 +77,7 @@ class AbrevvaCryptoModuleTest {
     @DisplayName("encrypt()")
     inner class EncryptTests {
         @Test
-        fun `should reject if ct is empty`() {
+        fun should_reject_if_ct_is_empty() {
             every { Hex.decode(any<String>()) } answers { callOriginal()}
             every { AesCCM.encrypt(any(), any(), any(), any(), any()) } returns ByteArray(0)
 
@@ -87,7 +87,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `should resolve if ct is not empty`() {
+        fun should_resolve_if_ct_is_not_empty() {
             every { AesCCM.encrypt(any(), any(), any(), any(), any()) } returns ByteArray(10)
 
             abrevvaCryptoModule.encrypt(readableMapMock, promiseMock)
@@ -100,7 +100,7 @@ class AbrevvaCryptoModuleTest {
     @DisplayName("decrypt()")
     inner class DecryptTests {
         @Test
-        fun `should reject if pt is empty`() {
+        fun should_reject_if_pt_is_empty() {
             every { AesCCM.decrypt(any(), any(), any(), any(), any()) } returns ByteArray(0)
 
             abrevvaCryptoModule.decrypt(readableMapMock, promiseMock)
@@ -109,7 +109,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `should resolve if pt is not empty`() {
+        fun should_resolve_if_pt_is_not_empty() {
             every { AesCCM.decrypt(any(), any(), any(), any(), any()) } returns ByteArray(10)
 
             abrevvaCryptoModule.decrypt(readableMapMock, promiseMock)
@@ -122,7 +122,7 @@ class AbrevvaCryptoModuleTest {
     @DisplayName("generateKeyPair()")
     inner class GenerateKeyPairTests {
         @Test
-        fun `should resolve if keys where generated successfully`() {
+        fun should_resolve_if_keys_where_generated_successfully() {
             every { X25519Wrapper.generateKeyPair() } returns mockk<X25519Wrapper.KeyPair>(relaxed = true)
 
             abrevvaCryptoModule.generateKeyPair(promiseMock)
@@ -131,7 +131,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `should reject if keys cannot be generated`() {
+        fun should_reject_if_keys_cannot_be_generated() {
             every { X25519Wrapper.generateKeyPair() } throws Exception("generateKeyPair() Fail Exception")
 
             abrevvaCryptoModule.generateKeyPair(promiseMock)
@@ -146,7 +146,7 @@ class AbrevvaCryptoModuleTest {
     inner class EncryptFileTests {
         @ParameterizedTest(name = "encryptFile({0}, {1}, {2}) should reject")
         @MethodSource("parameterizedArgs_encrypt")
-        fun `encryptFile() should reject if any Param is missing`(
+        fun encryptFile_should_reject_if_any_Param_is_missing(
             ctPath: String?,
             ptPath: String?,
             sharedSecret: String?
@@ -171,7 +171,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `should resolve if args are valid and file could be encrypted`() {
+        fun should_resolve_if_args_are_valid_and_file_could_be_encrypted() {
             val mapMock = mockk<WritableMap>(relaxed = true)
             every { mapMock.getString(any()) } returns "notEmpty"
             every { AesGCM.encryptFile(any(), any(), any()) } returns true
@@ -182,7 +182,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `should reject if args are valid but encryption fails`() {
+        fun should_reject_if_args_are_valid_but_encryption_fails() {
             val mapMock = mockk<WritableMap>(relaxed = true)
             every { mapMock.getString(any()) } returns "notEmpty"
             every {
@@ -205,7 +205,7 @@ class AbrevvaCryptoModuleTest {
     inner class DecryptFileTests {
         @ParameterizedTest(name = "empty args should be rejected")
         @MethodSource("parameterizedArgs_decrypt")
-        fun `should reject if any Param is empty`(
+        fun should_reject_if_any_Param_is_empty(
             ctPath: String?,
             ptPath: String?,
             sharedSecret: String?
@@ -231,7 +231,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `should resolve if args are valid and file could be encrypted`() {
+        fun should_resolve_if_args_are_valid_and_file_could_be_encrypted() {
             val mapMock = mockk<WritableMap>(relaxed = true)
             every { mapMock.getString(any()) } returns "notEmpty"
             every { AesGCM.decryptFile(any(), any(), any()) } returns true
@@ -242,7 +242,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `should reject if encryption fails`() {
+        fun should_reject_if_encryption_fails() {
             val mapMock = mockk<WritableMap>(relaxed = true)
             every { mapMock.getString(any()) } returns "notEmpty"
             every {
@@ -269,7 +269,7 @@ class AbrevvaCryptoModuleTest {
         inner class DecryptFileFromURL_ParameterizedTest {
             @ParameterizedTest
             @MethodSource("parameterizedArgs_decryptFileFromURL")
-            fun `should reject if any Param is empty`(
+            fun should_reject_if_any_Param_is_empty(
                 sharedSecret: String?,
                 url: String?,
                 ptPath: String?
@@ -296,7 +296,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `decryptFileFromURL() should reject if ctPath-File is not accessible`() {
+        fun decryptFileFromURL_should_reject_if_ctPathFile_is_not_accessible() {
             val mockMap = mockk<ReadableMap>(relaxed = true)
             val moduleSpy = spyk(AbrevvaCryptoModule(contextMock))
             every { mockMap.getString(any()) } returns "notEmpty"
@@ -308,7 +308,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `decryptFileFromURL() should reject if decode fails`() {
+        fun decryptFileFromURL_should_reject_if_decode_fails() {
             val mockMap = mockk<ReadableMap>(relaxed = true)
             val moduleSpy = spyk(AbrevvaCryptoModule(contextMock))
             every { mockMap.getString(any()) } returns "notEmpty"
@@ -321,7 +321,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `decryptFileFromURL() should resolve if everything works as intended`() {
+        fun decryptFileFromURL_should_resolve_if_everything_works_as_intended() {
             val mockMap = mockk<ReadableMap>(relaxed = true)
             val moduleSpy = spyk(AbrevvaCryptoModule(contextMock))
             every { mockMap.getString(any()) } returns "notEmpty"
@@ -339,7 +339,7 @@ class AbrevvaCryptoModuleTest {
     inner class RandomTests {
         @ParameterizedTest(name = "random(numBytes: {0}) resolved String size should be {1}")
         @CsvSource("2,4", "4,8", "7,14")
-        fun `should return random bytes n number of bytes if successful`(
+        fun should_return_random_bytes_n_number_of_bytes_if_successful(
             numBytes: Int,
             expectedStrLen: Int
         ) {
@@ -352,7 +352,7 @@ class AbrevvaCryptoModuleTest {
         }
 
         @Test
-        fun `should reject if bytes cannot be generated`(){
+        fun should_reject_if_bytes_cannot_be_generated(){
             every { SimpleSecureRandom.getSecureRandomBytes(any()) } returns ByteArray(0)
             testMap.putInt("numBytes", 10)
 
@@ -366,7 +366,7 @@ class AbrevvaCryptoModuleTest {
     inner class DeriveTests {
 
         @Test
-        fun `should resolve if successful`() {
+        fun should_resolve_if_successful() {
             testMap.putInt("length", 0)
             every { HKDF.derive(any(), any(), any(), any()) } returns ByteArray(0)
 
@@ -375,7 +375,7 @@ class AbrevvaCryptoModuleTest {
             verify { promiseMock.reject(any<Exception>()) }
         }
         @Test
-        fun `should reject if unsuccessful`() {
+        fun should_reject_if_unsuccessful() {
             testMap.putInt("length", 10)
             every { HKDF.derive(any(), any(), any(), any()) } returns ByteArray(10)
             abrevvaCryptoModule.derive(testMap, promiseMock)

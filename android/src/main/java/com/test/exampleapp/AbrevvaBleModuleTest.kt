@@ -1,8 +1,11 @@
 package com.test.exampleapp
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.os.ParcelUuid
+import android.util.Log
+import com.evva.xesar.abrevva.ble.BleManager
 import com.exampleapp.AbrevvaBleModule
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -15,9 +18,12 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
+import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.unmockkAll
+import io.mockk.verify
 import no.nordicsemi.android.common.core.DataByteArray
 import no.nordicsemi.android.kotlin.ble.core.ServerDevice
 import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanRecord
@@ -28,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.runner.RunWith
 import java.util.UUID
 
 class AbrevvaBleModuleTest {
@@ -63,8 +70,34 @@ class AbrevvaBleModuleTest {
     }
 
 
+    @SuppressLint("MissingPermission")
     @Test
-    fun `getBleDeviceFromNordic() should save data from BleScanResult in new map`() {
+    fun startNotifications_notification_recieved_closure_should_generate_key_correctly(){
+        val callbackSlot = slot<(data: ByteArray) -> Unit>()
+        val keySlot = slot<String>()
+        val successCallback = slot<(success: Boolean) -> Unit>()
+        val deviceId = "e7f635ac-27ae-4bc6-a5ca-3f07872f49e9"
+        val service = "01a660db-5dbd-488a-bd01-b42449817c82"
+        val characteristic = "d0d71305-05b2-4add-9ea9-bcd1cc82211c"
+        val options = WritableMapTestImplementation(mutableMapOf(
+            "deviceId" to deviceId,
+            "service" to service,
+            "characteristic" to characteristic
+        ))
+        mockkConstructor(BleManager::class)
+        every {Arguments.createMap()} returns options
+        every { anyConstructed<BleManager>().startNotifications(any(), any(), any(), capture(successCallback), capture(callbackSlot)) } returns Unit
+        every { anyConstructed<BleManager>().isBleEnabled() } returns false
+        every { contextMock.emitDeviceEvent(capture(keySlot), any()) } returns Unit
+        abrevvaBleModule.startNotifications(options, promiseMock)
+
+        callbackSlot.captured(ByteArray(1))
+
+        assert(keySlot.captured == "notification|e7f635ac-27ae-4bc6-a5ca-3f07872f49e9|01a660db-5dbd-488a-bd01-b42449817c82|d0d71305-05b2-4add-9ea9-bcd1cc82211c")
+    }
+
+    @Test
+    fun getBleDeviceFromNordic_should_save_data_from_BleScanResult_in_new_map() {
         val name = "name"
         val address = "deviceAddress"
         val bleDevice = WritableMapTestImplementation()
@@ -87,7 +120,7 @@ class AbrevvaBleModuleTest {
     }
 
     @Test
-    fun `getScanResultFromNordic() should construct ReadableMap from ScanResult`(){
+    fun getScanResultFromNordic_should_construct_ReadableMap_from_ScanResult(){
         val name = "name"
         val deviceId = "deviceId"
         val txPower = 10
