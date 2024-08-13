@@ -61,7 +61,8 @@
   },
   "homepage": "https://github.com/evva-sfw/abrevva-react-native",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.2.2",
