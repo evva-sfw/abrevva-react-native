@@ -32,13 +32,7 @@ yarn add <git remote url>
 
 ### IOS
 
-Add the following to your Podfile:
-
-```ruby
-source 'https://cdn.cocoapods.org/'
-```
-
-then execute `pod install` inside of your projects ios/ folder.
+ execute `pod install` inside of your projects ios/ folder.
 
 ### Android
 
