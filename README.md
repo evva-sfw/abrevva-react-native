@@ -34,28 +34,6 @@ yarn add <git remote url>
 
  execute `pod install` inside of your projects ios/ folder.
 
-### Android
-
-Add this to your `build.gradle` file:
-
-[![Maven Central Version](https://img.shields.io/maven-central/v/com.evva.xesar/abrevva-sdk-android)](https://central.sonatype.com/artifact/com.evva.xesar/abrevva-sdk-android)
-
-
-```ruby
-...
-dependencies {
-  implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "1.0.19" <-- change to latest version. 
-}
-```
-
-Add Permissions to your `Manifest.xml` file as needed.
-
-```xml
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-```
-
 ## Examples
 
 ### Initialize and scan for EVVA components
