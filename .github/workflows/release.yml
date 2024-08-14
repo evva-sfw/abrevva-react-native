@@ -9,12 +9,17 @@ on:
         - major
         - minor
         - patch
-      
 
 jobs:
   publish:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Test inputs
-      run: echo "Type of release:${{ github.event.inputs.input_version }}"
+      run: echo "Type of release:${{ github.event.inputs.input_version }} from user ${GITHUB_ACTOR}"
+
+    - name: Authenticate with registry
+      run: npm config set --global //registry.npmjs.org/:_authToken $NPM_TOKEN
