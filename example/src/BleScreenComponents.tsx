@@ -80,10 +80,16 @@ const advManufacturerDataParser = new Parser()
 
 export const BleScreen = () => {
   const [statusCode, setStatusCode] = useState('none');
+  const [startScanNoftification, setStartScanNoftification] = useState(
+    'pull down to start scanning',
+  );
 
   return (
     <>
-      <ScanResults setStatus={setStatusCode} />
+      <Text style={bleStyles.scanNotification}>{startScanNoftification}</Text>
+      <ScanResults
+        props={{ setStatus: setStatusCode, setScanNoftification: setStartScanNoftification }}
+      />
       <SafeAreaView style={bleStyles.status}>
         <Text>Last received Statuscode '{statusCode}'</Text>
       </SafeAreaView>
@@ -91,9 +97,11 @@ export const BleScreen = () => {
   );
 };
 
-const ScanResults = ({ setStatus }) => {
+const ScanResults = ({ props }) => {
   const [deviceList, setdeviceList] = useState<ScanResult[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const setStatus = props.setStatus;
+  const setScanNoftification = props.setScanNoftification;
 
   const scanRequestCallback = (data: ScanResult) => {
     if (data.manufacturerData !== undefined && '2153' in data.manufacturerData) {
@@ -114,11 +122,13 @@ const ScanResults = ({ setStatus }) => {
 
   const onRefresh = () => {
     setStatus('none');
+    setScanNoftification('scanning ...');
     setRefreshing(true);
     setdeviceList([]);
 
     const timeout: NodeJS.Timeout = setTimeout(() => {
       setRefreshing(false);
+      setScanNoftification('');
     }, SCAN_TIMEOUT);
     AbrevvaBle.stopLEScan()
       .then(() => {
@@ -139,17 +149,7 @@ const ScanResults = ({ setStatus }) => {
   };
 
   useEffect(() => {
-    AbrevvaBle.initialize(true).then(() => {
-      void AbrevvaBle.requestLEScan(
-        scanRequestCallback,
-        (address: string) => {
-          console.log(`connected to Device =${address}`);
-        },
-        (address: string) => {
-          console.log(`disconnected from Device =${address}`);
-        },
-      );
-    });
+    AbrevvaBle.initialize(true);
   }, []);
 
   return (
@@ -308,6 +308,11 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
 }
 
 const bleStyles = StyleSheet.create({
+  scanNotification: {
+    margin: 'auto',
+    color: 'black',
+    marginVertical: 10,
+  },
   BleScanResult: {
     justifyContent: 'center',
     alignItems: 'center',
