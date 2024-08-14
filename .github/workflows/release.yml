@@ -1,0 +1,20 @@
+name: Release and publish to npm
+on: 
+  workflow_dispatch:
+    inputs:
+      input_version:
+        type: choice
+        description: What type of release?
+        options:
+        - major
+        - minor
+        - patch
+      
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Test inputs
+      run: echo "Type of release:${{ github.event.inputs.input_version }}"
