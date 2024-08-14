@@ -1,4 +1,5 @@
 name: Release and publish to npm
+
 on: 
   workflow_dispatch:
     inputs:
@@ -9,7 +10,8 @@ on:
         - major
         - minor
         - patch
-      
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   publish:
