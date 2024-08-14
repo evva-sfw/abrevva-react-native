@@ -5,7 +5,10 @@
   },
   "git": {
     "commitMessage": "chore: release ${version}",
-    "tagName": "${version}"
+    "tagName": "${version}",
+    "commitArgs": ["-S"],
+    "tagArgs": ["-S"],
+    "tagExclude": "*[-]*"
   },
   "npm": {
     "publish": true,
