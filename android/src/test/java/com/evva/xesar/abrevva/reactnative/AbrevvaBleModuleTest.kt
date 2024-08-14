@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.os.ParcelUuid
-import android.util.Log
 import com.evva.xesar.abrevva.ble.BleManager
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -65,12 +64,13 @@ class AbrevvaBleModuleTest {
     }
 
 
+    /* https://github.com/mockk/mockk/issues/586#issuecomment-1404973825 */
     @SuppressLint("MissingPermission")
     @Test
     fun `startNotifications notification recieved closure should generate key correctly`() {
+        mockkConstructor(BleManager::class)
         val callbackSlot = slot<(data: ByteArray) -> Unit>()
         val keySlot = slot<String>()
-        val successCallback = slot<(success: Boolean) -> Unit>()
         val deviceId = "e7f635ac-27ae-4bc6-a5ca-3f07872f49e9"
         val service = "01a660db-5dbd-488a-bd01-b42449817c82"
         val characteristic = "d0d71305-05b2-4add-9ea9-bcd1cc82211c"
@@ -81,24 +81,25 @@ class AbrevvaBleModuleTest {
                 "characteristic" to characteristic
             )
         )
-        mockkConstructor(BleManager::class)
-        mockkStatic(Log::class)
-        every { Log.e(any(), any()) } returns 0
         every { Arguments.createMap() } returns options
         every {
             anyConstructed<BleManager>().startNotifications(
                 any(),
                 any(),
                 any(),
-                capture(successCallback),
-                capture(callbackSlot)
+                any(),
+                capture(callbackSlot),
+                any()
             )
         } returns Unit
-        every { anyConstructed<BleManager>().isBleEnabled() } returns false
         every { contextMock.emitDeviceEvent(capture(keySlot), any()) } returns Unit
-        abrevvaBleModule.startNotifications(options, promiseMock)
+        abrevvaBleModule = AbrevvaBleModule(contextMock)
 
-        callbackSlot.captured(ByteArray(1))
+        abrevvaBleModule.startNotifications(
+            options, promiseMock
+        )
+        callbackSlot.captured.invoke(ByteArray(0))
+
         assert(keySlot.captured == "notification|e7f635ac-27ae-4bc6-a5ca-3f07872f49e9|01a660db-5dbd-488a-bd01-b42449817c82|d0d71305-05b2-4add-9ea9-bcd1cc82211c")
     }
 
