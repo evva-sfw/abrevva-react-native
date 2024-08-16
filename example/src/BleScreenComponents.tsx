@@ -140,6 +140,7 @@ const ScanResults = ({ props }) => {
           (address: string) => {
             console.log(`disconnected from Device =${address}`);
           },
+          10_000,
         );
       })
       .catch((e) => {

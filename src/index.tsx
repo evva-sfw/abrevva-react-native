@@ -136,13 +136,13 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
     onScanResultCallback: (result: ScanResult) => void,
     onConnectCallback: (address: string) => void,
     onDisconnectCallback: (address: string) => void,
+    timeout?: number,
     services?: string[],
     name?: string,
     namePrefix?: string,
     optionalServices?: string[],
     allowDuplicates?: boolean,
     scanMode?: ScanMode,
-    timeout?: number,
   ): Promise<void> {
     if (this.listeners.get('onScanResult') !== undefined) {
       return Promise.reject('scan already in progress');
