@@ -74,14 +74,14 @@ const CryptoScreen = () => {
   return (
     <View style={styles.cryptoContainer}>
       <View style={styles.cryptoView}>
-        <Text>{result}</Text>
+        <Text style={styles.cryptoText}>{result}</Text>
       </View>
       <ScrollView style={styles.scrollView}>
         <Button
           text="generateKeyPair"
           onPressFunction={() => {
             AbrevvaCrypto.generateKeyPair().then((ret: any) => {
-              setResult(`Privat Key:\n${ret.privateKey}\n\nPublic Key\n:${ret.publicKey}`);
+              setResult(`Privat Key:\n${ret.privateKey}\n\nPublic Key:\n${ret.publicKey}`);
             });
           }}
         />
@@ -128,6 +128,9 @@ export const styles = StyleSheet.create({
   cryptoView: {
     marginTop: 20,
     height: 150,
+  },
+  cryptoText: {
+    color: 'black',
   },
   cryptoContainer: {
     alignItems: 'center',
