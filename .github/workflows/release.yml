@@ -63,4 +63,4 @@ jobs:
       - name: Run release-it
         run: npx release-it ${{ github.event.inputs.input_version }} --ci
         env:
-          GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+          BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
