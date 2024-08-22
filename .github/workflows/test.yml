@@ -22,6 +22,7 @@ jobs:
         cache: 'yarn'
     - run: yarn
     - run: yarn test
+
   test-ios:
     runs-on: macos-latest
     strategy:
@@ -39,12 +40,14 @@ jobs:
         with:
           ruby-version: '3.3'
           bundler-cache: true
+      - name: "Get Ruby Version"
+        run: ruby --version
       - uses: SwiftyLab/setup-swift@latest
         with:
           swift-version: "5.10.0"
-      - name: Get swift version
+      - name: Get Swift Version
         run: swift --version
-      - name: Get swift version in macOS
+      - name: Set Swift Version
         if: runner.os == 'macOS'
         run: xcrun --toolchain ${{ env.TOOLCHAINS }} swift --version
       - run: corepack enable
