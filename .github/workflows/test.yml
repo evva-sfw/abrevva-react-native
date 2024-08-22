@@ -7,7 +7,7 @@ on:
   pull_request:
     branches: [ "main" ]
 jobs:
-  test:
+  test-web:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,3 +22,21 @@ jobs:
         cache: 'yarn'
     - run: yarn
     - run: yarn test
+  test-ios:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        node-version: [lts/*]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/previous-releases
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      - run: corepack enable
+      - run: yarn
+      - run: cd example; bundle; cd -
+      - run: cd example/ios; bundle exec pod install; cd -
+      - run: make test
