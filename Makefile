@@ -2,7 +2,7 @@ test:
 	$(MAKE) test-ios
 
 test-ios:
-	xcodebuild \
+	xcodebuild -quiet \
       -workspace example/ios/ExampleAppExample.xcworkspace \
       -scheme ExampleAppExample \
       -sdk iphonesimulator \
