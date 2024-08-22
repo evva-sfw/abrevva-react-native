@@ -54,11 +54,6 @@ jobs:
           git config user.name "${{ steps.import-gpg.outputs.name }}"
           git config user.email "${{ steps.import-gpg.outputs.email }}"
 
-      # - name: ssh config
-      #   uses: webfactory/ssh-agent@v0.9.0
-      #   with:
-      #     ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
-
       - name: Install dependencies
         run: corepack enable && yarn install
 
