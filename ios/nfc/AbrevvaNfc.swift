@@ -23,16 +23,14 @@ class AbrevvaNfc: NSObject, NFCSessionDelegate {
     }
     
     @objc func connect() {
-        var clientCertArray = getClientCertFromP12File(certName: "client-ios.p12", certPassword: "123")
+        let clientCertArray = getClientCertFromP12File(certName: "client-ios.p12", certPassword: "123")
+        
         self.clientID = CLIENTID
         
         mqtt5Client = MQTT5Client(clientID: clientID, host: HOST, port: PORT, clientCertArray:clientCertArray)
         mqtt5Client?.setOnMessageRecieveHandler(handler: onMessageRecieveHandler)
         mqtt5Client?.setDidStateChangeToHandler(handler: didStateChangeToHandler)
-        
-        
         mqtt5Client?.connect()
-
     }
     
     @objc func disconnect() {
@@ -109,18 +107,16 @@ class AbrevvaNfc: NSObject, NFCSessionDelegate {
     }
     
     func sessionDidStart(_ withSuccess: Bool) {
-    
     }
     
     func sessionDidClose(_ withError: (any Error)?) {
-        
     }
     
     func sessionDidReceiveKeyOnEvent(_ tagID: Data, _ historicalBytes: Data) {
-        mqtt5Client?.publishKyOn(identifier: tagID, historicalBytes: historicalBytes)
+        mqtt5Client?.publishKyOn(identifier: tagID.toHexString(), historicalBytes: historicalBytes.toHexString())
     }
     
     func sessionDidReceiveKeyOffEvent(_ tagID: Data, _ historicalBytes: Data) {
-        mqtt5Client?.publishKyOff(identifier: tagID, historicalBytes: historicalBytes)
+        mqtt5Client?.publishKyOff(identifier: tagID.toHexString(), historicalBytes: historicalBytes.toHexString())
     }
 }

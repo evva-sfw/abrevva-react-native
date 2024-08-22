@@ -3,8 +3,8 @@ import Quick
 import Nimble
 import Mockingbird
 import CoreBluetooth
-@testable import react_native_example_app
 import AbrevvaSDK
+@testable import abrevva_react_native
 
 final class AbrevvaBleTests: QuickSpec {
   override class func spec(){

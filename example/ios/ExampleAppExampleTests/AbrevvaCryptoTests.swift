@@ -2,8 +2,8 @@ import XCTest
 import Quick
 import Nimble
 import Mockingbird
-@testable import react_native_example_app
 import AbrevvaSDK
+@testable import abrevva_react_native
 
 class RCTPromise{
   var data: Any?
