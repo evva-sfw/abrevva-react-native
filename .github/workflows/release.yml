@@ -23,9 +23,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Test inputs
-        run: echo "Type of release:${{ github.event.inputs.input_version }} from user ${GITHUB_ACTOR}"
-
+          ssh-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
+      - name: Debug inputs
+        run: |
+          echo "Type of release:${{ github.event.inputs.input_version }} from user ${GITHUB_ACTOR}"
+          git config --list
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
