@@ -75,19 +75,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Cache NPM
+        id: cache-test-android-node-modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            example/node_modules
+          key: ${{ runner.os }}_cache-test-android-node-modules
       - name: Cache Gradle
-        id: cache-gradle
+        id: cache-test-android-gradle
         uses: actions/cache@v4
         with:
           path: |
             .gradle
             example/android/.gradle
-          key: ${{ runner.os }}-gradle
+          key: ${{ runner.os }}_cache-test-android-gradle
       - run: |
           corepack enable
           yarn
       - name: Run Gradle
         if: steps.cache-gradle.outputs.cache-hit != 'true'
-        run: ./gradlew
+        run: example/android/gradlew
       - name: Run Tests
         run: make test-android
