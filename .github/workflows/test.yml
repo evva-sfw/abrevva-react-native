@@ -50,6 +50,8 @@ jobs:
       - name: Set Swift Version
         if: runner.os == 'macOS'
         run: xcrun --toolchain ${{ env.TOOLCHAINS }} swift --version
+      - name: Get Xcode version
+        run: xcodebuild -version
       - run: corepack enable
       - run: yarn
       - run: cd example; bundle; cd -
