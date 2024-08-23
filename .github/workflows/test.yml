@@ -48,8 +48,9 @@ jobs:
       - name: Get Swift Version
         run: swift --version
       - name: Set Swift Version
-        if: runner.os == 'macOS'
-        run: xcrun --toolchain ${{ env.TOOLCHAINS }} swift --version
+        run: |
+          echo ${{ env.TOOLCHAINS }}
+          xcrun --toolchain ${{ env.TOOLCHAINS }} swift --version
       - name: List available Xcode versions
         run: ls /Applications | grep Xcode
       - name: Set Xcode version
