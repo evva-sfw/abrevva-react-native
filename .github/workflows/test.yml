@@ -47,15 +47,13 @@ jobs:
           swift-version: "5.10.0"
       - name: Get Swift Version
         run: swift --version
-      - name: Set Swift Version
-        run: |
-          echo ${{ env.TOOLCHAINS }}
-          xcrun --toolchain ${{ env.TOOLCHAINS }} swift --version
       - name: List available Xcode versions
         run: ls /Applications | grep Xcode
-      - name: Set Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+#      - name: Set Xcode version
+#        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
       - name: Get Xcode version
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_15.4.app
         run: xcodebuild -version
       - name: Show available software
         run: softwareupdate --list --all
