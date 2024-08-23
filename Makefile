@@ -11,4 +11,4 @@ test-ios:
 		test || exit 1
 
 test-android:
-	cd example/android && ./gradlew :evva-sfw_abrevva-react-native:testDebugUnitTest && cd -
+	cd example/android && ./gradlew :evva-sfw_abrevva-react-native:testDebugUnitTest || exit 1
