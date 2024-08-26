@@ -6,6 +6,7 @@ import {
   hexStringToDataView,
   numbersToDataView,
   type ScanResult,
+  type StringResult,
 } from '@evva-sfw/abrevva-react-native';
 import { hex } from '@scure/base';
 import { Parser } from 'binary-parser-encoder';

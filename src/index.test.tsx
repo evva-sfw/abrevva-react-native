@@ -111,44 +111,35 @@ describe('AbrevvaBleModule', () => {
     expect(AbrevvaBleMock.stopLEScan).toHaveBeenCalledTimes(1);
   });
   it('should run connect()', async () => {
-    await AbrevvaBle.connect({ deviceId: 'deviceId' });
+    await AbrevvaBle.connect('deviceId');
     expect(AbrevvaBleMock.connect).toHaveBeenCalledTimes(1);
   });
   it('should run disconnect()', async () => {
-    await AbrevvaBle.disconnect({ deviceId: 'deviceId' });
+    await AbrevvaBle.disconnect('deviceId');
     expect(AbrevvaBleMock.disconnect).toHaveBeenCalledTimes(1);
     expect(AbrevvaBleMock.setSupportedEvents).toHaveBeenCalledTimes(1);
   });
   it('should run read()', async () => {
-    await AbrevvaBle.read({
-      deviceId: 'deviceId',
-      service: 'service',
-      characteristic: 'characteristic',
-    });
+    await AbrevvaBle.read('deviceId', 'service', 'characteristic');
     expect(AbrevvaBleMock.read).toHaveBeenCalledTimes(1);
   });
   it('should run write()', async () => {
-    await AbrevvaBle.write({
-      deviceId: 'deviceId',
-      service: 'service',
-      characteristic: 'characteristic',
-      value: 'value',
-    });
+    await AbrevvaBle.write('deviceId', 'service', 'characteristic', 'value');
     expect(AbrevvaBleMock.write).toHaveBeenCalledTimes(1);
   });
   it('should run signalize()', async () => {
-    await AbrevvaBle.signalize({ deviceId: 'deviceId' });
+    await AbrevvaBle.signalize('deviceId');
     expect(AbrevvaBleMock.signalize).toHaveBeenCalledTimes(1);
   });
   it('should run disengage()', async () => {
-    await AbrevvaBle.disengage({
-      deviceId: 'deviceId',
-      mobileId: 'mobileId',
-      mobileDeviceKey: 'mobileDeviceKey',
-      mobileGroupId: 'mobileGroupId',
-      mobileAccessData: 'mobileAccessData',
-      isPermanentRelease: false,
-    });
+    await AbrevvaBle.disengage(
+      'deviceId',
+      'mobileId',
+      'mobileDeviceKey',
+      'mobileGroupId',
+      'mobileAccessData',
+      false,
+    );
     expect(AbrevvaBleMock.disengage).toHaveBeenCalledTimes(1);
   });
   describe('startNotifications()', () => {});
