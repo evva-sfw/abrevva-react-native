@@ -25,7 +25,6 @@ jobs:
           node-version: '22'
           cache: 'yarn'
       - run: |
-          which corepack
           corepack enable
           cd example && yarn install
 
@@ -35,6 +34,7 @@ jobs:
           path: |
             .gradle
             example/android/.gradle
+            ~/.gradle/caches
           key: gradle
 
       - name: Build android example app
