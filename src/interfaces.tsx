@@ -15,22 +15,6 @@ export interface RequestBleDeviceOptions {
 
 export type Data = DataView | string;
 
-export interface BooleanResult {
-  value: boolean;
-}
-
-export interface StringResult {
-  value: string;
-}
-
-export interface DeviceIdOptions {
-  deviceId: string;
-}
-
-export interface TimeoutOptions {
-  timeout?: number;
-}
-
 export interface BleDevice {
   deviceId: string;
   name?: string;
@@ -57,36 +41,6 @@ export interface ScanResultInternal<T = Data> {
   serviceData?: { [key: string]: T };
   uuids?: string[];
   rawAdvertisement?: T;
-}
-
-export interface ReadOptions {
-  deviceId: string;
-  service: string;
-  characteristic: string;
-}
-
-export interface ReadResult {
-  value?: string;
-}
-
-export interface WriteOptions {
-  deviceId: string;
-  service: string;
-  characteristic: string;
-  value: string;
-}
-
-export interface SignalizeOptions {
-  deviceId: string;
-}
-
-export interface DisengageOptions {
-  deviceId: string;
-  mobileId: string;
-  mobileDeviceKey: string;
-  mobileGroupId: string;
-  mobileAccessData: string;
-  isPermanentRelease: boolean;
 }
 
 export interface AbrevvaNfcInterface {
@@ -139,12 +93,30 @@ export interface AbrevvaBLEInterface {
     scanMode?: ScanMode,
   ): Promise<void>;
   stopLEScan(): Promise<void>;
-  connect(options: DeviceIdOptions & TimeoutOptions): Promise<void>;
-  disconnect(options: DeviceIdOptions): Promise<void>;
-  read(options: ReadOptions & TimeoutOptions): Promise<ReadResult>;
-  write(options: WriteOptions & TimeoutOptions): Promise<void>;
-  signalize(options: SignalizeOptions): Promise<void>;
-  disengage(options: DisengageOptions): Promise<StringResult>;
+  connect(deviceId: string, timeout?: number): Promise<void>;
+  disconnect(deviceId: string): Promise<void>;
+  read(
+    deviceId: string,
+    service: string,
+    characteristic: string,
+    timeout?: number,
+  ): Promise<ReadResult>;
+  write(
+    deviceId: string,
+    service: string,
+    characteristic: string,
+    value: string,
+    timeout?: number,
+  ): Promise<void>;
+  signalize(deviceId: string): Promise<void>;
+  disengage(
+    deviceId: string,
+    mobileId: string,
+    mobileDeviceKey: string,
+    mobileGroupId: string,
+    mobileAccessData: string,
+    isPermanentRelease: boolean,
+  ): Promise<StringResult>;
   startNotifications(
     deviceId: string,
     service: string,
