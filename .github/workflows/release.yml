@@ -6,11 +6,11 @@ on:
         type: choice
         description: What type of release?
         options:
-        - patch
-        - minor
-        - major
+          - patch
+          - minor
+          - major
 
-concurrency : ${{ github.workflow }}-${{ github.ref }}
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   publish:
@@ -19,6 +19,7 @@ jobs:
       contents: write
       packages: write
       id-token: write
+      attestations: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -66,3 +67,8 @@ jobs:
         run: npx release-it ${{ github.event.inputs.input_version }} --ci
         env:
           BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+
+      - name: Attest
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: '${{ github.workspace }}/*.tgz'
