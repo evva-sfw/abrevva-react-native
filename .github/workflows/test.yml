@@ -21,10 +21,6 @@ jobs:
 
   test-ios:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        node-version: [lts/*]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/previous-releases
     steps:
       - uses: actions/checkout@v3
       - name: Setup NodeJS
