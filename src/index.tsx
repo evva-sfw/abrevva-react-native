@@ -240,8 +240,13 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
     });
   }
 
-  async signalize(deviceId: string): Promise<void> {
-    return NativeModuleBle.signalize({ deviceId: deviceId });
+  async signalize(deviceId: string): Promise<Boolean> {
+    try {
+      NativeModuleBle.signalize({ deviceId: deviceId });
+    } catch (err) {
+      return false;
+    }
+    return true;
   }
 
   async disengage(

@@ -111,7 +111,7 @@ export interface AbrevvaBLEInterface {
     value: string,
     timeout?: number,
   ): Promise<void>;
-  signalize(deviceId: string): Promise<void>;
+  signalize(deviceId: string): Promise<Boolean>;
   disengage(
     deviceId: string,
     mobileId: string,

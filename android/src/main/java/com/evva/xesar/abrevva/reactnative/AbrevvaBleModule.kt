@@ -24,26 +24,11 @@ import java.util.UUID
 
 class AbrevvaBleModule(reactContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactContext) {
-    private lateinit var manager: BleManager
-    private lateinit var aliases: Array<String>
+    private var manager: BleManager = BleManager(reactContext)
+    private var aliases: Array<String>
 
     init {
-        manager = BleManager(reactContext)
         aliases = arrayOf()
-    }
-
-    @SuppressLint("MissingPermission")
-    @ReactMethod
-    fun signalize(options: ReadableMap, promise: Promise) {
-        val deviceId = options.getString("deviceId") ?: ""
-
-        manager.signalize(deviceId) { success: Boolean ->
-            if (success) {
-                promise.resolve("success")
-            } else {
-                promise.reject(Exception("signalize() failed"))
-            }
-        }
     }
 
     @ReactMethod
@@ -255,7 +240,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
                     ret.putString("value", bytesToString(data!!))
                     promise.resolve(ret)
                 } else {
-                    promise.reject("read(): failed to read from device")
+                    promise.reject(Exception("read(): failed to read from device"))
                 }
             },
             timeout
@@ -274,7 +259,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
 
         val characteristic =
             getCharacteristic(options, promise)
-                ?: return promise.reject("read(): bad characteristic")
+                ?: return promise.reject(Exception("read(): bad characteristic"))
         val value =
             options.getString("value")
                 ?: return promise.reject(Exception("write(): missing value for write"))
@@ -293,6 +278,20 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             },
             timeout
         )
+    }
+
+    @SuppressLint("MissingPermission")
+    @ReactMethod
+    fun signalize(options: ReadableMap, promise: Promise) {
+        val deviceId = options.getString("deviceId") ?: ""
+
+        manager.signalize(deviceId) { success: Boolean ->
+            if (success) {
+                promise.resolve("success")
+            } else {
+                promise.reject(Exception("signalize() failed"))
+            }
+        }
     }
 
     @ReactMethod
@@ -449,7 +448,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         if (scanRecordBytes != null) {
             try {
                 // Extract EVVA manufacturer-id
-                var arr = byteArrayOf(0x01)
+                val arr = byteArrayOf(0x01)
                 arr.toHexString()
                 val keyHex = byteArrayOf(scanRecordBytes.getByte(6)!!).toHexString() + byteArrayOf(
                     scanRecordBytes.getByte(5)!!
