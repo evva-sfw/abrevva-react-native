@@ -1,6 +1,6 @@
 {
   "name": "@evva-sfw/abrevva-react-native",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "author": "EVVA Sicherheitstechnologie GmbH",
   "description": "The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.",
   "source": "./src/index.tsx",
