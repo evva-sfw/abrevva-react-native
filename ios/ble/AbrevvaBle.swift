@@ -127,7 +127,22 @@ public class AbrevvaBle: RCTEventEmitter {
         bleManager.stopScan()
         resolve("success")
     }
-
+    @objc
+    func signalize(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) async {
+        guard let optionsSwift = options as? [String: Any] else {
+            return reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
+        }
+        
+        guard let deviceID = optionsSwift["deviceId"] as? String else {
+            return reject("signalize(): deviceId required", nil, nil)
+        }
+        guard let bleDevice = self.bleDeviceMap[deviceID] else {
+            return reject("signalize(): deviceId doesnt exist", nil, nil)
+        }
+        await bleManager?.signalize(bleDevice)
+        resolve("success")
+        
+    }
     @objc
     func connect(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
         guard self.getBleManager(reject) != nil else { return }
