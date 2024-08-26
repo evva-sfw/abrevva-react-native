@@ -73,6 +73,9 @@ RCT_EXTERN_METHOD(setSupportedEvents:(NSDictionary *)options
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(signalize:(NSDictionary *)options
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
 + (BOOL)requiresMainQueueSetup
 {
     return NO;
