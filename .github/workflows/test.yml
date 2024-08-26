@@ -15,7 +15,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'yarn'
+      - name: Cache node_modules
+        id: node-modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            example/node_modules
+          key: node-modules
       - run: yarn
       - run: yarn test
 
@@ -27,7 +34,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'yarn'
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
@@ -44,25 +50,25 @@ jobs:
           DEVELOPER_DIR: /Applications/Xcode_15.4.app
         run: xcodebuild -version
       - name: Cache Pods
-        id: cache-test-ios-pods
+        id: pods
         uses: actions/cache@v4
         with:
           path: |
             example/ios/Pods
-          key: cache-test-ios-pods
+          key: pods
       - name: Cache node_modules
-        id: cache-test-node-modules
+        id: node-modules
         uses: actions/cache@v4
         with:
           path: |
             node_modules
             example/node_modules
-          key: cache-test-node-modules
+          key: node-modules
       - name: Cache Xcode DerivedData
         uses: irgaly/xcode-cache@v1.7.2
         with:
-          key: cache-test-xcode-deriveddata-${{ github.workflow }}-${{ github.sha }}
-          restore-keys: cache-test-xcode-deriveddata-${{ github.workflow }}-
+          key: xcode-deriveddata
+          restore-keys: xcode-deriveddata
       - run: corepack enable
       - run: yarn
       - run: cd example; bundle; cd -
@@ -86,15 +92,15 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: lts/*
       - name: Cache node_modules
-        id: cache-test-node-modules
+        id: node-modules
         uses: actions/cache@v4
         with:
           path: |
             node_modules
             example/node_modules
-          key: cache-test-node-modules
+          key: node-modules
       - name: Cache Gradle
         id: cache_gradle
         uses: actions/cache@v4

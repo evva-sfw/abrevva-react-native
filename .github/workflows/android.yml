@@ -22,8 +22,15 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
+          node-version: lts/*
+      - name: Cache node_modules
+        id: node-modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            example/node_modules
+          key: node-modules
       - run: |
           corepack enable
           cd example && yarn install
