@@ -11,10 +11,13 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient.Mqtt3SubscribeAndCallbackBuilder.Call.Ex
 import org.bouncycastle.util.encoders.Base64
 import org.bouncycastle.util.encoders.Hex
 import java.io.BufferedInputStream
 import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
 import java.net.URL
 import java.nio.file.Paths
 
@@ -72,8 +75,8 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
             val keyPair: X25519Wrapper.KeyPair = X25519Wrapper.generateKeyPair()
 
             val ret = Arguments.createMap()
-            ret.putString("privateKey", Base64.toBase64String(keyPair.privateKey))
-            ret.putString("publicKey", Base64.toBase64String(keyPair.publicKey))
+            ret.putString("privateKey", Hex.toHexString(keyPair.privateKey))
+            ret.putString("publicKey", Hex.toHexString(keyPair.publicKey))
             promise.resolve(ret)
         } catch (e: Exception) {
             promise.reject(Exception("generateKeyPair(): private key creation failed"))
@@ -94,8 +97,8 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
                 return
             }
             val sharedSecret: ByteArray = X25519Wrapper.computeSharedSecret(
-                Base64.decode(privateKey),
-                Base64.decode(peerPublicKey)
+               Hex.decode(privateKey),
+               Hex.decode(peerPublicKey)
             )
 
             val ret = Arguments.createMap()
@@ -165,7 +168,6 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
             promise.reject(e)
         }
     }
-
     fun writeToFile(ctPath: String, url: String) {
 
         BufferedInputStream(URL(url).openStream()).use { `in` ->
