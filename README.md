@@ -27,12 +27,16 @@ The EVVA React-Native Module is a collection of tools to work with electronical 
 
 ## Installation
 ```
-yarn add <git remote url>
+yarn add @evva-sfw/abrevva-react-native
 ```
 
-### IOS
+### iOS
 
- execute `pod install` inside of your projects ios/ folder.
+Execute `bundle exec pod install` inside of your projects ios/ folder.
+
+### Android
+
+Perform a gradle sync.
 
 ## Examples
 
@@ -41,23 +45,21 @@ yarn add <git remote url>
 To start off first import `AbrevvaBle` from this module
 
 ```typescript
-import {AbrevvaBle} from '@evva-sfw/abrevva-react-native';
+import { AbrevvaBle } from '@evva-sfw/abrevva-react-native';
 
-async function scanForBleDevices(androidNeverForLocation: Boolean, timeout: Number){
-    const androidNeverForLocation = true;
+async function scanForBleDevices(androidNeverForLocation: Boolean = true, timeout: Number) {
     await AbrevvaBle.initialize(androidNeverForLocation);
 
-    const timeout = 10_000
     AbrevvaBle.requestLEScan(
-        timeout, 
+        10_000, 
         (data: ScanResult) => {
-            console.log(`found device: ${data.name}`);
+            console.log(`Found device: ${data.name}`);
         },
-        (data: Object) => {
-            console.log(`Connected to device /w address=${data.address}`);
+        (address: string) => {
+            console.log(`Connected to device: ${address}`);
         },
-        (data: Object) => {
-            console.log(`Disconnected to device /w address=${data.address}`);
+        (address: string) => {
+            console.log(`Disconnected to device: ${address}`);
         }
     );
 }
@@ -68,12 +70,12 @@ async function scanForBleDevices(androidNeverForLocation: Boolean, timeout: Numb
 With the signalize method you can localize EVVA components. On a successful signalization the component will emit a melody indicating its location.
 
 ```typescript
-AbrevvaBle.signalize({ deviceId: 'deviceId' }() => {
+AbrevvaBle.signalize({ deviceId: 'deviceId' }) => {
     console.log(`Signalized /w success=${it}`)
 }
 );
 ```
-### Perform disengage for EVVA components
+### Perform disengage on EVVA components
 
 For the component disengage you have to provide access credentials to the EVVA component. Those are generally acquired in the form of access media metadata from the Xesar software.
 
