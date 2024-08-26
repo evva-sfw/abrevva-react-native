@@ -107,7 +107,7 @@ jobs:
           corepack enable
           yarn
       - name: Run Gradle
-        if: steps.cache-gradle.outputs.cache-hit != 'true'
+        if: steps.cache-test-android-gradle.outputs.cache-hit != 'true'
         run: example/android/gradlew
       - name: Run Tests
         run: make test-android
