@@ -323,7 +323,7 @@ public class AbrevvaBle: RCTEventEmitter {
             reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
             return nil
         }
-        let services = optionsSwift["services"] as? [String] ?? [] // TODO: Check if works as intended
+        let services = optionsSwift["services"] as? [String] ?? []
         let serviceUUIDs = services.map { service -> CBUUID in
             return CBUUID(string: service)
         }
@@ -386,7 +386,7 @@ public class AbrevvaBle: RCTEventEmitter {
         return bleDevice
     }
 
-    private func getScanResultDict(
+    func getScanResultDict(
         _ device: BleDevice,
         _ advertisementData: [String: Any],
         _ rssi: NSNumber
@@ -417,7 +417,7 @@ public class AbrevvaBle: RCTEventEmitter {
         return data
     }
 
-    private func getManufacturerDataDict(data: Data) -> [String: String] {
+    func getManufacturerDataDict(data: Data) -> [String: String] {
         var company = 0
         var rest = ""
         for (index, byte) in data.enumerated() {
@@ -432,7 +432,7 @@ public class AbrevvaBle: RCTEventEmitter {
         return [String(company): rest]
     }
 
-    private func getServiceDataDict(data: [CBUUID: Data]) -> [String: String] {
+    func getServiceDataDict(data: [CBUUID: Data]) -> [String: String] {
         var result: [String: String] = [:]
         for (key, value) in data {
             result[CBUUIDToString(key)] = dataToString(value)
@@ -453,7 +453,7 @@ public class AbrevvaBle: RCTEventEmitter {
             return reject("setSupportedEvents(): Failed to convert NSDictionary to Swift dictionary", nil, nil)
         }
         guard let newEvents = optionsSwift["events"] as? [String] else {
-            return reject("setSupportedEvents(): characteristic UUID required", nil, nil)
+            return reject("setSupportedEvents(): provide events as [String]", nil, nil)
         }
         self.events = newEvents
         resolve(nil)

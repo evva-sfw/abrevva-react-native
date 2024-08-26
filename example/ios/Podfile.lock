@@ -1,6 +1,6 @@
 PODS:
-  - abrevva-react-native (0.1.0):
-    - AbrevvaSDK (~> 1.0.20)
+  - abrevva-react-native (0.1.5):
+    - AbrevvaSDK (~> 1.0.23)
     - CocoaMQTT
     - CryptoSwift
     - DoubleConversion
@@ -23,7 +23,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - AbrevvaSDK (1.0.20):
+  - AbrevvaSDK (1.0.23):
     - CocoaMQTT
     - CryptoSwift
   - boost (1.83.0)
@@ -32,6 +32,15 @@ PODS:
   - CocoaMQTT/Core (2.1.6):
     - MqttCocoaAsyncSocket (~> 1.0.8)
   - CryptoSwift (1.8.3)
+  - CwlCatchException (2.2.0):
+    - CwlCatchExceptionSupport (~> 2.2.0)
+  - CwlCatchExceptionSupport (2.2.0)
+  - CwlMachBadInstructionHandler (2.2.0)
+  - CwlPosixPreconditionTesting (2.2.0)
+  - CwlPreconditionTesting (2.2.1):
+    - CwlCatchException (~> 2.2.0)
+    - CwlMachBadInstructionHandler (~> 2.2.0)
+    - CwlPosixPreconditionTesting (~> 2.2.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.74.3)
   - fmt (9.1.0)
@@ -39,7 +48,11 @@ PODS:
   - hermes-engine (0.74.3):
     - hermes-engine/Pre-built (= 0.74.3)
   - hermes-engine/Pre-built (0.74.3)
+  - MockingbirdFramework (0.20.0)
   - MqttCocoaAsyncSocket (1.0.8)
+  - Nimble (13.4.0):
+    - CwlPreconditionTesting (~> 2.2.0)
+  - Quick (7.6.2)
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -968,7 +981,7 @@ PODS:
   - React-Mapbuffer (0.74.3):
     - glog
     - React-debug
-  - react-native-safe-area-context (4.10.8):
+  - react-native-safe-area-context (4.10.9):
     - React-Core
   - React-nativeconfig (0.74.3)
   - React-NativeModulesApple (0.74.3):
@@ -1201,7 +1214,7 @@ PODS:
     - React-utils (= 0.74.3)
   - RNFS (2.20.0):
     - React-Core
-  - RNScreens (3.32.0):
+  - RNScreens (3.34.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1234,6 +1247,9 @@ DEPENDENCIES:
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
+  - MockingbirdFramework (~> 0.20)
+  - Nimble
+  - Quick
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
@@ -1293,7 +1309,15 @@ SPEC REPOS:
     - AbrevvaSDK
     - CocoaMQTT
     - CryptoSwift
+    - CwlCatchException
+    - CwlCatchExceptionSupport
+    - CwlMachBadInstructionHandler
+    - CwlPosixPreconditionTesting
+    - CwlPreconditionTesting
+    - MockingbirdFramework
     - MqttCocoaAsyncSocket
+    - Nimble
+    - Quick
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -1416,17 +1440,25 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  abrevva-react-native: a71c4e72921fc2f516bc32d9818839b48842f02f
-  AbrevvaSDK: fa79760425864800f524905612f708fa9e323fc5
+  abrevva-react-native: 6980035371bf192213003a60418276baced5d569
+  AbrevvaSDK: 4edd60273dd1b2d171e8adb5a84756aa5084347c
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   CocoaMQTT: 1f206228b29318eabdacad0c2e4e88575922c27a
   CryptoSwift: 967f37cea5a3294d9cce358f78861652155be483
+  CwlCatchException: 51bf8319009a31104ea6f0568730d1ecc25b6454
+  CwlCatchExceptionSupport: 1345d6adb01a505933f2bc972dab60dcb9ce3e50
+  CwlMachBadInstructionHandler: ea1030428925d9bf340882522af30712fb4bf356
+  CwlPosixPreconditionTesting: a125dee731883f2582715f548c6b6c92c7fde145
+  CwlPreconditionTesting: ccfd08aca58d14e04062b2a3dd2fd52e09857453
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   hermes-engine: 1f547997900dd0752dc0cc0ae6dd16173c49e09b
+  MockingbirdFramework: 54e35fbbb47b806c1a1fae2cf3ef99f6eceb55e5
   MqttCocoaAsyncSocket: 77d3b74f76228dd5a05d1f9526eab101d415b30c
+  Nimble: c3d7c9848a0adae88a665ca52f8da23dd4d2cd94
+  Quick: b8bec97cd4b9f21da0472d45580f763b801fc353
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 4c7eeb42be0b2e95195563c49be08d0b839d22b4
   RCTRequired: d530a0f489699c8500e944fde963102c42dcd0c2
@@ -1451,7 +1483,7 @@ SPEC CHECKSUMS:
   React-jsitracing: 1aa5681c353b41573b03e0e480a5adf5fa1c56d8
   React-logger: fa92ba4d3a5d39ac450f59be2a3cec7b099f0304
   React-Mapbuffer: 70da5955150a58732e9336a0c7e71cd49e909f25
-  react-native-safe-area-context: b7daa1a8df36095a032dff095a1ea8963cb48371
+  react-native-safe-area-context: ab8f4a3d8180913bd78ae75dd599c94cce3d5e9a
   React-nativeconfig: 84806b820491db30175afbf027e99e8415dc63f0
   React-NativeModulesApple: 7b79212f8cf496ab554e0b7b09acbd4aa4690260
   React-perflogger: 7bb9ba49435ff66b666e7966ee10082508a203e8
@@ -1476,10 +1508,10 @@ SPEC CHECKSUMS:
   React-utils: 6f7ac39d9a0de447d4334bb25d144a28c0c5d8c9
   ReactCommon: 4a09c7d8a06e93c1e2e988a3b9f3db3d2449f2fc
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNScreens: fd2722bcc59f36a629205af8cc7b48e4bc0d09f5
+  RNScreens: db442e7b8c7bc8befec2ce057927305ff8598cc8
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: bd92064a0d558be92786820514d74fc4dddd1233
 
-PODFILE CHECKSUM: c096dde368bb25db14174c2f8e4a6b2095e483e8
+PODFILE CHECKSUM: c2b657d91fc21203dd436e57c3a2a27527cbae3b
 
 COCOAPODS: 1.14.3
