@@ -23,9 +23,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'yarn'
       - run: |
-          corepack yarn
+          which corepack
+          corepack enable
           cd example && yarn install
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            .gradle
+            example/android/.gradle
+          key: gradle
 
       - name: Build android example app
         run: yarn build:android
