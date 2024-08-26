@@ -96,18 +96,19 @@ jobs:
             example/node_modules
           key: cache-test-node-modules
       - name: Cache Gradle
-        id: cache-test-android-gradle
+        id: cache_gradle
         uses: actions/cache@v4
         with:
           path: |
             .gradle
             example/android/.gradle
-          key: ${{ runner.os }}_cache-test-android-gradle
+            ~/.gradle/caches
+          key: gradle
       - run: |
           corepack enable
           yarn
       - name: Run Gradle
-        if: steps.cache-test-android-gradle.outputs.cache-hit != 'true'
+        if: steps.cache_gradle.outputs.cache-hit != 'true'
         run: example/android/gradlew
       - name: Run Tests
         run: make test-android
