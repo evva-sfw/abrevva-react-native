@@ -11,13 +11,9 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient.Mqtt3SubscribeAndCallbackBuilder.Call.Ex
-import org.bouncycastle.util.encoders.Base64
 import org.bouncycastle.util.encoders.Hex
 import java.io.BufferedInputStream
 import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
 import java.net.URL
 import java.nio.file.Paths
 
@@ -88,17 +84,17 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
         try {
             val privateKey = options.getString("privateKey")
             if (privateKey == null || privateKey == "") {
-                promise.reject("computeSharedSecret(): invalid private key")
+                promise.reject(Exception("computeSharedSecret(): invalid private key"))
                 return
             }
             val peerPublicKey = options.getString("peerPublicKey")
             if (peerPublicKey == null || peerPublicKey == "") {
-                promise.reject("computeSharedSecret(): invalid peer public key")
+                promise.reject(Exception("computeSharedSecret(): invalid peer public key"))
                 return
             }
             val sharedSecret: ByteArray = X25519Wrapper.computeSharedSecret(
-               Hex.decode(privateKey),
-               Hex.decode(peerPublicKey)
+                Hex.decode(privateKey),
+                Hex.decode(peerPublicKey)
             )
 
             val ret = Arguments.createMap()
@@ -168,8 +164,8 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
             promise.reject(e)
         }
     }
-    fun writeToFile(ctPath: String, url: String) {
 
+    fun writeToFile(ctPath: String, url: String) {
         BufferedInputStream(URL(url).openStream()).use { `in` ->
             FileOutputStream(ctPath).use { fileOutputStream ->
                 val dataBuffer = ByteArray(4096)

@@ -8,7 +8,6 @@ import com.evva.xesar.abrevva.ble.BleManager
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableArray
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -40,9 +39,6 @@ class AbrevvaBleModuleTest {
     private lateinit var promiseMock: Promise
 
     @MockK(relaxed = true)
-    private lateinit var readableMapMock: ReadableMap
-
-    @MockK(relaxed = true)
     private lateinit var writeableArrayMock: WritableArray
 
     @BeforeEach
@@ -62,7 +58,6 @@ class AbrevvaBleModuleTest {
     fun afterEach() {
         unmockkAll()
     }
-
 
     /* https://github.com/mockk/mockk/issues/586#issuecomment-1404973825 */
     @SuppressLint("MissingPermission")
@@ -164,6 +159,7 @@ class AbrevvaBleModuleTest {
         val scanResult = WritableMapTestImplementation()
         val manufacturerData = WritableMapTestImplementation()
         val serviceDataMap = WritableMapTestImplementation()
+
         every { result.data } returns null andThen data
         every { result.device } returns device
         every { result.device.hasName } returns true
@@ -190,6 +186,5 @@ class AbrevvaBleModuleTest {
             )
         )
         assert(ref == scanResult)
-
     }
 }

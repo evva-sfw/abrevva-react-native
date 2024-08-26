@@ -11,7 +11,7 @@ class ExampleAppPackage : ReactPackage {
             AbrevvaBleModule(reactContext)
         )
     }
-
+  
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
         return emptyList()
     }

@@ -153,7 +153,7 @@ public class AbrevvaBle: RCTEventEmitter {
             return
         }
         
-        let timeout = optionsSwift["timeout"] as? Int ?? nil
+        let timeout = optionsSwift["timeout"] as? Int ?? 10000
 
         Task {
             let success = await self.bleManager!.connect(device, timeout)
