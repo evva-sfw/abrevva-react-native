@@ -6,11 +6,11 @@ on:
         type: choice
         description: What type of release?
         options:
-        - patch
-        - minor
-        - major
+          - patch
+          - minor
+          - major
 
-concurrency : ${{ github.workflow }}-${{ github.ref }}
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   publish:

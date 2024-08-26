@@ -3,9 +3,9 @@
 name: Node.js lint
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 permissions:
   id-token: write
   attestations: write
@@ -16,22 +16,22 @@ jobs:
       id-token: write
       attestations: write
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup nodejs
-      uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-        cache: 'yarn'
-    - run: yarn
-    - run: yarn lint
-    - run: yarn typecheck
-    - run: yarn pack --out '%s_%v.tgz'
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: package
-        path: '${{ github.workspace }}/*.tgz'
-    - name: Attest
-      uses: actions/attest-build-provenance@v1
-      with:
-        subject-path: '${{ github.workspace }}/*.tgz'
+      - uses: actions/checkout@v3
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'yarn'
+      - run: yarn
+      - run: yarn lint
+      - run: yarn typecheck
+      - run: yarn pack --out '%s_%v.tgz'
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: '${{ github.workspace }}/*.tgz'
+      - name: Attest
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: '${{ github.workspace }}/*.tgz'
