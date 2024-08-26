@@ -42,6 +42,9 @@ export interface ScanResultInternal<T = Data> {
   uuids?: string[];
   rawAdvertisement?: T;
 }
+export interface StringResult {
+  value?: string;
+}
 
 export interface AbrevvaNfcInterface {
   connect: () => Promise<void>;
@@ -100,7 +103,7 @@ export interface AbrevvaBLEInterface {
     service: string,
     characteristic: string,
     timeout?: number,
-  ): Promise<ReadResult>;
+  ): Promise<StringResult>;
   write(
     deviceId: string,
     service: string,
@@ -121,7 +124,7 @@ export interface AbrevvaBLEInterface {
     deviceId: string,
     service: string,
     characteristic: string,
-    callback: (event: ReadResult) => void,
+    callback: (event: StringResult) => void,
   ): Promise<void>;
   stopNotifications(deviceId: string, service: string, characteristic: string): Promise<void>;
 }

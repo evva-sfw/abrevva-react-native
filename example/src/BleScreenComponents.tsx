@@ -5,7 +5,6 @@ import {
   dataViewToNumbers,
   hexStringToDataView,
   numbersToDataView,
-  type ReadResult,
   type ScanResult,
 } from '@evva-sfw/abrevva-react-native';
 import { hex } from '@scure/base';
@@ -192,7 +191,7 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
       data.device.deviceId,
       SERVICE,
       CHARACTERISTICS.ACCESS_STATUS,
-      (event: ReadResult) => {
+      (event: StringResult) => {
         newStatus = event.value!;
       },
     );

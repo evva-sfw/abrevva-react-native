@@ -15,7 +15,6 @@ import type {
   AbrevvaBLEInterface,
   AbrevvaCryptoInterface,
   AbrevvaNfcInterface,
-  ReadResult,
   ScanMode,
   ScanResult,
   ScanResultInternal,
@@ -216,7 +215,7 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
     service: string,
     characteristic: string,
     timeout?: number,
-  ): Promise<ReadResult> {
+  ): Promise<StringResult> {
     return NativeModuleBle.read({
       deviceId: deviceId,
       service: service,
@@ -267,7 +266,7 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
     deviceId: string,
     service: string,
     characteristic: string,
-    callback: (event: ReadResult) => void,
+    callback: (event: StringResult) => void,
   ): Promise<void> {
     const key = `notification|${deviceId}|${service}|${characteristic}`.toLowerCase();
     const listener = this.eventEmitter!.addListener(key, callback);
