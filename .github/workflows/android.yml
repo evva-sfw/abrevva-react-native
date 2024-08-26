@@ -29,7 +29,3 @@ jobs:
 
       - name: Build android example app
         run: yarn build:android
-        env:
-          GH_USERNAME: ${{ vars.USERNAME }}
-          # PAT has read:packages permissions
-          GH_TOKEN: ${{ secrets.TOKEN }}
