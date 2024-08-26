@@ -3,25 +3,21 @@
 name: Test
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 jobs:
   test-web:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [lts/*]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/previous-releases
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
-    - run: yarn
-    - run: yarn test
+      - uses: actions/checkout@v3
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'yarn'
+      - run: yarn
+      - run: yarn test
 
   test-ios:
     runs-on: macos-latest
@@ -31,20 +27,20 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/previous-releases
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: lts/*
           cache: 'yarn'
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
           bundler-cache: true
-      - name: "Get Ruby Version"
+      - name: 'Get Ruby Version'
         run: ruby --version
       - uses: SwiftyLab/setup-swift@latest
         with:
-          swift-version: "5.10.0"
+          swift-version: '5.10.0'
       - name: Get Swift Version
         run: swift --version
       - name: Get Xcode version
