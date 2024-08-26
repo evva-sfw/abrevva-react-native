@@ -95,7 +95,7 @@ public class AbrevvaBle: RCTEventEmitter {
         let name = optionsSwift["name"] as? String ?? nil
         let namePrefix = optionsSwift["namePrefix"] as? String ?? nil
         let allowDuplicates = optionsSwift["allowDuplicates"] as? Bool ?? false
-        let timeout =   optionsSwift["timeout"] as? Int ?? 0
+        let timeout =   optionsSwift["timeout"] as? Int ?? 10000
     
         bleManager.startScan(
             name,
