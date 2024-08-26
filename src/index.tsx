@@ -15,17 +15,10 @@ import type {
   AbrevvaBLEInterface,
   AbrevvaCryptoInterface,
   AbrevvaNfcInterface,
-  DeviceIdOptions,
-  DisengageOptions,
-  ReadOptions,
-  ReadResult,
   ScanMode,
   ScanResult,
   ScanResultInternal,
-  SignalizeOptions,
   StringResult,
-  TimeoutOptions,
-  WriteOptions,
 } from './interfaces';
 
 const NativeModuleNfc = NativeModules.AbrevvaNfc
@@ -198,11 +191,14 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
     return await NativeModuleBle.stopLEScan();
   }
 
-  async connect(options: DeviceIdOptions & TimeoutOptions): Promise<void> {
-    return await NativeModuleBle.connect(options);
+  async connect(deviceId: string, timeout?: number): Promise<void> {
+    return await NativeModuleBle.connect({
+      deviceId: deviceId,
+      timeout: timeout,
+    });
   }
 
-  async disconnect(options: DeviceIdOptions): Promise<void> {
+  async disconnect(deviceId: string): Promise<void> {
     this.listeners.forEach((listener) => listener?.remove);
     this.listeners = new Map<String, EmitterSubscription | undefined>([
       ['onEnabledChanged', undefined],
@@ -211,30 +207,71 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
       ['onDisconnect', undefined],
     ]);
     NativeModuleBle.setSupportedEvents({ events: [...this.listeners.keys()] });
-    return NativeModuleBle.disconnect(options);
+    return NativeModuleBle.disconnect({ deviceId: deviceId });
   }
 
-  async read(options: ReadOptions & TimeoutOptions): Promise<ReadResult> {
-    return NativeModuleBle.read(options);
+  async read(
+    deviceId: string,
+    service: string,
+    characteristic: string,
+    timeout?: number,
+  ): Promise<StringResult> {
+    return NativeModuleBle.read({
+      deviceId: deviceId,
+      service: service,
+      characteristic: characteristic,
+      timeout: timeout,
+    });
   }
 
-  async write(options: WriteOptions & TimeoutOptions): Promise<void> {
-    return NativeModuleBle.write(options);
+  async write(
+    deviceId: string,
+    service: string,
+    characteristic: string,
+    value: string,
+    timeout?: number,
+  ): Promise<void> {
+    return NativeModuleBle.write({
+      deviceId: deviceId,
+      service: service,
+      characteristic: characteristic,
+      value: value,
+      timeout: timeout,
+    });
   }
 
-  async signalize(options: SignalizeOptions): Promise<void> {
-    return NativeModuleBle.signalize(options);
+  async signalize(deviceId: string): Promise<Boolean> {
+    try {
+      NativeModuleBle.signalize({ deviceId: deviceId });
+    } catch (err) {
+      return false;
+    }
+    return true;
   }
 
-  async disengage(options: DisengageOptions): Promise<StringResult> {
-    return NativeModuleBle.disengage(options);
+  async disengage(
+    deviceId: string,
+    mobileId: string,
+    mobileDeviceKey: string,
+    mobileGroupId: string,
+    mobileAccessData: string,
+    isPermanentRelease: boolean,
+  ): Promise<StringResult> {
+    return NativeModuleBle.disengage({
+      deviceId: deviceId,
+      mobileId: mobileId,
+      mobileDeviceKey: mobileDeviceKey,
+      mobileGroupId: mobileGroupId,
+      mobileAccessData: mobileAccessData,
+      isPermanentRelease: isPermanentRelease,
+    });
   }
 
   async startNotifications(
     deviceId: string,
     service: string,
     characteristic: string,
-    callback: (event: ReadResult) => void,
+    callback: (event: StringResult) => void,
   ): Promise<void> {
     const key = `notification|${deviceId}|${service}|${characteristic}`.toLowerCase();
     const listener = this.eventEmitter!.addListener(key, callback);

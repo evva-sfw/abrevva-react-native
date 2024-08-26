@@ -5,8 +5,8 @@ import {
   dataViewToNumbers,
   hexStringToDataView,
   numbersToDataView,
-  type ReadResult,
   type ScanResult,
+  type StringResult,
 } from '@evva-sfw/abrevva-react-native';
 import { hex } from '@scure/base';
 import { Parser } from 'binary-parser-encoder';
@@ -186,26 +186,23 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
 
   try {
     await AbrevvaBle.stopLEScan();
-    await AbrevvaBle.connect({
-      deviceId: data.device.deviceId,
-      timeout: 10000,
-    });
+    await AbrevvaBle.connect(data.device.deviceId, 10000);
 
     await AbrevvaBle.startNotifications(
       data.device.deviceId,
       SERVICE,
       CHARACTERISTICS.ACCESS_STATUS,
-      (event: ReadResult) => {
+      (event: StringResult) => {
         newStatus = event.value!;
       },
     );
 
-    const challenge = await AbrevvaBle.read({
-      deviceId: data.device.deviceId,
-      service: SERVICE,
-      characteristic: CHARACTERISTICS.CHALLENGE,
-      timeout: 10000,
-    });
+    const challenge = await AbrevvaBle.read(
+      data.device.deviceId,
+      SERVICE,
+      CHARACTERISTICS.CHALLENGE,
+      10000,
+    );
 
     const challengeDataView = hexStringToDataView(challenge.value!);
     const challengeBuffer = Buffer.from(dataViewToNumbers(challengeDataView));
@@ -255,15 +252,15 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
       authTag: authTagBuffer,
     });
 
-    void AbrevvaBle.write({
-      deviceId: data.device.deviceId,
-      service: SERVICE,
-      characteristic: CHARACTERISTICS.MOBILE_ACCESS_DATA,
-      value: dataViewToHexString(numbersToDataView(mdf)),
-      timeout: 1000,
-    });
+    void AbrevvaBle.write(
+      data.device.deviceId,
+      SERVICE,
+      CHARACTERISTICS.MOBILE_ACCESS_DATA,
+      dataViewToHexString(numbersToDataView(mdf)),
+      1000,
+    );
   } catch (error: any) {
-    void AbrevvaBle.disconnect({ deviceId: data.device.deviceId });
+    void AbrevvaBle.disconnect(data.device.deviceId);
     serviceIsActive = false;
     Alert.alert('Error', error.code, [
       {
@@ -284,7 +281,7 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
           setStatus(() => {
             return newStatus;
           });
-          AbrevvaBle.disconnect({ deviceId: data.device.deviceId });
+          AbrevvaBle.disconnect(data.device.deviceId);
           serviceIsActive = false;
           resolve();
         }
@@ -300,7 +297,7 @@ async function mobileIdentificationMediumService(data: ScanResult, setStatus: an
             text: 'Ok',
           },
         ]);
-        AbrevvaBle.disconnect({ deviceId: data.device.deviceId });
+        AbrevvaBle.disconnect(data.device.deviceId);
         serviceIsActive = false;
         resolve();
       }, 20000);

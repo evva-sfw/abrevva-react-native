@@ -70,19 +70,19 @@ async function scanForBleDevices(androidNeverForLocation: Boolean = true, timeou
 With the signalize method you can localize EVVA components. On a successful signalization the component will emit a melody indicating its location.
 
 ```typescript
-await AbrevvaBle.signalize({ deviceId: 'deviceId' });
+const success = await AbrevvaBle.signalize('deviceId');
 ```
 ### Perform disengage on EVVA components
 
 For the component disengage you have to provide access credentials to the EVVA component. Those are generally acquired in the form of access media metadata from the Xesar software.
 
 ```typescript
-const status = await AbrevvaBle.disengage({
-    deviceId: 'deviceId',
-    mobileId: 'mobileId',
-    mobileDeviceKey: 'mobileDeviceKey',
-    mobileGroupId: 'mobileGroupId',
-    mobileAccessData: 'mobileAccessData',
-    isPermanentRelease: false,
-});
+const status = await AbrevvaBle.disengage(
+    'deviceId',
+    'mobileId',
+    'mobileDeviceKey',
+    'mobileGroupId',
+    'mobileAccessData',
+    false,
+);
 ```
