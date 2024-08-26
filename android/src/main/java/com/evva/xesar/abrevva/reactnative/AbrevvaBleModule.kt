@@ -1,5 +1,6 @@
 package com.evva.xesar.abrevva.reactnative
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -29,6 +30,20 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
     init {
         manager = BleManager(reactContext)
         aliases = arrayOf()
+    }
+
+    @SuppressLint("MissingPermission")
+    @ReactMethod
+    fun signalize(options: ReadableMap, promise: Promise) {
+        val deviceId = options.getString("deviceId") ?: ""
+
+        manager.signalize(deviceId) { success: Boolean ->
+            if (success) {
+                promise.resolve("success")
+            } else {
+                promise.reject(Exception("signalize() failed"))
+            }
+        }
     }
 
     @ReactMethod
@@ -261,7 +276,8 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             getCharacteristic(options, promise)
                 ?: return promise.reject("read(): bad characteristic")
         val value =
-            options.getString("value") ?: return promise.reject(Exception("write(): missing value for write"))
+            options.getString("value")
+                ?: return promise.reject(Exception("write(): missing value for write"))
 
         manager.write(
             deviceId,
