@@ -7,6 +7,18 @@ on:
   pull_request:
     branches: ['main']
 jobs:
+  npm-compatibility-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      # Cache not enabled to test if npm can load and resolve everything
+      - name: Remove engine restrictions to enable use of npm
+        run: npm pkg delete engines
+      - run: npm i
   test-web:
     runs-on: ubuntu-latest
     steps:
