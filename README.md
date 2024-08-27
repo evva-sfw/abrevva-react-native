@@ -2,6 +2,18 @@
   <h1 align="center">EVVA React-Native Module</h1>
 </p>
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/@evva-sfw/abrevva-react-native">
+    <img alt="NPM Version" src="https://img.shields.io/npm/v/%40evva-sfw%2Fabrevva-react-native"></a>
+  <a href="https://www.npmjs.com/package/@evva-sfw/abrevva-react-native">
+  <img alt="NPM Downloads" src="https://img.shields.io/npm/dy/%40evva-sfw%2Fabrevva-react-native"></a>
+  <img alt="GitHub package.json dynamic" src="https://img.shields.io/github/package-json/packageManager/evva-sfw/abrevva-react-native">
+  <img alt="NPM Unpacked Size (with version)" src="https://img.shields.io/npm/unpacked-size/%40evva-sfw%2Fabrevva-react-native/latest">
+  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/evva-sfw/abrevva-react-native">
+  <a href="https://github.com/evva-sfw/abrevva-react-native/actions"><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/evva-sfw/abrevva-react-native/main"></a>
+
+</p>
+
 The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.
 
 - [Features](#features)
