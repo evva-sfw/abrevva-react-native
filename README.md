@@ -19,13 +19,14 @@ The EVVA React-Native Module is a collection of tools to work with electronical 
 ## Requirements
 
 - react-native < 0.74.3
-- Java 17+  (Android)
+- Java 17+ (Android)
 - Android SDK (Android)
 - Android 10+ (API level 29) (Android)
 - Xcode 15.4 (iOS)
 - iOS 15.0+ (iOS)
 
 ## Installation
+
 ```
 yarn add @evva-sfw/abrevva-react-native
 ```
@@ -48,20 +49,20 @@ To start off first import `AbrevvaBle` from this module
 import { AbrevvaBle } from '@evva-sfw/abrevva-react-native';
 
 async function scanForBleDevices(androidNeverForLocation: Boolean = true, timeout: Number) {
-    await AbrevvaBle.initialize(androidNeverForLocation);
+  await AbrevvaBle.initialize(androidNeverForLocation);
 
-    AbrevvaBle.requestLEScan(
-        10_000, 
-        (data: ScanResult) => {
-            console.log(`Found device: ${data.name}`);
-        },
-        (address: string) => {
-            console.log(`Connected to device: ${address}`);
-        },
-        (address: string) => {
-            console.log(`Disconnected to device: ${address}`);
-        }
-    );
+  AbrevvaBle.requestLEScan(
+    10_000, 
+    (data: ScanResult) => {
+        console.log(`Found device: ${data.name}`);
+    },
+    (address: string) => {
+        console.log(`Connected to device: ${address}`);
+    },
+    (address: string) => {
+        console.log(`Disconnected to device: ${address}`);
+    }
+  );
 }
 ```
 
@@ -72,17 +73,18 @@ With the signalize method you can localize EVVA components. On a successful sign
 ```typescript
 const success = await AbrevvaBle.signalize('deviceId');
 ```
+
 ### Perform disengage on EVVA components
 
 For the component disengage you have to provide access credentials to the EVVA component. Those are generally acquired in the form of access media metadata from the Xesar software.
 
 ```typescript
 const status = await AbrevvaBle.disengage(
-    'deviceId',
-    'mobileId',
-    'mobileDeviceKey',
-    'mobileGroupId',
-    'mobileAccessData',
-    false,
+  'deviceId',
+  'mobileId',
+  'mobileDeviceKey',
+  'mobileGroupId',
+  'mobileAccessData',
+  false,
 );
 ```
