@@ -28,6 +28,7 @@ jobs:
           path: |
             node_modules
             example/node_modules
+            .yarn/cache
           key: node-modules
       - run: yarn
       - run: yarn lint
