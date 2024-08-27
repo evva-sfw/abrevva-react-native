@@ -40,6 +40,7 @@ jobs:
           path: |
             node_modules
             example/node_modules
+            .yarn/cache
           key: node-modules
       - name: Import GPG key
         id: import-gpg
