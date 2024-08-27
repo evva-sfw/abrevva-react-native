@@ -16,6 +16,8 @@ jobs:
         with:
           node-version: lts/*
       # Cache not enabled to test if npm can load and resolve everything
+      - name: Remove engine restrictions to enable use of npm
+        run: npm pkg delete engines
       - run: npm i
   test-web:
     runs-on: ubuntu-latest
