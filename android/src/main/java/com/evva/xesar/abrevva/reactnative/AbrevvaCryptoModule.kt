@@ -197,7 +197,7 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
 
         val ctPath = Paths.get(ptPath).parent.toString() + "/blob"
         try {
-            writeToFile(ptPath, url)
+            writeToFile(ctPath, url)
         } catch (e: Exception) {
             promise.reject(e)
             return
