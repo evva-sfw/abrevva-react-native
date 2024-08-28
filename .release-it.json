@@ -1,11 +1,11 @@
 {
     "$schema": "https://unpkg.com/release-it@17/schema/release-it.json",
     "hooks": {
-        "before:init": [
+        "after:bump": [
             "rm -f *.tgz",
-            "yarn pack --out '%s_%v.tgz'"
-        ],
-        "after:bump": "npx auto-changelog -p"
+            "yarn pack --out '%s_%v.tgz'",
+            "npx auto-changelog -p"
+        ]
     },
     "git": {
         "commitMessage": "chore: release ${version}",
