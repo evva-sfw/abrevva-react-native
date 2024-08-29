@@ -13,7 +13,6 @@
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.10.1",
     "@scure/base": "^1.1.7",
-    "binary-parser-encoder": "^1.5.3",
     "react": "18.2.0",
     "react-native": "0.74.3",
     "react-native-fs": "^2.20.0",
