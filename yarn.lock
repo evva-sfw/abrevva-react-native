@@ -3649,7 +3649,6 @@ __metadata:
     "@react-navigation/native-stack": ^6.10.1
     "@scure/base": ^1.1.7
     babel-plugin-module-resolver: ^5.0.0
-    binary-parser-encoder: ^1.5.3
     react: 18.2.0
     react-native: 0.74.3
     react-native-fs: ^2.20.0
@@ -4230,15 +4229,6 @@ __metadata:
   version: 2.2.3
   resolution: "before-after-hook@npm:2.2.3"
   checksum: a1a2430976d9bdab4cd89cb50d27fa86b19e2b41812bf1315923b0cba03371ebca99449809226425dd3bcef20e010db61abdaff549278e111d6480034bebae87
-  languageName: node
-  linkType: hard
-
-"binary-parser-encoder@npm:^1.5.3":
-  version: 1.5.3
-  resolution: "binary-parser-encoder@npm:1.5.3"
-  dependencies:
-    smart-buffer: ^4.1.0
-  checksum: a1a8e86211621360c3f7b475c43d08bba8cdd6c6480b5a4f444ffff74ae49735419a1e4b4db0117430ab1866c2b32ee1914c9b56ae0278fca2e3adc96efd4a89
   languageName: node
   linkType: hard
 
