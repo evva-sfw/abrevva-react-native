@@ -11734,7 +11734,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"smart-buffer@npm:^4.1.0, smart-buffer@npm:^4.2.0":
+"smart-buffer@npm:^4.2.0":
   version: 4.2.0
   resolution: "smart-buffer@npm:4.2.0"
   checksum: b5167a7142c1da704c0e3af85c402002b597081dd9575031a90b4f229ca5678e9a36e8a374f1814c8156a725d17008ae3bde63b92f9cfd132526379e580bec8b
