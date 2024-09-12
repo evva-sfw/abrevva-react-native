@@ -1,4 +1,4 @@
-name: Node.js lint
+name: Global Node.js lint
 on:
   push:
     branches: ['main']
