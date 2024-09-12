@@ -1,0 +1,13 @@
+name: Node.js lint
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  permissions:
+    id-token: write
+    attestations: write
+  jobs:
+    main:
+      name: lint Project
+      uses: evva-sfw/.github/lint-node.yml
