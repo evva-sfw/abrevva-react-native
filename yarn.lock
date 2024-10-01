@@ -10920,12 +10920,12 @@ __metadata:
   linkType: hard
 
 "react-native-safe-area-context@npm:^4.10.8":
-  version: 4.10.9
-  resolution: "react-native-safe-area-context@npm:4.10.9"
+  version: 4.11.0
+  resolution: "react-native-safe-area-context@npm:4.11.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 150bf4fa7607e8de565cce0c45d321048a3c982f4c82cc2a49eb342def968559f538d4554c30c20fa8b2e6dc716c24846745b129dc25396e083d98c2a29962a2
+  checksum: 6d6af265ecf1b9cb45e042a335f2c5da472ad41eb5d4fda8e31a1607b344726f0f4f9501ef3a3a731cec3784ba93485b44cbdafbf5f13055caa130c703bbd307
   languageName: node
   linkType: hard
 
