@@ -1965,9 +1965,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@evva-sfw/abrevva-react-native@workspace:.":
+"@evva/abrevva-react-native@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@evva-sfw/abrevva-react-native@workspace:."
+  resolution: "@evva/abrevva-react-native@workspace:."
   dependencies:
     "@commitlint/config-conventional": ^19.2.2
     "@evilmartians/lefthook": ^1.7.11

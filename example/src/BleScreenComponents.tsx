@@ -1,4 +1,4 @@
-import { AbrevvaBle, type ScanResult } from '@evva-sfw/abrevva-react-native';
+import { AbrevvaBle, type ScanResult } from '@evva/abrevva-react-native';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import {
