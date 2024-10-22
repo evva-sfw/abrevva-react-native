@@ -450,7 +450,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
                 val keyHex = byteArrayOf(scanRecordBytes.getByte(6)!!) + byteArrayOf(
                     scanRecordBytes.getByte(5)!!
                 )
-                val keyDec = bytesToString(keyHex).toInt(16)
+                val keyDec = bytesToString(keyHex).replace(" ", "").toInt(16)
 
                 // Slice out manufacturer data
                 val bytes = scanRecordBytes.copyOfRange(7, scanRecordBytes.size)
