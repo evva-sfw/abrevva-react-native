@@ -28,6 +28,8 @@ end
 target 'ExampleAppExample' do
   config = use_native_modules!
   use_frameworks!
+  pod 'CryptoSwift'
+
   use_react_native!(
     :path => config[:reactNativePath],
     # Enables Flipper.

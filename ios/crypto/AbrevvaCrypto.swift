@@ -1,6 +1,7 @@
 import Foundation
 import CryptoKit
 import AbrevvaSDK
+import CryptoSwift
 
 @objc(AbrevvaCrypto)
 public class AbrevvaCrypto: NSObject {
@@ -16,7 +17,7 @@ public class AbrevvaCrypto: NSObject {
             return
         }
         
-        let key = Array<UInt8>(hex: "0x" + (optionsSwift["key"] as? String ?? ""))
+      let key = Array<UInt8>(hex: "0x" + (optionsSwift["key"] as? String ?? ""))
         let iv =  Array<UInt8>(hex:  "0x" + (optionsSwift["iv"] as? String ?? ""))
         let adata = Array<UInt8>(hex:  "0x" + (optionsSwift["adata"] as? String ?? ""))
         let pt = Array<UInt8>(hex:  "0x" + (optionsSwift["pt"] as? String ?? ""))
@@ -26,7 +27,7 @@ public class AbrevvaCrypto: NSObject {
             reject("encrypt failed", nil, nil)
         } else {
             resolve([
-                "cipherText": Array<UInt8>(ct[..<pt.count]).toHexString(),
+              "cipherText": Array<UInt8>(ct[..<pt.count]).toHexString(),
                 "authTag": Array<UInt8>(ct[pt.count...]).toHexString(),
             ]);
         }
