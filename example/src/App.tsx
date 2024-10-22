@@ -1,4 +1,4 @@
-import { AbrevvaCrypto } from '@evva-sfw/abrevva-react-native';
+import { AbrevvaCrypto } from '@evva/abrevva-react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useState } from 'react';
