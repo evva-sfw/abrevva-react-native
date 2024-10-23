@@ -1,4 +1,4 @@
-# EVVA React-Native Module
+# Abrevva React-Native Module
 
 [![NPM Version](https://img.shields.io/npm/v/%40evva%2Fabrevva-react-native)](https://www.npmjs.com/package/@evva/abrevva-react-native)
 [![NPM Downloads](https://img.shields.io/npm/dy/%40evva%2Fabrevva-react-native)](https://www.npmjs.com/package/@evva/abrevva-react-native)
