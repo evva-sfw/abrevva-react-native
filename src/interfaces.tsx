@@ -45,12 +45,6 @@ export interface ScanResultInternal<T = Data> {
 export interface StringResult {
   value?: string;
 }
-
-export interface AbrevvaNfcInterface {
-  connect: () => Promise<void>;
-  disconnect: () => Promise<void>;
-  read: () => Promise<void>;
-}
 export interface AbrevvaCryptoInterface {
   encrypt: (
     key: string,

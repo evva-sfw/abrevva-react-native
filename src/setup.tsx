@@ -14,11 +14,6 @@ jest.mock('react-native/Libraries/Utilities/Platform', () => ({
 
 jest.mock('react-native', () => {
   const originalModule = jest.requireActual('react-native');
-  originalModule.NativeModules.AbrevvaNfc = {
-    connect: jest.fn(),
-    disconnect: jest.fn(),
-    read: jest.fn(),
-  };
   originalModule.NativeModules.AbrevvaBle = {
     setSupportedEvents: jest.fn(),
     initialize: jest.fn(),
