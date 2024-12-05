@@ -10,6 +10,7 @@ import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.evva.xesar.abrevva.ble.BleManager
+import com.evva.xesar.abrevva.disengage.DisengageStatusType
 import com.evva.xesar.abrevva.util.bytesToString
 import com.evva.xesar.abrevva.util.stringToBytes
 import com.facebook.react.bridge.Arguments
@@ -181,6 +182,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
     @ReactMethod
     fun stopLEScan(promise: Promise) {
         manager.stopScan()
+        promise.resolve("success")
     }
 
     @ReactMethod
@@ -314,9 +316,9 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             mobileGroupId,
             mobileAccessData,
             isPermanentRelease
-        ) { status: Any ->
+        ) { status: DisengageStatusType ->
             val result = Arguments.createMap()
-            result.putString("value", status as String)
+            result.putString("value", status.toString())
 
             promise.resolve(result)
         }

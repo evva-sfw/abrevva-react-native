@@ -176,7 +176,7 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
   }
 
   async stopLEScan(): Promise<void> {
-    return await NativeModuleBle.stopLEScan();
+    return NativeModuleBle.stopLEScan();
   }
 
   async connect(deviceId: string, timeout?: number): Promise<void> {
