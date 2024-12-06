@@ -95,7 +95,7 @@ const ScanResults = ({ props }) => {
                 'mobileAccessData',
                 true,
               );
-              console.log(`Disengage Status: ${result}`);
+              console.log(`Disengage Status: ${result.value}`);
             }}
           >
             <Text>{item.item.device.deviceId}</Text>
