@@ -10,7 +10,7 @@ import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.evva.xesar.abrevva.ble.BleManager
-import com.evva.xesar.abrevva.nfc.toHexString
+import com.evva.xesar.abrevva.disengage.DisengageStatusType
 import com.evva.xesar.abrevva.util.bytesToString
 import com.evva.xesar.abrevva.util.stringToBytes
 import com.facebook.react.bridge.Arguments
@@ -182,6 +182,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
     @ReactMethod
     fun stopLEScan(promise: Promise) {
         manager.stopScan()
+        promise.resolve("success")
     }
 
     @ReactMethod
@@ -315,9 +316,9 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             mobileGroupId,
             mobileAccessData,
             isPermanentRelease
-        ) { status: Any ->
+        ) { status: DisengageStatusType ->
             val result = Arguments.createMap()
-            result.putString("value", status as String)
+            result.putString("value", status.toString())
 
             promise.resolve(result)
         }
@@ -448,12 +449,10 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         if (scanRecordBytes != null) {
             try {
                 // Extract EVVA manufacturer-id
-                val arr = byteArrayOf(0x01)
-                arr.toHexString()
-                val keyHex = byteArrayOf(scanRecordBytes.getByte(6)!!).toHexString() + byteArrayOf(
+                val keyHex = byteArrayOf(scanRecordBytes.getByte(6)!!) + byteArrayOf(
                     scanRecordBytes.getByte(5)!!
-                ).toHexString()
-                val keyDec = keyHex.toInt(16)
+                )
+                val keyDec = bytesToString(keyHex).replace(" ", "").toInt(16)
 
                 // Slice out manufacturer data
                 val bytes = scanRecordBytes.copyOfRange(7, scanRecordBytes.size)

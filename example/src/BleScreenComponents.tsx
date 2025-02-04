@@ -1,4 +1,4 @@
-import { AbrevvaBle, type ScanResult } from '@evva-sfw/abrevva-react-native';
+import { AbrevvaBle, type ScanResult } from '@evva/abrevva-react-native';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import {
@@ -44,7 +44,7 @@ const ScanResults = ({ props }) => {
     });
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setStatus('none');
     setScanNoftification('scanning ...');
     setRefreshing(true);
@@ -54,23 +54,24 @@ const ScanResults = ({ props }) => {
       setRefreshing(false);
       setScanNoftification('');
     }, 3_000);
-    AbrevvaBle.stopLEScan()
-      .then(() => {
-        void AbrevvaBle.requestLEScan(
-          scanRequestCallback,
-          (address: string) => {
-            console.log(`connected to Device =${address}`);
-          },
-          (address: string) => {
-            console.log(`disconnected from Device =${address}`);
-          },
-          10_000,
-        );
-      })
-      .catch((e) => {
-        console.log(e);
-        clearTimeout(timeout);
-      });
+
+    await AbrevvaBle.stopLEScan();
+
+    try {
+      await AbrevvaBle.requestLEScan(
+        scanRequestCallback,
+        (address: string) => {
+          console.log(`connected to Device =${address}`);
+        },
+        (address: string) => {
+          console.log(`disconnected from Device =${address}`);
+        },
+        10_000,
+      );
+    } catch (err) {
+      console.log(err);
+      clearTimeout(timeout);
+    }
   };
 
   useEffect(() => {
@@ -86,8 +87,7 @@ const ScanResults = ({ props }) => {
         <SafeAreaView style={bleStyles.BleScanResult}>
           <TouchableOpacity
             onPress={async () => {
-              AbrevvaBle.connect(item.item.device.deviceId, 10_000);
-              AbrevvaBle.disengage(
+              const result = await AbrevvaBle.disengage(
                 'deviceId',
                 'mobileId',
                 'deviceKey',
@@ -95,6 +95,7 @@ const ScanResults = ({ props }) => {
                 'mobileAccessData',
                 true,
               );
+              console.log(`Disengage Status: ${result.value}`);
             }}
           >
             <Text>{item.item.device.deviceId}</Text>

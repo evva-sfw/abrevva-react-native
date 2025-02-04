@@ -14,23 +14,11 @@ import { convertObject, convertValue } from './conversion';
 import type {
   AbrevvaBLEInterface,
   AbrevvaCryptoInterface,
-  AbrevvaNfcInterface,
   ScanMode,
   ScanResult,
   ScanResultInternal,
   StringResult,
 } from './interfaces';
-
-const NativeModuleNfc = NativeModules.AbrevvaNfc
-  ? NativeModules.AbrevvaNfc
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error('Linking Error AbrevvaNfc');
-        },
-      },
-    );
 
 const NativeModuleCrypto = NativeModules.AbrevvaCrypto
   ? NativeModules.AbrevvaCrypto
@@ -188,7 +176,7 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
   }
 
   async stopLEScan(): Promise<void> {
-    return await NativeModuleBle.stopLEScan();
+    return NativeModuleBle.stopLEScan();
   }
 
   async connect(deviceId: string, timeout?: number): Promise<void> {
@@ -307,18 +295,6 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
   }
 }
 
-class AbrevvaNfcModule implements AbrevvaNfcInterface {
-  connect() {
-    return NativeModuleNfc.connect();
-  }
-  disconnect() {
-    return NativeModuleNfc.disconnect();
-  }
-  read() {
-    return NativeModuleNfc.read();
-  }
-}
-
 class AbrevvaCryptoModule implements AbrevvaCryptoInterface {
   encrypt(key: string, iv: string, adata: string, pt: string, tagLength?: number) {
     return NativeModuleCrypto.encrypt({
@@ -381,7 +357,6 @@ class AbrevvaCryptoModule implements AbrevvaCryptoInterface {
 
 export const AbrevvaBle = new AbrevvaBleModule();
 export const AbrevvaCrypto = new AbrevvaCryptoModule();
-export const AbrevvaNfc = new AbrevvaNfcModule();
 
 export function createAbrevvaBleInstance() {
   return new AbrevvaBleModule();

@@ -7,7 +7,7 @@ import com.facebook.react.uimanager.ViewManager
 
 class ExampleAppPackage : ReactPackage {
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-        return listOf(AbrevvaCryptoModule(reactContext)) + listOf(AbrevvaNfcModule(reactContext)) + listOf(
+        return listOf(AbrevvaCryptoModule(reactContext)) + listOf(
             AbrevvaBleModule(reactContext)
         )
     }

@@ -1,5 +1,5 @@
 PODS:
-  - abrevva-react-native (0.1.5):
+  - abrevva-react-native (1.0.1):
     - AbrevvaSDK (~> 1.0.23)
     - CocoaMQTT
     - CryptoSwift
@@ -23,7 +23,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - AbrevvaSDK (1.0.23):
+  - AbrevvaSDK (1.0.31):
     - CocoaMQTT
     - CryptoSwift
   - boost (1.83.0)
@@ -32,15 +32,15 @@ PODS:
   - CocoaMQTT/Core (2.1.6):
     - MqttCocoaAsyncSocket (~> 1.0.8)
   - CryptoSwift (1.8.3)
-  - CwlCatchException (2.2.0):
-    - CwlCatchExceptionSupport (~> 2.2.0)
-  - CwlCatchExceptionSupport (2.2.0)
-  - CwlMachBadInstructionHandler (2.2.0)
-  - CwlPosixPreconditionTesting (2.2.0)
-  - CwlPreconditionTesting (2.2.1):
-    - CwlCatchException (~> 2.2.0)
-    - CwlMachBadInstructionHandler (~> 2.2.0)
-    - CwlPosixPreconditionTesting (~> 2.2.0)
+  - CwlCatchException (2.2.1):
+    - CwlCatchExceptionSupport (~> 2.2.1)
+  - CwlCatchExceptionSupport (2.2.1)
+  - CwlMachBadInstructionHandler (2.2.2)
+  - CwlPosixPreconditionTesting (2.2.2)
+  - CwlPreconditionTesting (2.2.2):
+    - CwlCatchException (~> 2.2.1)
+    - CwlMachBadInstructionHandler (~> 2.2.2)
+    - CwlPosixPreconditionTesting (~> 2.2.2)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.74.3)
   - fmt (9.1.0)
@@ -50,7 +50,7 @@ PODS:
   - hermes-engine/Pre-built (0.74.3)
   - MockingbirdFramework (0.20.0)
   - MqttCocoaAsyncSocket (1.0.8)
-  - Nimble (13.4.0):
+  - Nimble (13.5.0):
     - CwlPreconditionTesting (~> 2.2.0)
   - Quick (7.6.2)
   - RCT-Folly (2024.01.01.00):
@@ -1440,16 +1440,16 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  abrevva-react-native: 6980035371bf192213003a60418276baced5d569
-  AbrevvaSDK: 4edd60273dd1b2d171e8adb5a84756aa5084347c
+  abrevva-react-native: bad5d64a489a5cc76813d5ac9ef5747081fc7f6c
+  AbrevvaSDK: 87be0b144be7212470f79d2cbc5d3b3c72df4da4
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   CocoaMQTT: 1f206228b29318eabdacad0c2e4e88575922c27a
   CryptoSwift: 967f37cea5a3294d9cce358f78861652155be483
-  CwlCatchException: 51bf8319009a31104ea6f0568730d1ecc25b6454
-  CwlCatchExceptionSupport: 1345d6adb01a505933f2bc972dab60dcb9ce3e50
-  CwlMachBadInstructionHandler: ea1030428925d9bf340882522af30712fb4bf356
-  CwlPosixPreconditionTesting: a125dee731883f2582715f548c6b6c92c7fde145
-  CwlPreconditionTesting: ccfd08aca58d14e04062b2a3dd2fd52e09857453
+  CwlCatchException: 7acc161b299a6de7f0a46a6ed741eae2c8b4d75a
+  CwlCatchExceptionSupport: 54ccab8d8c78907b57f99717fb19d4cc3bce02dc
+  CwlMachBadInstructionHandler: dae4fdd124d45c9910ac240287cc7b898f4502a1
+  CwlPosixPreconditionTesting: ecd095aa2129e740b44301c34571e8d85906fb88
+  CwlPreconditionTesting: 67a0047dd4de4382b93442c0e3f25207f984f35a
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
@@ -1457,7 +1457,7 @@ SPEC CHECKSUMS:
   hermes-engine: 1f547997900dd0752dc0cc0ae6dd16173c49e09b
   MockingbirdFramework: 54e35fbbb47b806c1a1fae2cf3ef99f6eceb55e5
   MqttCocoaAsyncSocket: 77d3b74f76228dd5a05d1f9526eab101d415b30c
-  Nimble: c3d7c9848a0adae88a665ca52f8da23dd4d2cd94
+  Nimble: cc0469644d253140c6bab7e88d4ee3bbed59a25c
   Quick: b8bec97cd4b9f21da0472d45580f763b801fc353
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 4c7eeb42be0b2e95195563c49be08d0b839d22b4
@@ -1514,4 +1514,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: c2b657d91fc21203dd436e57c3a2a27527cbae3b
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2

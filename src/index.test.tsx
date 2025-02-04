@@ -1,11 +1,6 @@
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
-import {
-  type AbrevvaBLEInterface,
-  AbrevvaCrypto,
-  AbrevvaNfc,
-  createAbrevvaBleInstance,
-} from './index';
+import { type AbrevvaBLEInterface, AbrevvaCrypto, createAbrevvaBleInstance } from './index';
 
 describe('AbrevvaBleModule', () => {
   let AbrevvaBleMock = NativeModules.AbrevvaBle;
@@ -169,27 +164,6 @@ describe('AbrevvaBleModule', () => {
       expect(emitterSubscriptionMock.remove).toHaveBeenCalledTimes(0);
       expect(AbrevvaBleMock.stopNotifications).toHaveBeenCalledTimes(1);
     });
-  });
-});
-
-describe('AbrevvaNfcModule', () => {
-  const AbrevvaNfcMock = NativeModules.AbrevvaNfc;
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should run connect()', async () => {
-    await AbrevvaNfc.connect();
-    expect(AbrevvaNfcMock.connect).toHaveBeenCalledTimes(1);
-  });
-  it('should run disconnect()', async () => {
-    await AbrevvaNfc.disconnect();
-    expect(AbrevvaNfcMock.disconnect).toHaveBeenCalledTimes(1);
-  });
-  it('should run read()', async () => {
-    await AbrevvaNfc.read();
-    expect(AbrevvaNfcMock.read).toHaveBeenCalledTimes(1);
   });
 });
 
