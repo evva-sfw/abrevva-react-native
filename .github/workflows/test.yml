@@ -71,7 +71,7 @@ jobs:
           bundler-cache: true
       - name: 'Get Ruby Version'
         run: ruby --version
-      - uses: SwiftyLab/setup-swift@5825efd16e0e9f41c4e9b94658b7973e16410d5b # latest
+      - uses: SwiftyLab/setup-swift@5825efd16e0e9f41c4e9b94658b7973e16410d5b # v1.9.1
         with:
           swift-version: '5.10.0'
       - name: Get Swift Version
