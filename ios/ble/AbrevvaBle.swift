@@ -319,7 +319,6 @@ public class AbrevvaBle: RCTEventEmitter {
         let mobileAccessData = optionsSwift["mobileAccessData"] as? String ?? ""
         let isPermanentRelease =
             optionsSwift["isPermanentRelease"] as? Bool ?? false
-        let timeout = optionsSwift["timeout"] as? Int ?? nil
 
         Task {
             let status = await self.bleManager!.disengage(
@@ -329,7 +328,6 @@ public class AbrevvaBle: RCTEventEmitter {
                 mobileGroupID,
                 mobileAccessData,
                 isPermanentRelease,
-                timeout
             )
             resolve(["value": status.rawValue])
         }
