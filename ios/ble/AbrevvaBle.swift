@@ -327,7 +327,7 @@ public class AbrevvaBle: RCTEventEmitter {
                 mobileDeviceKey,
                 mobileGroupID,
                 mobileAccessData,
-                isPermanentRelease,
+                isPermanentRelease
             )
             resolve(["value": status.rawValue])
         }
