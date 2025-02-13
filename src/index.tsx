@@ -10,12 +10,13 @@ export type * from './interfaces';
 
 import { Platform } from 'react-native';
 
-import type {
-  AbrevvaBLEInterface,
-  AbrevvaCryptoInterface,
-  BleDevice,
-  BooleanResult,
-  StringResult,
+import {
+  type AbrevvaBLEInterface,
+  type AbrevvaCryptoInterface,
+  type BleDevice,
+  type BooleanResult,
+  DisengageStatusType,
+  type StringResult,
 } from './interfaces';
 
 const NativeModuleCrypto = NativeModules.AbrevvaCrypto
@@ -222,15 +223,25 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
     mobileGroupId: string,
     mobileAccessData: string,
     isPermanentRelease: boolean,
-  ): Promise<StringResult> {
-    return NativeModuleBle.disengage({
-      deviceId: deviceId,
-      mobileId: mobileId,
-      mobileDeviceKey: mobileDeviceKey,
-      mobileGroupId: mobileGroupId,
-      mobileAccessData: mobileAccessData,
-      isPermanentRelease: isPermanentRelease,
-    });
+  ): Promise<DisengageStatusType> {
+    const status = (
+      await NativeModuleBle.disengage({
+        deviceId: deviceId,
+        mobileId: mobileId,
+        mobileDeviceKey: mobileDeviceKey,
+        mobileGroupId: mobileGroupId,
+        mobileAccessData: mobileAccessData,
+        isPermanentRelease: isPermanentRelease,
+      })
+    ).value;
+
+    let result: DisengageStatusType;
+    if (Object.values(DisengageStatusType).some((val: string) => val === status)) {
+      result = status as DisengageStatusType;
+    } else {
+      result = DisengageStatusType.Error;
+    }
+    return result;
   }
 
   async startNotifications(

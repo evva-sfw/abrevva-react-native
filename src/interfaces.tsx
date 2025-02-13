@@ -157,9 +157,9 @@ export interface AbrevvaBLEInterface {
   openBluetoothSettings(): Promise<void>;
   openAppSettings(): Promise<void>;
   startScan(
-    onScanResult: (result: BleDevice) => void, //
-    onScanStart?: (success: BooleanResult) => void, //
-    onScanStop?: (success: BooleanResult) => void, //
+    onScanResult: (result: BleDevice) => void,
+    onScanStart?: (success: BooleanResult) => void,
+    onScanStop?: (success: BooleanResult) => void,
     macFilter?: string,
     allowDuplicates?: boolean,
     timeout?: number,
@@ -184,7 +184,7 @@ export interface AbrevvaBLEInterface {
     value: string,
     timeout?: number,
   ): Promise<void>;
-  signalize(deviceId: string): Promise<BooleanResult>; //
+  signalize(deviceId: string): Promise<BooleanResult>;
   disengage(
     deviceId: string,
     mobileId: string,
@@ -192,7 +192,7 @@ export interface AbrevvaBLEInterface {
     mobileGroupId: string,
     mobileAccessData: string,
     isPermanentRelease: boolean,
-  ): Promise<StringResult>;
+  ): Promise<DisengageStatusType>;
   startNotifications(
     deviceId: string,
     service: string,
