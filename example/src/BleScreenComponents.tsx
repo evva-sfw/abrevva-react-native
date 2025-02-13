@@ -87,23 +87,22 @@ const ScanResults = ({ props }) => {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       style={bleStyles.row}
       data={deviceList}
-      renderItem={(item) => (
+      renderItem={(listRenderItem) => (
         <SafeAreaView style={bleStyles.BleScanResult}>
           <TouchableOpacity
             onPress={async () => {
               const result = await AbrevvaBle.disengage(
-                'deviceId',
+                listRenderItem.item.deviceId,
                 'mobileId',
-                'deviceKey',
-                'mobilegroudId',
+                'mobileDeviceKey',
+                'mobileGroupId',
                 'mobileAccessData',
                 true,
               );
               console.log(`Disengage Status: ${result.value}`);
             }}
           >
-            <Text>{item.item.deviceId}</Text>
-            <Text>{item.item.advertisementData?.manufacturerData?.companyIdentifier}</Text>
+            <Text>{listRenderItem.item.advertisementData?.manufacturerData?.identifier}</Text>
           </TouchableOpacity>
         </SafeAreaView>
       )}

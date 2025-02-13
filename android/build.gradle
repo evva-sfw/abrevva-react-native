@@ -91,7 +91,7 @@ repositories {
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-    implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "3.0.1"
+    implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "3.0.2"
 
     implementation "com.facebook.react:react-native:0.20.1"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

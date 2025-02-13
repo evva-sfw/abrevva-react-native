@@ -30,7 +30,7 @@ export interface BleDeviceAdvertisementData {
   rssi?: number;
   isConnectable?: boolean;
   manufacturerData?: BleDeviceManufacturerData;
-  raw?: [string: any];
+  rawData?: [string: any];
 }
 
 export interface BleDeviceManufacturerData {
