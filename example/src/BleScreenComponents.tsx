@@ -1,4 +1,4 @@
-import { AbrevvaBle, type ScanResult } from '@evva/abrevva-react-native';
+import { AbrevvaBle, type BleDevice, type BooleanResult } from '@evva/abrevva-react-native';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import {
@@ -33,15 +33,17 @@ export const BleScreen = () => {
 };
 
 const ScanResults = ({ props }) => {
-  const [deviceList, setdeviceList] = useState<ScanResult[]>([]);
+  const [deviceList, setdeviceList] = useState<BleDevice[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const setStatus = props.setStatus;
   const setScanNoftification = props.setScanNoftification;
 
-  const scanRequestCallback = (data: ScanResult) => {
-    setdeviceList((prevDeviceList) => {
-      return [data, ...prevDeviceList];
-    });
+  const scanRequestCallback = (data: BleDevice) => {
+    if (data.advertisementData?.manufacturerData?.companyIdentifier === 2153) {
+      setdeviceList((prevDeviceList) => {
+        return [data, ...prevDeviceList];
+      });
+    }
   };
 
   const onRefresh = async () => {
@@ -55,17 +57,19 @@ const ScanResults = ({ props }) => {
       setScanNoftification('');
     }, 3_000);
 
-    await AbrevvaBle.stopLEScan();
+    await AbrevvaBle.stopScan();
 
     try {
-      await AbrevvaBle.requestLEScan(
+      await AbrevvaBle.startScan(
         scanRequestCallback,
-        (address: string) => {
-          console.log(`connected to Device =${address}`);
+        (success: BooleanResult) => {
+          console.log(`onScanStart: ${success}`);
         },
-        (address: string) => {
-          console.log(`disconnected from Device =${address}`);
+        (success: BooleanResult) => {
+          console.log(`onScanStop: ${success}`);
         },
+        undefined,
+        false,
         10_000,
       );
     } catch (err) {
@@ -98,8 +102,8 @@ const ScanResults = ({ props }) => {
               console.log(`Disengage Status: ${result.value}`);
             }}
           >
-            <Text>{item.item.device.deviceId}</Text>
-            <Text>{item.item.device.name}</Text>
+            <Text>{item.item.deviceId}</Text>
+            <Text>{item.item.advertisementData?.manufacturerData?.companyIdentifier}</Text>
           </TouchableOpacity>
         </SafeAreaView>
       )}
