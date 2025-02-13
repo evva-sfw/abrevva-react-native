@@ -9,7 +9,9 @@ import android.provider.Settings
 import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.evva.xesar.abrevva.ble.BleDevice
 import com.evva.xesar.abrevva.ble.BleManager
+import com.evva.xesar.abrevva.ble.BleWriteType
 import com.evva.xesar.abrevva.disengage.DisengageStatusType
 import com.evva.xesar.abrevva.util.bytesToString
 import com.evva.xesar.abrevva.util.stringToBytes
@@ -19,6 +21,9 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanResult
 import java.util.UUID
 
@@ -160,103 +165,108 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         } catch (_: Exception) {
         }
 
-        this.manager.startScan({ success: Boolean ->
-            if (success) {
-                promise.resolve("success")
-            } else {
-                promise.reject(Exception("startScan(): failed to start"))
-            }
-        }, { result: BleScanResult ->
-            val scanResult = getScanResultFromNordic(result)
-            reactApplicationContext.emitDeviceEvent("onScanResult", scanResult)
-
-        }, { address: String ->
-            reactApplicationContext.emitDeviceEvent("connected|${address}", null)
-        }, { address ->
-            reactApplicationContext.emitDeviceEvent("disconnected|${address}", null)
-        },
-            timeout
-        )
+        this.manager.startScan({device: BleDevice ->
+            reactApplicationContext.emitDeviceEvent("onScanResult", getBleDeviceData(device))
+          },
+          { success ->
+            val ret = Arguments.createMap()
+            ret.putBoolean("value", success)
+            reactApplicationContext.emitDeviceEvent("onScanStart", ret)
+          }, { success ->
+            val ret = Arguments.createMap()
+            ret.putBoolean("value", success)
+            reactApplicationContext.emitDeviceEvent("onScanStop", ret)
+          })
     }
 
     @ReactMethod
     fun stopScan(promise: Promise) {
         manager.stopScan()
-        promise.resolve("success")
+        promise.resolve(null)
     }
 
     @ReactMethod
     @RequiresPermission(value = "android.permission.BLUETOOTH_CONNECT")
     fun connect(options: ReadableMap, promise: Promise) {
-        val deviceId = options.getString("deviceId") ?: ""
-        var timeout: Long = 10000
-        try {
-            timeout = options.getDouble("timeout").toLong()
-        } catch (_: Exception) {
+        val deviceId: String = options.getString("deviceId") ?: ""
+        val timeout: Long = options.getDouble("timeout").toLong()
+
+        val bleDevice = manager.getBleDevice(deviceId) ?: run {
+          return promise.reject(Exception("connect(): device not found"))
         }
 
-        manager.connect(deviceId, { success: Boolean ->
+        manager.connect(
+          bleDevice,
+          { success ->
             if (success) {
-                promise.resolve("success")
+              val ret = Arguments.createMap()
+              ret.putBoolean("value", success)
+              promise.resolve(ret)
             } else {
-                promise.reject(Exception("connect(): failed to connect"))
+              promise.reject(Exception("connect(): failed to connect"))
             }
-        }, timeout)
+          },
+          { success ->
+            if (success) {
+              val ret = Arguments.createMap()
+              ret.putString("address", deviceId)
+              reactApplicationContext.emitDeviceEvent("onDisconnect|${deviceId}", ret)
+            } else {
+              promise.reject(Exception("connect(): disconnect error"))
+            }
+          },
+          timeout
+          )
     }
 
     @ReactMethod
     @RequiresPermission(value = "android.permission.BLUETOOTH_CONNECT")
     fun disconnect(options: ReadableMap, promise: Promise) {
         val deviceId = options.getString("deviceId") ?: ""
+        val bleDevice = manager.getBleDevice(deviceId) ?: run {
+          return promise.reject(Exception("disconnect(): device not found"))
+        }
 
-        manager.disconnect(deviceId) { success: Boolean ->
+        manager.disconnect(bleDevice) { success: Boolean ->
             if (success) {
-                promise.resolve("success")
+              val ret = Arguments.createMap()
+              ret.putBoolean("value", success)
+                promise.resolve(ret)
             } else {
                 promise.reject(Exception("disconnect(): failed to disconnect"))
             }
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     @ReactMethod
     @RequiresPermission(value = "android.permission.BLUETOOTH_CONNECT")
     fun read(options: ReadableMap, promise: Promise) {
         val deviceId = options.getString("deviceId") ?: ""
-        var timeout: Long = 10000
-        try {
-            timeout = options.getDouble("timeout").toLong()
-        } catch (_: Exception) {
+        val timeout: Long = options.getDouble("timeout").toLong()
+        val bleDevice = manager.getBleDevice(deviceId) ?: run {
+          return promise.reject(Exception("connect(): device not found"))
         }
-
         val characteristic = getCharacteristic(options, promise)
             ?: return promise.reject(Exception("read(): bad characteristic"))
-
-        manager.read(
-            deviceId,
-            characteristic.first,
-            characteristic.second,
-            { success: Boolean, data: ByteArray? ->
-                if (success) {
-                    val ret = Arguments.createMap()
-                    ret.putString("value", bytesToString(data!!))
-                    promise.resolve(ret)
-                } else {
-                    promise.reject(Exception("read(): failed to read from device"))
-                }
-            },
-            timeout
-        )
+      GlobalScope.launch {
+        val data = bleDevice.read(characteristic.first, characteristic.second, timeout)
+        if (data != null) {
+          val ret = Arguments.createMap()
+          ret.putString("value", bytesToString(data))
+          promise.resolve(ret)
+        } else {
+          promise.reject(Exception("read(): failed to read from device"))
+        }
+      }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     @ReactMethod
     @RequiresPermission(value = "android.permission.BLUETOOTH_CONNECT")
     fun write(options: ReadableMap, promise: Promise) {
         val deviceId = options.getString("deviceId") ?: ""
-        var timeout: Long = 10000
-        try {
-            timeout = options.getDouble("timeout").toLong()
-        } catch (_: Exception) {
-        }
+        val timeout = options.getDouble("timeout").toLong()
 
         val characteristic =
             getCharacteristic(options, promise)
@@ -264,29 +274,33 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         val value =
             options.getString("value")
                 ?: return promise.reject(Exception("write(): missing value for write"))
-
-        manager.write(
-            deviceId,
-            characteristic.first,
-            characteristic.second,
-            stringToBytes(value),
-            { success: Boolean ->
-                if (success) {
-                    promise.resolve("success")
-                } else {
-                    promise.reject(Exception("write(): failed to write to device"))
-                }
-            },
-            timeout
+        val bleDevice = manager.getBleDevice(deviceId) ?: run {
+          return promise.reject(Exception("connect(): device not found"))
+        }
+      GlobalScope.launch {
+        val success = bleDevice.write(
+          characteristic.first,
+          characteristic.second,
+          stringToBytes(value),
+          BleWriteType.NO_RESPONSE,
+          timeout
         )
+        if (success) {
+          promise.resolve("success")
+        } else {
+          promise.reject(Exception("write(): failed to write to device"))
+        }
+      }
     }
 
     @SuppressLint("MissingPermission")
     @ReactMethod
     fun signalize(options: ReadableMap, promise: Promise) {
         val deviceId = options.getString("deviceId") ?: ""
-
-        manager.signalize(deviceId) { success: Boolean ->
+      val bleDevice = manager.getBleDevice(deviceId) ?: run {
+        return promise.reject(Exception("connect(): device not found"))
+      }
+        manager.signalize(bleDevice) { success: Boolean ->
             if (success) {
                 promise.resolve("success")
             } else {
@@ -303,27 +317,30 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         val mobileDeviceKey = options.getString("mobileDeviceKey") ?: ""
         val mobileGroupId = options.getString("mobileGroupId") ?: ""
         val mobileAccessData = options.getString("mobileAccessData") ?: ""
+//        val timeout = options.getDouble("timeout") ?: ""
         var isPermanentRelease = false
         try {
             isPermanentRelease = options.getBoolean("isPermanentRelease")
         } catch (_: Exception) {
         }
-
+        val bleDevice = manager.getBleDevice(deviceId) ?: run {
+          return promise.reject(Exception("connect(): device not found"))
+        }
         manager.disengage(
-            deviceId,
-            mobileId,
-            mobileDeviceKey,
-            mobileGroupId,
-            mobileAccessData,
-            isPermanentRelease
+          bleDevice,
+          mobileId,
+          mobileDeviceKey,
+          mobileGroupId,
+          mobileAccessData,
+          isPermanentRelease
         ) { status: DisengageStatusType ->
-            val result = Arguments.createMap()
-            result.putString("value", status.toString())
-
-            promise.resolve(result)
+          val ret = Arguments.createMap()
+          ret.putString("value", status.toString())
+          promise.resolve(ret)
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     @ReactMethod
     @RequiresPermission(value = "android.permission.BLUETOOTH_CONNECT")
     fun startNotifications(options: ReadableMap, promise: Promise) {
@@ -331,27 +348,31 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         val characteristic =
             getCharacteristic(options, promise)
                 ?: return promise.reject(Exception("startNotifications(): bad characteristic"))
+        val bleDevice = manager.getBleDevice(deviceId) ?: run {
+          return promise.reject(Exception("connect(): device not found"))
+        }
 
-        manager.startNotifications(
-            deviceId,
-            characteristic.first,
-            characteristic.second,
-            { success: Boolean ->
-                if (success) {
-                    promise.resolve("success")
-                } else {
-                    promise.reject(Exception("startNotifications(): failed to set notifications"))
-                }
-            }, { data: ByteArray ->
-                val key =
-                    "notification|${deviceId}|${(characteristic.first)}|${(characteristic.second)}"
+      GlobalScope.launch {
+        val success = bleDevice.setNotifications(characteristic.first,
+          characteristic.second, { data ->
+            val key =
+              "notification|${deviceId}|${(characteristic.first)}|${(characteristic.second)}"
+            val ret = Arguments.createMap()
 
-                val ret = Arguments.createMap()
-                ret.putString("value", bytesToString(data))
-                reactApplicationContext.emitDeviceEvent(key, ret)
-            })
+            ret.putString("value", bytesToString(data))
+            reactApplicationContext.emitDeviceEvent(key, ret)
+          })
+        if (success) {
+          val ret = Arguments.createMap()
+          ret.putString("value", "success")
+          promise.resolve(ret)
+        } else {
+          promise.reject(Exception("startNotifications(): failed to set notifications"))
+        }
+      }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     @ReactMethod
     @RequiresPermission(value = "android.permission.BLUETOOTH_CONNECT")
     fun stopNotifications(options: ReadableMap, promise: Promise) {
@@ -359,18 +380,19 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         val characteristic =
             getCharacteristic(options, promise)
                 ?: return promise.reject(Exception("stopNotifications(): bad characteristic"))
-
-        manager.stopNotifications(
-            deviceId,
-            characteristic.first,
-            characteristic.second
-        ) { success: Boolean ->
-            if (success) {
-                promise.resolve("success")
-            } else {
-                promise.reject(Exception("stopNotifications(): failed to unset notifications"))
-            }
+        val bleDevice = manager.getBleDevice(deviceId) ?: run {
+          return promise.reject(Exception("connect(): device not found"))
         }
+      GlobalScope.launch {
+        val success = bleDevice.stopNotifications(characteristic.first, characteristic.second)
+        if (success) {
+          val ret = Arguments.createMap()
+          ret.putString("value", "success")
+          promise.resolve(ret)
+        } else {
+          promise.reject(Exception("stopNotifications(): failed to unset notifications"))
+        }
+      }
     }
 
     private fun getCharacteristic(options: ReadableMap, promise: Promise): Pair<UUID, UUID>? {
@@ -407,94 +429,91 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
         return Pair(serviceUUID, characteristicUUID)
     }
 
-    fun getBleDeviceFromNordic(result: BleScanResult): ReadableMap {
-        val bleDevice = Arguments.createMap()
+  private fun getBleDeviceData(device: BleDevice): ReadableMap {
+    val bleDeviceData = Arguments.createMap()
 
-        bleDevice.putString("deviceId", result.device.address)
+    bleDeviceData.putString("deviceId", device.address)
+    bleDeviceData.putString("name", device.localName)
 
-        if (result.device.hasName) {
-            bleDevice.putString("name", result.device.name)
-        }
+    val advertisementData = Arguments.createMap()
+    device.advertisementData?.let {
+      advertisementData.putInt("rssi", it.rssi)
+      advertisementData.putBoolean("isConnectable", it.isConnectable == true)
 
-        val uuids = Arguments.createArray()
-        result.data?.scanRecord?.serviceUuids?.forEach { uuid -> uuids.pushString(uuid.toString()) }
-
-        if (uuids.size() > 0) {
-            bleDevice.putArray("uuids", uuids)
-        }
-        return bleDevice
-    }
-
-    fun getScanResultFromNordic(result: BleScanResult): ReadableMap {
-        val scanResult = Arguments.createMap()
-        val bleDevice = getBleDeviceFromNordic(result)
-
-        scanResult.putMap("device", bleDevice)
-
-        if (result.device.hasName) {
-            scanResult.putString("localName", result.device.name)
-        }
-        if (result.data?.rssi != null) {
-            scanResult.putInt("rssi", result.data!!.rssi)
-        }
-        if (result.data?.txPower != null) {
-            scanResult.putInt("txPower", result.data!!.txPower ?: 0)
-        } else {
-            scanResult.putInt("txPower", 127)
-        }
-
-        val manufacturerData = Arguments.createMap()
-
-        val scanRecordBytes = result.data?.scanRecord?.bytes
-        if (scanRecordBytes != null) {
-            try {
-                // Extract EVVA manufacturer-id
-                val keyHex = byteArrayOf(scanRecordBytes.getByte(6)!!) + byteArrayOf(
-                    scanRecordBytes.getByte(5)!!
-                )
-                val keyDec = bytesToString(keyHex).replace(" ", "").toInt(16)
-
-                // Slice out manufacturer data
-                val bytes = scanRecordBytes.copyOfRange(7, scanRecordBytes.size)
-
-                manufacturerData.putString(keyDec.toString(), bytesToString(bytes.value))
-            } catch (e: Exception) {
-                System.err.println("getScanResultFromNordic(): invalid manufacturer data")
-            }
-        }
-
-        scanResult.putMap("manufacturerData", manufacturerData)
-
-        val serviceDataObject = Arguments.createMap()
-        val serviceData = result.data?.scanRecord?.serviceData
-        serviceData?.forEach {
-            serviceDataObject.putString(it.key.toString(), bytesToString(it.value.value))
-        }
-        scanResult.putMap("serviceData", serviceDataObject)
-
-        val uuids = Arguments.createArray()
-        result.data?.scanRecord?.serviceUuids?.forEach { uuid -> uuids.pushString(uuid.toString()) }
-        scanResult.putArray("uuids", uuids)
-        scanResult.putString(
-            "rawAdvertisement",
-            result.data?.scanRecord?.bytes?.toString()
+      val manufacturerData = Arguments.createMap()
+      it.manufacturerData?.let { data ->
+        manufacturerData.putInt("companyIdentifier", data.companyIdentifier.toInt())
+        manufacturerData.putInt("version", data.version.toInt())
+        manufacturerData.putString(
+          "componentType",
+          when (data.componentType.toInt()) {
+            98 -> "escutcheon"
+            100 -> "handle"
+            105 -> "iobox"
+            109 -> "emzy"
+            119 -> "wallreader"
+            122 -> "cylinder"
+            else -> "unknown"
+          }
         )
-
-        return scanResult
+        manufacturerData.putInt(
+          "mainFirmwareVersionMajor",
+          data.mainFirmwareVersionMajor.toInt()
+        )
+        manufacturerData.putInt(
+          "mainFirmwareVersionMinor",
+          data.mainFirmwareVersionMinor.toInt()
+        )
+        manufacturerData.putInt(
+          "mainFirmwareVersionPatch",
+          data.mainFirmwareVersionPatch.toInt()
+        )
+        manufacturerData.putInt("componentHAL", data.componentHAL)
+        manufacturerData.putString(
+          "batteryStatus",
+          if (data.batteryStatus) "battery-full" else "battery-empty"
+        )
+        manufacturerData.putBoolean("mainConstructionMode", data.mainConstructionMode)
+        manufacturerData.putBoolean("subConstructionMode", data.subConstructionMode)
+        manufacturerData.putBoolean("isOnline", data.isOnline)
+        manufacturerData.putBoolean("officeModeEnabled", data.officeModeEnabled)
+        manufacturerData.putBoolean("twoFactorRequired", data.twoFactorRequired)
+        manufacturerData.putBoolean("officeModeActive", data.officeModeActive)
+        manufacturerData.putInt("reservedBits", data.reservedBits ?: 0 )
+        manufacturerData.putString("identifier", data.identifier)
+        manufacturerData.putInt(
+          "subFirmwareVersionMajor",
+          data.subFirmwareVersionMajor?.toInt() ?: 0
+        )
+        manufacturerData.putInt(
+          "subFirmwareVersionMinor",
+          data.subFirmwareVersionMinor?.toInt() ?: 0
+        )
+        manufacturerData.putInt(
+          "subFirmwareVersionPatch",
+          data.subFirmwareVersionPatch?.toInt() ?: 0
+        )
+        manufacturerData.putString("subComponentIdentifier", data.subComponentIdentifier)
+      }
+      advertisementData.putMap("manufacturerData", manufacturerData)
     }
+    bleDeviceData.putMap("advertisementData", advertisementData)
+
+    return bleDeviceData
+  }
+
+  override fun getName(): String {
+    return NAME
+  }
+
+  companion object {
+    const val NAME = "AbrevvaBle"
+  }
 
     // not needed for Android
     @ReactMethod
     fun setSupportedEvents(options: ReadableMap, promise: Promise) {
         promise.resolve(null)
-    }
-
-    override fun getName(): String {
-        return NAME
-    }
-
-    companion object {
-        const val NAME = "AbrevvaBle"
     }
 
     @ReactMethod
