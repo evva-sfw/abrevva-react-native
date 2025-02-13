@@ -106,7 +106,9 @@ describe('AbrevvaBleModule', () => {
     expect(AbrevvaBleMock.stopScan).toHaveBeenCalledTimes(1);
   });
   it('should run connect()', async () => {
-    await AbrevvaBle.connect('deviceId');
+    await AbrevvaBle.connect('deviceId', (address) => {
+      console.log(address);
+    });
     expect(AbrevvaBleMock.connect).toHaveBeenCalledTimes(1);
   });
   it('should run disconnect()', async () => {

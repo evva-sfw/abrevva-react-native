@@ -99,7 +99,7 @@ const ScanResults = ({ props }) => {
                 'mobileAccessData',
                 true,
               );
-              console.log(`Disengage Status: ${result.value}`);
+              console.log(`Disengage Status: ${result}`);
             }}
           >
             <Text>{listRenderItem.item.advertisementData?.manufacturerData?.identifier}</Text>
