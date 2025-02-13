@@ -153,7 +153,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun requestLEScan(options: ReadableMap, promise: Promise) {
+    fun startScan(options: ReadableMap, promise: Promise) {
         var timeout: Long = 10000
         try {
             timeout = options.getDouble("timeout").toLong()
@@ -164,7 +164,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
             if (success) {
                 promise.resolve("success")
             } else {
-                promise.reject(Exception("requestLEScan(): failed to start"))
+                promise.reject(Exception("startScan(): failed to start"))
             }
         }, { result: BleScanResult ->
             val scanResult = getScanResultFromNordic(result)
@@ -180,7 +180,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun stopLEScan(promise: Promise) {
+    fun stopScan(promise: Promise) {
         manager.stopScan()
         promise.resolve("success")
     }

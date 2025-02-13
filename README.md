@@ -60,7 +60,7 @@ import { AbrevvaBle } from '@evva/abrevva-react-native';
 async function scanForBleDevices(androidNeverForLocation: Boolean = true, timeout: Number) {
   await AbrevvaBle.initialize(androidNeverForLocation);
 
-  AbrevvaBle.requestLEScan( 
+  AbrevvaBle.startScan( 
     (data: ScanResult) => {
         console.log(`Found device: ${data.name}`);
     },
