@@ -154,6 +154,7 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ExampleAppExample" */;
 			buildPhases = (
 				AA1E527239C7DC8BC535B9F1 /* [CP] Check Pods Manifest.lock */,
+				39353F6A2D5E0F6700C0DF5D /* Run Swiftlint */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
@@ -317,6 +318,25 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ExampleAppExample/Pods-ExampleAppExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		39353F6A2D5E0F6700C0DF5D /* Run Swiftlint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Swiftlint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n${PODS_ROOT}/SwiftFormat/CommandLineTool/swiftformat --swiftversion 6.0 $SRCROOT\n";
 		};
 		AA1E527239C7DC8BC535B9F1 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

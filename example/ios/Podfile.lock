@@ -1237,6 +1237,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - SocketRocket (0.7.0)
+  - SwiftFormat/CLI (0.55.5)
+  - SwiftLint (0.54.0)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1302,6 +1304,8 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - RNFS (from `../node_modules/react-native-fs`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - SwiftFormat/CLI (~> 0.49)
+  - SwiftLint (~> 0.54.0)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1319,6 +1323,8 @@ SPEC REPOS:
     - Nimble
     - Quick
     - SocketRocket
+    - SwiftFormat
+    - SwiftLint
 
 EXTERNAL SOURCES:
   abrevva-react-native:
@@ -1510,8 +1516,10 @@ SPEC CHECKSUMS:
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNScreens: 62ee76dc52f65afddfa6821b01965dc79d69c35b
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
+  SwiftFormat: 548c7b221429101546d3caeeeb672f11578df0ad
+  SwiftLint: c1de071d9d08c8aba837545f6254315bc900e211
   Yoga: bd92064a0d558be92786820514d74fc4dddd1233
 
-PODFILE CHECKSUM: c2b657d91fc21203dd436e57c3a2a27527cbae3b
+PODFILE CHECKSUM: 4b7b9745bd3069b0dfcee04d1901c81317f4fcf9
 
 COCOAPODS: 1.14.3
