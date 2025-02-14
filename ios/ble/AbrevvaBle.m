@@ -34,11 +34,11 @@ RCT_EXTERN_METHOD(openBluetoothSettings:(RCTPromiseResolveBlock)resolve
 RCT_EXTERN_METHOD(openAppSettings:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(requestLEScan:(NSDictionary *)options
+RCT_EXTERN_METHOD(startScan:(NSDictionary *)options
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(stopLEScan:(RCTPromiseResolveBlock)resolve
+RCT_EXTERN_METHOD(stopScan:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(connect:(NSDictionary *)options

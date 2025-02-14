@@ -5,19 +5,21 @@
 //  Created by Matthias on 05.03.24.
 //
 
-import Foundation
 import AbrevvaSDK
 import CoreBluetooth
+import Foundation
 
 @objc(AbrevvaBle)
 public class AbrevvaBle: RCTEventEmitter {
-
     private var bleManager: BleManager?
     private var bleDeviceMap = [String: BleDevice]()
 
     @objc
-    func initialize(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        self.bleManager = BleManager { success, message in
+    func initialize(
+        _: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        bleManager = BleManager { success, message in
             if success {
                 resolve("success")
             } else {
@@ -27,20 +29,29 @@ public class AbrevvaBle: RCTEventEmitter {
     }
 
     @objc
-    func isEnabled(_  resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard let bleManager = self.getBleManager(reject) else { return }
+    func isEnabled(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard let bleManager = getBleManager(reject) else { return }
         let enabled: Bool = bleManager.isBleEnabled()
         resolve(["value": enabled])
     }
 
     @objc
-    func isLocationEnabled(_  resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        reject("isLocationEnabled(): not available on iOS", nil,nil)
+    func isLocationEnabled(
+        _: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        reject("isLocationEnabled(): not available on iOS", nil, nil)
     }
 
     @objc
-    func startEnabledNotifications(_  resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard let bleManager = self.getBleManager(reject) else { return }
+    func startEnabledNotifications(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard let bleManager = getBleManager(reject) else { return }
         bleManager.registerStateReceiver { enabled in
             self.sendEvent(withName: "onEnabledChanged", body: ["value": enabled])
         }
@@ -48,36 +59,52 @@ public class AbrevvaBle: RCTEventEmitter {
     }
 
     @objc
-    func stopEnabledNotifications(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard let bleManager = self.getBleManager(reject) else { return }
+    func stopEnabledNotifications(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard let bleManager = getBleManager(reject) else { return }
         bleManager.unregisterStateReceiver()
         resolve("success")
     }
 
     @objc
-    func openLocationSettings(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+    func openLocationSettings(
+        _: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
         reject("openLocationSettings(): is not available on iOS", nil, nil)
     }
 
     @objc
-    func openBluetoothSettings(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+    func openBluetoothSettings(
+        _: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
         reject("openBluetoothSettings(): is not available on iOS", nil, nil)
     }
 
     @objc
-    func openAppSettings(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
+    func openAppSettings(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard let settingsURL = URL(string: UIApplication.openSettingsURLString)
+        else {
             reject("openAppSettings(): cannot open app settings", nil, nil)
             return
         }
 
         DispatchQueue.main.async {
             if UIApplication.shared.canOpenURL(settingsURL) {
-                UIApplication.shared.open(settingsURL, completionHandler: { success in
-                    resolve([
-                        "value": success,
-                    ])
-                })
+                UIApplication.shared.open(
+                    settingsURL,
+                    completionHandler: { success in
+                        resolve([
+                            "value": success
+                        ])
+                    }
+                )
             } else {
                 reject("openAppSettings(): cannot open app settings", nil, nil)
             }
@@ -85,95 +112,113 @@ public class AbrevvaBle: RCTEventEmitter {
     }
 
     @objc
-    func requestLEScan(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-
+    func startScan(
+        _ options: NSDictionary, resolver _: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
         guard let optionsSwift = options as? [String: Any] else {
             reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
             return
         }
-        guard let bleManager = self.getBleManager(reject) else { return }
-        let name = optionsSwift["name"] as? String ?? nil
-        let namePrefix = optionsSwift["namePrefix"] as? String ?? nil
+        guard let bleManager = getBleManager(reject) else { return }
+        let macFilter = optionsSwift["macFilter"] as? String ?? nil
         let allowDuplicates = optionsSwift["allowDuplicates"] as? Bool ?? false
-        let timeout =   optionsSwift["timeout"] as? Int ?? 10000
-    
-        bleManager.startScan(
-            name,
-            namePrefix,
-            allowDuplicates,
-            { success in
+        let timeout = optionsSwift["timeout"] as? Int ?? 10000
 
-                if success {
-                    resolve("success")
-                } else {
-                    reject("requestLEScan(): failed to start", nil, nil)
-                }
-            }, { device, advertisementData, rssi in
-                self.bleDeviceMap[device.getAddress()] = device
-                let data = self.getScanResultDict(device, advertisementData, rssi)
-                self.sendEvent(withName: "onScanResult", body: data)
-            },{ address in
-                self.sendEvent(withName: "onConnect", body: address)
-            },{ address in
-                self.sendEvent(withName: "onDisconnect", body: address)
-            },
-            timeout
+        bleManager.startScan({ device in
+            self.bleDeviceMap[device.getAddress()] = device
+            self.sendEvent(
+                withName: "onScanResult", body: self.getAdvertismentData(device)
+            )
+        }, { error in
+            self.sendEvent(withName: "onScanStart", body: error == nil)
+        }, { error in
+            self.sendEvent(withName: "onScanStop", body: error == nil)
+        },
+        macFilter,
+        allowDuplicates,
+        timeout
         )
     }
 
     @objc
-    func stopLEScan(_  resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard let bleManager = self.getBleManager(reject) else { return }
+    func stopScan(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard let bleManager = getBleManager(reject) else { return }
         bleManager.stopScan()
-        resolve("success")
+        resolve(["value": "success"])
     }
+
     @objc
-    func signalize(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) async {
+    func signalize(
+        _ options: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) async {
         guard let optionsSwift = options as? [String: Any] else {
-            return reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
+            return reject(
+                "Failed to convert NSDictionary to Swift dictionary", nil, nil
+            )
         }
-        
+
         guard let deviceID = optionsSwift["deviceId"] as? String else {
             return reject("signalize(): deviceId required", nil, nil)
         }
-        guard let bleDevice = self.bleDeviceMap[deviceID] else {
+        guard let bleDevice = bleDeviceMap[deviceID] else {
             return reject("signalize(): deviceId doesnt exist", nil, nil)
         }
-        await bleManager?.signalize(bleDevice)
-        resolve("success")
-        
+
+        await resolve(["value": bleManager?.signalize(bleDevice)])
     }
+
     @objc
-    func connect(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard self.getBleManager(reject) != nil else { return }
-        guard let device = self.getDevice(options, rejecter: reject, checkConnection: false) else { return }
-        
+    func connect(
+        _ options: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard getBleManager(reject) != nil else { return }
+        guard
+            let device = getDevice(
+                options, rejecter: reject, checkConnection: false
+            )
+        else { return }
+
         guard let optionsSwift = options as? [String: Any] else {
             reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
             return
         }
-        
-        let timeout = optionsSwift["timeout"] as? Int ?? 10000
 
+        let timeout = optionsSwift["timeout"] as? Int ?? 10000
         Task {
-            let success = await self.bleManager!.connect(device, timeout)
-            if success {
-                resolve("success")
-            } else {
-                reject("connect(): failed to connect to device", nil, nil)
-            }
+            let success = await self.bleManager!.connect(
+                device, { address in
+                    self.sendEvent(
+                        withName: "onDisconnect|\(address)", body: ["address": address]
+                    )
+                },
+                timeout
+            )
+            resolve(["value": success])
         }
     }
 
     @objc
-    func disconnect(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard self.getBleManager(reject) != nil else { return }
-        guard let device = self.getDevice(options, rejecter: reject, checkConnection: false) else { return }
+    func disconnect(
+        _ options: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard getBleManager(reject) != nil else { return }
+        guard
+            let device = getDevice(
+                options, rejecter: reject, checkConnection: false
+            )
+        else { return }
 
         Task {
             let success = await self.bleManager!.disconnect(device)
             if success {
-                resolve("success")
+                resolve(["value": success])
             } else {
                 reject("disconnect(): failed to disconnect from device", nil, nil)
             }
@@ -181,16 +226,20 @@ public class AbrevvaBle: RCTEventEmitter {
     }
 
     @objc
-    func read(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard self.getBleManager(reject) != nil else { return }
-        guard let device = self.getDevice(options, rejecter: reject) else { return }
-        guard let characteristic = self.getCharacteristic(options, rejecter: reject) else { return }
-        
+    func read(
+        _ options: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard getBleManager(reject) != nil else { return }
+        guard let device = getDevice(options, rejecter: reject) else { return }
+        guard let characteristic = getCharacteristic(options, rejecter: reject)
+        else { return }
+
         guard let optionsSwift = options as? [String: Any] else {
             reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
             return
         }
-        
+
         let timeout = optionsSwift["timeout"] as? Int ?? nil
         Task {
             let data = await device.read(characteristic.0, characteristic.1, timeout)
@@ -204,16 +253,20 @@ public class AbrevvaBle: RCTEventEmitter {
     }
 
     @objc
-    func write(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard self.getBleManager(reject) != nil else { return }
-        guard let device = self.getDevice(options, rejecter: reject) else { return }
-        guard let characteristic = self.getCharacteristic(options, rejecter: reject) else { return }
-        
+    func write(
+        _ options: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard getBleManager(reject) != nil else { return }
+        guard let device = getDevice(options, rejecter: reject) else { return }
+        guard let characteristic = getCharacteristic(options, rejecter: reject)
+        else { return }
+
         guard let optionsSwift = options as? [String: Any] else {
             reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
             return
         }
-        
+
         guard let value = optionsSwift["value"] as? String else {
             reject("write(): value must be provided", nil, nil)
             return
@@ -231,7 +284,7 @@ public class AbrevvaBle: RCTEventEmitter {
                 timeout
             )
             if success {
-                resolve("success")
+                resolve(["value": "success"])
             } else {
                 reject("write(): failed to write data", nil, nil)
             }
@@ -239,21 +292,28 @@ public class AbrevvaBle: RCTEventEmitter {
     }
 
     @objc
-    func disengage(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard self.getBleManager(reject) != nil else { return }
-        guard let device = self.getDevice(options, rejecter: reject, checkConnection: false) else { return }
-        
+    func disengage(
+        _ options: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard getBleManager(reject) != nil else { return }
+        guard
+            let device = getDevice(
+                options, rejecter: reject, checkConnection: false
+            )
+        else { return }
+
         guard let optionsSwift = options as? [String: Any] else {
             reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
             return
         }
-        
+
         let mobileID = optionsSwift["mobileId"] as? String ?? ""
         let mobileDeviceKey = optionsSwift["mobileDeviceKey"] as? String ?? ""
         let mobileGroupID = optionsSwift["mobileGroupId"] as? String ?? ""
         let mobileAccessData = optionsSwift["mobileAccessData"] as? String ?? ""
-        let isPermanentRelease = optionsSwift["isPermanentRelease"] as? Bool ?? false
-        let timeout = optionsSwift["timeout"] as? Int ?? nil
+        let isPermanentRelease =
+            optionsSwift["isPermanentRelease"] as? Bool ?? false
 
         Task {
             let status = await self.bleManager!.disengage(
@@ -262,40 +322,44 @@ public class AbrevvaBle: RCTEventEmitter {
                 mobileDeviceKey,
                 mobileGroupID,
                 mobileAccessData,
-                isPermanentRelease,
-                timeout
+                isPermanentRelease
             )
             resolve(["value": status.rawValue])
         }
     }
 
     @objc
-    func startNotifications(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        
-        guard self.getBleManager(reject) != nil else { return }
-        guard let device = self.getDevice(options, rejecter: reject) else { return }
-        guard let characteristic = self.getCharacteristic(options, rejecter: reject) else { return }
-        
+    func startNotifications(
+        _ options: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard getBleManager(reject) != nil else { return }
+        guard let device = getDevice(options, rejecter: reject) else { return }
+        guard let characteristic = getCharacteristic(options, rejecter: reject)
+        else { return }
+
         guard let optionsSwift = options as? [String: Any] else {
             reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
             return
         }
         let timeout = optionsSwift["timeout"] as? Int ?? nil
         Task {
-            let success = await device.setNotifications(characteristic.0, characteristic.1, true, { value in
-                let key =
-                "notification|\(device.getAddress().lowercased())|" +
-                    "\(characteristic.0.uuidString.lowercased())|" +
-                    "\(characteristic.1.uuidString.lowercased())"
+            let success = await device.setNotifications(
+                characteristic.0, characteristic.1, true, { value in
+                    let key =
+                        "notification|\(device.getAddress().lowercased())|"
+                        + "\(characteristic.0.uuidString.lowercased())|"
+                        + "\(characteristic.1.uuidString.lowercased())"
 
-                if value != nil {
-                    self.sendEvent(withName: key, body: ["value": dataToString(value!)])
-                } else {
-                    self.sendEvent(withName: key, body: nil)
-                }
-            }, timeout)
+                    if value != nil {
+                        self.sendEvent(withName: key, body: ["value": dataToString(value!)])
+                    } else {
+                        self.sendEvent(withName: key, body: nil)
+                    }
+                }, timeout
+            )
             if success {
-                resolve("Success")
+                resolve(["value": "Success"])
             } else {
                 reject("startNotifications(): failed to start notifications", nil, nil)
             }
@@ -303,37 +367,113 @@ public class AbrevvaBle: RCTEventEmitter {
     }
 
     @objc
-    func stopNotifications(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard self.getBleManager(reject) != nil else { return }
-        guard let device = self.getDevice(options, rejecter: reject) else { return }
-        guard let characteristic = self.getCharacteristic(options, rejecter: reject) else { return }
-        
+    func stopNotifications(
+        _ options: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard getBleManager(reject) != nil else { return }
+        guard let device = getDevice(options, rejecter: reject) else { return }
+        guard let characteristic = getCharacteristic(options, rejecter: reject)
+        else { return }
+
         guard let optionsSwift = options as? [String: Any] else {
             reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
             return
         }
-        
+
         let timeout = optionsSwift["timeout"] as? Int ?? nil
 
         Task {
-            let success = await device.setNotifications(characteristic.0, characteristic.1, false, nil, timeout)
+            let success = await device.setNotifications(
+                characteristic.0, characteristic.1, false, nil, timeout
+            )
             if success {
-                resolve("success")
+                resolve(["value": "success"])
             } else {
                 reject("stopNotifications(): failed to stop notifications", nil, nil)
             }
         }
     }
 
-    private func getBleManager(_ reject: @escaping RCTPromiseRejectBlock) -> BleManager? {
-        guard let bleManager = self.bleManager else {
+    private func getAdvertismentData(
+        _ device: BleDevice
+    ) -> [String: Any?] {
+        var bleDeviceData: [String: Any?] = [
+            "deviceId": device.getAddress(),
+            "name": device.getName(),
+            "raw": device.advertisementData?.rawData
+        ]
+
+        var advertismentData: [String: Any?] = [
+            "rssi": device.advertisementData?.rssi
+        ]
+        if let isConnectable = device.advertisementData?.isConnectable {
+            advertismentData["isConnectable"] = isConnectable
+        }
+
+        guard let mfData = device.advertisementData?.manufacturerData else {
+            bleDeviceData["advertisementData"] = advertismentData
+            return bleDeviceData
+        }
+
+        let manufacturerData: [String: Any?] = [
+            "companyIdentifier": mfData.companyIdentifier,
+            "version": mfData.version,
+            "mainFirmwareVersionMajor": mfData.mainFirmwareVersionMajor,
+            "mainFirmwareVersionMinor": mfData.mainFirmwareVersionMinor,
+            "mainFirmwareVersionPatch": mfData.mainFirmwareVersionPatch,
+            "componentHAL": mfData.componentHAL,
+            "batteryStatus": mfData.batteryStatus ? "battery-full" : "battery-empty",
+            "mainConstructionMode": mfData.mainConstructionMode,
+            "subConstructionMode": mfData.subConstructionMode,
+            "isOnline": mfData.isOnline,
+            "officeModeEnabled": mfData.officeModeEnabled,
+            "twoFactorRequired": mfData.twoFactorRequired,
+            "officeModeActive": mfData.officeModeActive,
+            "identifier": mfData.identifier,
+            "subFirmwareVersionMajor": mfData.subFirmwareVersionMajor,
+            "subFirmwareVersionMinor": mfData.subFirmwareVersionMinor,
+            "subFirmwareVersionPatch": mfData.subFirmwareVersionPatch,
+            "subComponentIdentifier": mfData.subComponentIdentifier,
+            "componentType": getComponentType(mfData.componentType)
+        ]
+
+        advertismentData["manufacturerData"] = manufacturerData
+        bleDeviceData["advertisementData"] = advertismentData
+        return bleDeviceData
+    }
+
+    private func getComponentType(_ componentType: UInt8) -> String {
+        switch componentType {
+        case 98:
+            "escutcheon"
+        case 100:
+            "handle"
+        case 105:
+            "iobox"
+        case 109:
+            "emzy"
+        case 119:
+            "wallreader"
+        case 122:
+            "cylinder"
+        default:
+            "unkown"
+        }
+    }
+
+    private func getBleManager(_ reject: @escaping RCTPromiseRejectBlock)
+    -> BleManager? {
+        guard let bleManager else {
             reject("getBleManager(): not initialized", nil, nil)
             return nil
         }
         return bleManager
     }
 
-    private func getServiceUUIDs(_ options: NSDictionary, rejector reject: @escaping RCTPromiseRejectBlock) -> [CBUUID]? {
+    private func getServiceUUIDs(
+        _ options: NSDictionary, rejector reject: @escaping RCTPromiseRejectBlock
+    ) -> [CBUUID]? {
         guard let optionsSwift = options as? [String: Any] else {
             reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
             return nil
@@ -345,17 +485,20 @@ public class AbrevvaBle: RCTEventEmitter {
         return serviceUUIDs
     }
 
-    private func getDevice(_ options: NSDictionary , rejecter reject: @escaping RCTPromiseRejectBlock, checkConnection: Bool = true) -> BleDevice? {
+    private func getDevice(
+        _ options: NSDictionary, rejecter reject: @escaping RCTPromiseRejectBlock,
+        checkConnection: Bool = true
+    ) -> BleDevice? {
         guard let optionsSwift = options as? [String: Any] else {
             reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
             return nil
         }
-        
+
         guard let deviceID = optionsSwift["deviceId"] as? String else {
             reject("getDevice(): deviceId required", nil, nil)
             return nil
         }
-        guard let device = self.bleDeviceMap[deviceID] else {
+        guard let device = bleDeviceMap[deviceID] else {
             reject("getDevice(): device not found", nil, nil)
             return nil
         }
@@ -368,32 +511,33 @@ public class AbrevvaBle: RCTEventEmitter {
         return device
     }
 
-    private func getCharacteristic(_ options: NSDictionary , rejecter reject: @escaping RCTPromiseRejectBlock) -> (CBUUID, CBUUID)? {
-
+    private func getCharacteristic(
+        _ options: NSDictionary, rejecter reject: @escaping RCTPromiseRejectBlock
+    ) -> (CBUUID, CBUUID)? {
         guard let optionsSwift = options as? [String: Any] else {
             reject("Failed to convert NSDictionary to Swift dictionary", nil, nil)
             return nil
         }
-                
+
         guard let service = optionsSwift["service"] as? String else {
             reject("getCharacteristic(): service UUID required", nil, nil)
             return nil
         }
-        
+
         let serviceUUID = CBUUID(string: service)
 
         guard let characteristic = optionsSwift["characteristic"] as? String else {
             reject("getCharacteristic(): characteristic UUID required", nil, nil)
             return nil
         }
-        
+
         let characteristicUUID = CBUUID(string: characteristic)
         return (serviceUUID, characteristicUUID)
     }
 
     private func getBleDeviceDict(_ device: BleDevice) -> [String: String] {
         var bleDevice = [
-            "deviceId": device.getAddress(),
+            "deviceId": device.getAddress()
         ]
         if device.getName() != nil {
             bleDevice["name"] = device.getName()
@@ -401,76 +545,30 @@ public class AbrevvaBle: RCTEventEmitter {
         return bleDevice
     }
 
-    func getScanResultDict(
-        _ device: BleDevice,
-        _ advertisementData: [String: Any],
-        _ rssi: NSNumber
-    ) -> [String: Any] {
-        var data = [
-            "device": self.getBleDeviceDict(device),
-            "rssi": rssi,
-            "txPower": advertisementData[CBAdvertisementDataTxPowerLevelKey] ?? 127,
-            "uuids": (advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID] ?? []).map { uuid -> String in
-                return CBUUIDToString(uuid)
-            },
-        ]
-
-        let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String
-        if localName != nil {
-            data["localName"] = localName
-        }
-
-        let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data
-        if manufacturerData != nil {
-            data["manufacturerData"] = self.getManufacturerDataDict(data: manufacturerData!)
-        }
-
-        let serviceData = advertisementData[CBAdvertisementDataServiceDataKey] as? [CBUUID: Data]
-        if serviceData != nil {
-            data["serviceData"] = self.getServiceDataDict(data: serviceData!)
-        }
-        return data
-    }
-
-    func getManufacturerDataDict(data: Data) -> [String: String] {
-        var company = 0
-        var rest = ""
-        for (index, byte) in data.enumerated() {
-            if index == 0 {
-                company += Int(byte)
-            } else if index == 1 {
-                company += Int(byte) * 256
-            } else {
-                rest += String(format: "%02hhx ", byte)
-            }
-        }
-        return [String(company): rest]
-    }
-
-    func getServiceDataDict(data: [CBUUID: Data]) -> [String: String] {
-        var result: [String: String] = [:]
-        for (key, value) in data {
-            result[CBUUIDToString(key)] = dataToString(value)
-        }
-        return result
-    }
-    
     /// RCTEventEmitter
-    
-    var events = ["onScanResult", "onEnabledChanged"]
-    open override func supportedEvents() -> [String] {
-        self.events
+
+    var events: [String] = []
+    override open func supportedEvents() -> [String] {
+        events
     }
-    
+
     @objc
-    func setSupportedEvents(_ options: NSDictionary , resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+    func setSupportedEvents(
+        _ options: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) {
         guard let optionsSwift = options as? [String: Any] else {
-            return reject("setSupportedEvents(): Failed to convert NSDictionary to Swift dictionary", nil, nil)
+            return reject(
+                "setSupportedEvents(): Failed to convert NSDictionary to Swift dictionary",
+                nil, nil
+            )
         }
         guard let newEvents = optionsSwift["events"] as? [String] else {
-            return reject("setSupportedEvents(): provide events as [String]", nil, nil)
+            return reject(
+                "setSupportedEvents(): provide events as [String]", nil, nil
+            )
         }
-        self.events = newEvents
+        events = newEvents
         resolve(nil)
     }
 }

@@ -1,4 +1,4 @@
-import { AbrevvaBle, type ScanResult } from '@evva/abrevva-react-native';
+import { AbrevvaBle, type BleDevice, type BooleanResult } from '@evva/abrevva-react-native';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import {
@@ -14,58 +14,60 @@ import {
 global.Buffer = require('buffer').Buffer;
 
 export const BleScreen = () => {
-  const [statusCode, setStatusCode] = useState('none');
-  const [startScanNoftification, setStartScanNoftification] = useState(
-    'pull down to start scanning',
-  );
+  const [statusCode, setStatusCode] = useState('None');
+  const [startScanNotification, setStartScanNotification] = useState('Pull down to start scanning');
 
   return (
     <>
-      <Text style={bleStyles.scanNotification}>{startScanNoftification}</Text>
+      <Text style={bleStyles.scanNotification}>{startScanNotification}</Text>
       <ScanResults
-        props={{ setStatus: setStatusCode, setScanNoftification: setStartScanNoftification }}
+        props={{ setStatus: setStatusCode, setScanNotification: setStartScanNotification }}
       />
       <SafeAreaView style={bleStyles.status}>
-        <Text>Last received Statuscode '{statusCode}'</Text>
+        <Text>Last received status code '{statusCode}'</Text>
       </SafeAreaView>
     </>
   );
 };
 
 const ScanResults = ({ props }) => {
-  const [deviceList, setdeviceList] = useState<ScanResult[]>([]);
+  const [deviceList, setDeviceList] = useState<BleDevice[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const setStatus = props.setStatus;
-  const setScanNoftification = props.setScanNoftification;
+  const setScanNotification = props.setScanNotification;
 
-  const scanRequestCallback = (data: ScanResult) => {
-    setdeviceList((prevDeviceList) => {
-      return [data, ...prevDeviceList];
-    });
+  const scanRequestCallback = (data: BleDevice) => {
+    if (data.advertisementData?.manufacturerData?.companyIdentifier === 2153) {
+      setDeviceList((prevDeviceList) => {
+        return [data, ...prevDeviceList];
+      });
+    }
   };
 
   const onRefresh = async () => {
-    setStatus('none');
-    setScanNoftification('scanning ...');
+    setStatus('None');
+    setScanNotification('Scanning ...');
     setRefreshing(true);
-    setdeviceList([]);
+    setDeviceList([]);
 
     const timeout: NodeJS.Timeout = setTimeout(() => {
       setRefreshing(false);
-      setScanNoftification('');
+      setScanNotification('');
     }, 3_000);
 
-    await AbrevvaBle.stopLEScan();
+    await AbrevvaBle.stopScan();
 
     try {
-      await AbrevvaBle.requestLEScan(
+      await AbrevvaBle.startScan(
         scanRequestCallback,
-        (address: string) => {
-          console.log(`connected to Device =${address}`);
+        (result: BooleanResult) => {
+          console.log(`onScanStart: ${result.value}`);
         },
-        (address: string) => {
-          console.log(`disconnected from Device =${address}`);
+        (result: BooleanResult) => {
+          console.log(`onScanStop: ${result.value}`);
         },
+        undefined,
+        false,
         10_000,
       );
     } catch (err) {
@@ -75,7 +77,7 @@ const ScanResults = ({ props }) => {
   };
 
   useEffect(() => {
-    AbrevvaBle.initialize(true);
+    void AbrevvaBle.initialize(true);
   }, []);
 
   return (
@@ -83,23 +85,22 @@ const ScanResults = ({ props }) => {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       style={bleStyles.row}
       data={deviceList}
-      renderItem={(item) => (
+      renderItem={(listRenderItem) => (
         <SafeAreaView style={bleStyles.BleScanResult}>
           <TouchableOpacity
             onPress={async () => {
               const result = await AbrevvaBle.disengage(
-                'deviceId',
+                listRenderItem.item.deviceId,
                 'mobileId',
-                'deviceKey',
-                'mobilegroudId',
+                'mobileDeviceKey',
+                'mobileGroupId',
                 'mobileAccessData',
                 true,
               );
-              console.log(`Disengage Status: ${result.value}`);
+              console.log(`Disengage Status: ${result}`);
             }}
           >
-            <Text>{item.item.device.deviceId}</Text>
-            <Text>{item.item.device.name}</Text>
+            <Text>{listRenderItem.item.advertisementData?.manufacturerData?.identifier}</Text>
           </TouchableOpacity>
         </SafeAreaView>
       )}

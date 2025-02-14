@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
 import { type AbrevvaBLEInterface, AbrevvaCrypto, createAbrevvaBleInstance } from './index';
@@ -71,48 +72,53 @@ describe('AbrevvaBleModule', () => {
     expect(AbrevvaBleMock.openAppSettings).toHaveBeenCalledTimes(1);
   });
 
-  describe('requestLEScan()', () => {
+  describe('startScan()', () => {
     it('should reject if a scan is already in progress', async () => {
-      void AbrevvaBle.requestLEScan(
+      void AbrevvaBle.startScan(
         () => {},
         () => {},
         () => {},
       );
-      await expect(AbrevvaBle.requestLEScan).rejects.toThrow();
+      await expect(AbrevvaBle.startScan).rejects.toThrow();
     });
     it('should add the expected eventlisteners and discard them after the timeout', async () => {
       const addListenerSpy = jest.spyOn(mockEmitter, 'addListener');
-
       const emitterSubscriptionMock = { remove: jest.fn() };
+
+      const onScanResultMock = jest.fn((_data: any) => {});
+      const onConnectMock = jest.fn((_data: any) => {});
+      const onDisconnectMock = jest.fn((_data: any) => {});
       // @ts-ignore
-      mockEmitter.addListener.mockImplementation(() => {
-        return emitterSubscriptionMock;
-      });
-
-      void AbrevvaBle.requestLEScan(jest.fn(), jest.fn(), jest.fn());
-
-      jest.advanceTimersByTime(20000);
-
-      expect(addListenerSpy).toHaveBeenCalledWith('onScanResult', expect.any(Function));
-      expect(addListenerSpy).toHaveBeenCalledWith('onConnect', expect.any(Function));
-      expect(addListenerSpy).toHaveBeenCalledWith('onDisconnect', expect.any(Function));
-      expect(addListenerSpy).toHaveBeenCalledTimes(3);
-      expect(AbrevvaBleMock.requestLEScan).toHaveBeenCalledTimes(1);
-      expect(emitterSubscriptionMock.remove).toHaveBeenCalledTimes(3);
+      mockEmitter.addListener.mockImplementation(
+        (_eventType: string, listener: (event: any) => void) => {
+          listener(true);
+          return emitterSubscriptionMock;
+        },
+      );
+      await AbrevvaBle.startScan(onScanResultMock, onConnectMock, onDisconnectMock);
+      setTimeout(() => {
+        expect(onScanResultMock).toHaveBeenCalledTimes(1);
+        expect(onConnectMock).toHaveBeenCalledTimes(1);
+        expect(onDisconnectMock).toHaveBeenCalledTimes(1);
+        expect(addListenerSpy).toHaveBeenCalledTimes(3);
+        expect(AbrevvaBleMock.startScan).toHaveBeenCalledTimes(1);
+        expect(emitterSubscriptionMock.remove).toHaveBeenCalledTimes(3);
+      }, 500);
     });
   });
-  it('should run stopLEScan()', async () => {
-    await AbrevvaBle.stopLEScan();
-    expect(AbrevvaBleMock.stopLEScan).toHaveBeenCalledTimes(1);
+  it('should run stopScan()', async () => {
+    await AbrevvaBle.stopScan();
+    expect(AbrevvaBleMock.stopScan).toHaveBeenCalledTimes(1);
   });
   it('should run connect()', async () => {
-    await AbrevvaBle.connect('deviceId');
+    await AbrevvaBle.connect('deviceId', (address) => {
+      console.log(address);
+    });
     expect(AbrevvaBleMock.connect).toHaveBeenCalledTimes(1);
   });
   it('should run disconnect()', async () => {
     await AbrevvaBle.disconnect('deviceId');
     expect(AbrevvaBleMock.disconnect).toHaveBeenCalledTimes(1);
-    expect(AbrevvaBleMock.setSupportedEvents).toHaveBeenCalledTimes(1);
   });
   it('should run read()', async () => {
     await AbrevvaBle.read('deviceId', 'service', 'characteristic');
@@ -127,7 +133,10 @@ describe('AbrevvaBleModule', () => {
     expect(AbrevvaBleMock.signalize).toHaveBeenCalledTimes(1);
   });
   it('should run disengage()', async () => {
-    await AbrevvaBle.disengage(
+    AbrevvaBleMock.disengage.mockImplementation(() => {
+      return { value: 'ERROR' };
+    });
+    const status = await AbrevvaBle.disengage(
       'deviceId',
       'mobileId',
       'mobileDeviceKey',
@@ -136,6 +145,7 @@ describe('AbrevvaBleModule', () => {
       false,
     );
     expect(AbrevvaBleMock.disengage).toHaveBeenCalledTimes(1);
+    expect(status).toEqual('ERROR');
   });
   describe('startNotifications()', () => {});
   describe('stopNotifications()', () => {

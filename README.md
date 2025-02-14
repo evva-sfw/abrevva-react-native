@@ -52,26 +52,75 @@ Perform a gradle sync.
 
 ### Initialize and scan for EVVA components
 
-To start off first import `AbrevvaBle` from this module
-
 ```typescript
 import { AbrevvaBle } from '@evva/abrevva-react-native';
 
-async function scanForBleDevices(androidNeverForLocation: Boolean = true, timeout: Number) {
-  await AbrevvaBle.initialize(androidNeverForLocation);
+class ExampleClass {
+  private devices: BleDevice[];
+  
+  async startScan(event: any) {
+    this.devices = [];
+   
+    await AbrevvaBle.initialize();
+    await AbrevvaBle.startScan(
+      (device: BleDevice) => {
+        this.devices.push(device);
+      }, (success: boolean) => {
+        console.log(`Scan started, success: ${success}`);
+      }, (success: boolean) => {
+        console.log(`Scan stopped, success: ${success}`);
+      }
+    );
+  }
+}
+```
 
-  AbrevvaBle.requestLEScan( 
-    (data: ScanResult) => {
-        console.log(`Found device: ${data.name}`);
-    },
-    (address: string) => {
-        console.log(`Connected to device: ${address}`);
-    },
-    (address: string) => {
-        console.log(`Disconnected to device: ${address}`);
-    },
-    10_000
-  );
+### Read EVVA component advertisement
+
+Get the EVVA advertisement data from a scanned EVVA component.
+
+```typescript
+const ad = device.advertisementData;
+console.log(ad?.rssi);
+console.log(ad?.isConnectable);
+
+const md = ad?.manufacturerData;
+console.log(md?.batteryStatus);
+console.log(md?.isOnline);
+console.log(md?.officeModeEnabled);
+console.log(md?.officeModeActive);
+// ...
+```
+
+There are several properties that can be accessed from the advertisement.
+
+```typescript
+export interface BleDeviceAdvertisementData {
+  rssi?: number;
+  isConnectable?: boolean;
+  manufacturerData?: BleDeviceManufacturerData;
+}
+
+export interface BleDeviceManufacturerData {
+  companyIdentifier?: string;
+  version?: number;
+  componentType?: "handle" | "escutcheon" | "cylinder" | "wallreader" | "emzy" | "iobox" | "unknown";
+  mainFirmwareVersionMajor?: number;
+  mainFirmwareVersionMinor?: number;
+  mainFirmwareVersionPatch?: number;
+  componentHAL?: string;
+  batteryStatus?: "battery-full" | "battery-empty";
+  mainConstructionMode?: boolean;
+  subConstructionMode?: boolean;
+  isOnline?: boolean;
+  officeModeEnabled?: boolean;
+  twoFactorRequired?: boolean;
+  officeModeActive?: boolean;
+  identifier?: string;
+  subFirmwareVersionMajor?: number;
+  subFirmwareVersionMinor?: number;
+  subFirmwareVersionPatch?: number;
+  subComponentIdentifier?: string;
 }
 ```
 
@@ -80,7 +129,7 @@ async function scanForBleDevices(androidNeverForLocation: Boolean = true, timeou
 With the signalize method you can localize EVVA components. On a successful signalization the component will emit a melody indicating its location.
 
 ```typescript
-const success = await AbrevvaBle.signalize('deviceId');
+const success = (await AbrevvaBle.signalize('deviceId')).value;
 ```
 
 ### Perform disengage on EVVA components
@@ -89,11 +138,41 @@ For the component disengage you have to provide access credentials to the EVVA c
 
 ```typescript
 const status = await AbrevvaBle.disengage(
-  'deviceId',
-  'mobileId',
-  'mobileDeviceKey',
-  'mobileGroupId',
-  'mobileAccessData',
+  device.deviceId,
+  'mobileId',         // sha256-hashed hex-encoded version of `xsMobileId` found in blob data.
+  'mobileDeviceKey',  // mobile device key string from `xsMOBDK` found in blob data.
+  'mobileGroupId',    // mobile group id string from `xsMOBGID` found in blob data.
+  'mobileAccessData', // access data string from `mediumDataFrame` found in blob data.
   false,
 );
+```
+
+There are several access status types upon attempting the component disengage.
+
+```typescript
+export enum DisengageStatusType {
+  /// Component
+  Authorized = "AUTHORIZED",
+  AuthorizedPermanentEngage = "AUTHORIZED_PERMANENT_ENGAGE",
+  AuthorizedPermanentDisengage = "AUTHORIZED_PERMANENT_DISENGAGE",
+  AuthorizedBatteryLow = "AUTHORIZED_BATTERY_LOW",
+  AuthorizedOffline = "AUTHORIZED_OFFLINE",
+  Unauthorized = "UNAUTHORIZED",
+  UnauthorizedOffline = "UNAUTHORIZED_OFFLINE",
+  SignalLocalization = "SIGNAL_LOCALIZATION",
+  MediumDefectOnline = "MEDIUM_DEFECT_ONLINE",
+  MediumBlacklisted = "MEDIUM_BLACKLISTED",
+  Error = "ERROR",
+
+  /// Interface
+  UnableToConnect = "UNABLE_TO_CONNECT",
+  UnableToSetNotifications = "UNABLE_TO_SET_NOTIFICATIONS",
+  UnableToReadChallenge = "UNABLE_TO_READ_CHALLENGE",
+  UnableToWriteMDF = "UNABLE_TO_WRITE_MDF",
+  AccessCipherError = "ACCESS_CIPHER_ERROR",
+  BleAdapterDisabled = "BLE_ADAPTER_DISABLED",
+  UnknownDevice = "UNKNOWN_DEVICE",
+  UnknownStatusCode = "UNKNOWN_STATUS_CODE",
+  Timeout = "TIMEOUT",
+}
 ```
