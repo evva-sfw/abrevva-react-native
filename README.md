@@ -54,6 +54,7 @@ Perform a gradle sync.
 
 ```typescript
 import { AbrevvaBle } from '@evva/abrevva-react-native';
+
 class ExampleClass {
   private devices: BleDevice[];
   
