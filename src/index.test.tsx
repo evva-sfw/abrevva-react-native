@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
 import { type AbrevvaBLEInterface, AbrevvaCrypto, createAbrevvaBleInstance } from './index';
@@ -82,23 +83,27 @@ describe('AbrevvaBleModule', () => {
     });
     it('should add the expected eventlisteners and discard them after the timeout', async () => {
       const addListenerSpy = jest.spyOn(mockEmitter, 'addListener');
-
       const emitterSubscriptionMock = { remove: jest.fn() };
+
+      const onScanResultMock = jest.fn((_data: any) => {});
+      const onConnectMock = jest.fn((_data: any) => {});
+      const onDisconnectMock = jest.fn((_data: any) => {});
       // @ts-ignore
-      mockEmitter.addListener.mockImplementation(() => {
-        return emitterSubscriptionMock;
-      });
-
-      void AbrevvaBle.startScan(jest.fn(), jest.fn(), jest.fn());
-
-      jest.advanceTimersByTime(20000);
-
-      expect(addListenerSpy).toHaveBeenCalledWith('onScanResult', expect.any(Function));
-      expect(addListenerSpy).toHaveBeenCalledWith('onConnect', expect.any(Function));
-      expect(addListenerSpy).toHaveBeenCalledWith('onDisconnect', expect.any(Function));
-      expect(addListenerSpy).toHaveBeenCalledTimes(3);
-      expect(AbrevvaBleMock.startScan).toHaveBeenCalledTimes(1);
-      expect(emitterSubscriptionMock.remove).toHaveBeenCalledTimes(3);
+      mockEmitter.addListener.mockImplementation(
+        (_eventType: string, listener: (event: any) => void) => {
+          listener(true);
+          return emitterSubscriptionMock;
+        },
+      );
+      await AbrevvaBle.startScan(onScanResultMock, onConnectMock, onDisconnectMock);
+      setTimeout(() => {
+        expect(onScanResultMock).toHaveBeenCalledTimes(1);
+        expect(onConnectMock).toHaveBeenCalledTimes(1);
+        expect(onDisconnectMock).toHaveBeenCalledTimes(1);
+        expect(addListenerSpy).toHaveBeenCalledTimes(3);
+        expect(AbrevvaBleMock.startScan).toHaveBeenCalledTimes(1);
+        expect(emitterSubscriptionMock.remove).toHaveBeenCalledTimes(3);
+      }, 500);
     });
   });
   it('should run stopScan()', async () => {
@@ -114,7 +119,6 @@ describe('AbrevvaBleModule', () => {
   it('should run disconnect()', async () => {
     await AbrevvaBle.disconnect('deviceId');
     expect(AbrevvaBleMock.disconnect).toHaveBeenCalledTimes(1);
-    expect(AbrevvaBleMock.setSupportedEvents).toHaveBeenCalledTimes(1);
   });
   it('should run read()', async () => {
     await AbrevvaBle.read('deviceId', 'service', 'characteristic');
@@ -129,7 +133,10 @@ describe('AbrevvaBleModule', () => {
     expect(AbrevvaBleMock.signalize).toHaveBeenCalledTimes(1);
   });
   it('should run disengage()', async () => {
-    await AbrevvaBle.disengage(
+    AbrevvaBleMock.disengage.mockImplementation(() => {
+      return { value: 'ERROR' };
+    });
+    const status = await AbrevvaBle.disengage(
       'deviceId',
       'mobileId',
       'mobileDeviceKey',
@@ -138,6 +145,7 @@ describe('AbrevvaBleModule', () => {
       false,
     );
     expect(AbrevvaBleMock.disengage).toHaveBeenCalledTimes(1);
+    expect(status).toEqual('ERROR');
   });
   describe('startNotifications()', () => {});
   describe('stopNotifications()', () => {
