@@ -61,7 +61,7 @@ class ExampleClass {
   async startScan(event: any) {
     this.devices = [];
    
-    await AbrevvaBle.initialize()
+    await AbrevvaBle.initialize();
     await AbrevvaBle.startScan(
       (device: BleDevice) => {
         this.devices.push(device);
@@ -80,15 +80,15 @@ class ExampleClass {
 Get the EVVA advertisement data from a scanned EVVA component.
 
 ```typescript
-const ad = device.advertisementData
-console.log(ad?.rssi)
-console.log(ad?.isConnectable)
+const ad = device.advertisementData;
+console.log(ad?.rssi);
+console.log(ad?.isConnectable);
 
-const md = ad?.manufacturerData
-console.log(md?.batteryStatus)
-console.log(md?.isOnline)
-console.log(md?.officeModeEnabled)
-console.log(md?.officeModeActive)
+const md = ad?.manufacturerData;
+console.log(md?.batteryStatus);
+console.log(md?.isOnline);
+console.log(md?.officeModeEnabled);
+console.log(md?.officeModeActive);
 // ...
 ```
 
