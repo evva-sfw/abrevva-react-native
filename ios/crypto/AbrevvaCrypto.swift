@@ -33,7 +33,7 @@ public class AbrevvaCrypto: NSObject {
         } else {
             resolve([
                 "cipherText": [UInt8](ct[..<pt.count]).toHexString(),
-                "authTag": [UInt8](ct[pt.count...]).toHexString(),
+                "authTag": [UInt8](ct[pt.count...]).toHexString()
             ])
         }
     }
@@ -61,7 +61,7 @@ public class AbrevvaCrypto: NSObject {
         } else {
             resolve([
                 "plainText": pt,
-                "authOk": true,
+                "authOk": true
             ])
         }
     }
@@ -74,7 +74,7 @@ public class AbrevvaCrypto: NSObject {
 
         resolve([
             "privateKey": keyPair[0].toHexString(),
-            "publicKey": keyPair[1].toHexString(),
+            "publicKey": keyPair[1].toHexString()
         ])
     }
 
@@ -96,7 +96,7 @@ public class AbrevvaCrypto: NSObject {
         )
 
         resolve([
-            "sharedSecret": sharedSecret?.toHexString(),
+            "sharedSecret": sharedSecret?.toHexString()
         ])
     }
 
@@ -121,7 +121,7 @@ public class AbrevvaCrypto: NSObject {
             reject("encryption failed", nil, nil)
         } else {
             resolve([
-                "opOk": operationResult,
+                "opOk": operationResult
             ])
         }
     }
@@ -158,7 +158,7 @@ public class AbrevvaCrypto: NSObject {
             reject("Encryption has failed", nil, nil)
         } else {
             resolve([
-                "opOk": operationResult,
+                "opOk": operationResult
             ])
         }
     }
@@ -193,7 +193,7 @@ public class AbrevvaCrypto: NSObject {
             reject("Decryption has failed", nil, nil)
         } else {
             resolve([
-                "opOk": operationResult,
+                "opOk": operationResult
             ])
         }
     }
@@ -214,7 +214,7 @@ public class AbrevvaCrypto: NSObject {
             reject("random generation failed", nil, nil)
         } else {
             resolve([
-                "value": rnd,
+                "value": rnd
             ])
         }
     }
@@ -240,7 +240,7 @@ public class AbrevvaCrypto: NSObject {
             reject("derivation failed", nil, nil)
         } else {
             resolve([
-                "value": derived,
+                "value": derived
             ])
         }
     }

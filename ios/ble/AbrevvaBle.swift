@@ -102,7 +102,7 @@ public class AbrevvaBle: RCTEventEmitter {
                     settingsURL,
                     completionHandler: { success in
                         resolve([
-                            "value": success,
+                            "value": success
                         ])
                     }
                 )
@@ -126,22 +126,19 @@ public class AbrevvaBle: RCTEventEmitter {
         let allowDuplicates = optionsSwift["allowDuplicates"] as? Bool ?? false
         let timeout = optionsSwift["timeout"] as? Int ?? 10000
 
-        bleManager.startScan(
-            { device in
-                self.bleDeviceMap[device.getAddress()] = device
-                self.sendEvent(
-                    withName: "onScanResult", body: self.getAdvertismentData(device)
-                )
-            },
-            { error in
-                self.sendEvent(withName: "onScanStart", body: error == nil)
-            },
-            { error in
-                self.sendEvent(withName: "onScanStop", body: error == nil)
-            },
-            macFilter,
-            allowDuplicates,
-            timeout
+        bleManager.startScan({ device in
+            self.bleDeviceMap[device.getAddress()] = device
+            self.sendEvent(
+                withName: "onScanResult", body: self.getAdvertismentData(device)
+            )
+        }, { error in
+            self.sendEvent(withName: "onScanStart", body: error == nil)
+        }, { error in
+            self.sendEvent(withName: "onScanStop", body: error == nil)
+        },
+        macFilter,
+        allowDuplicates,
+        timeout
         )
     }
 
@@ -196,8 +193,7 @@ public class AbrevvaBle: RCTEventEmitter {
         let timeout = optionsSwift["timeout"] as? Int ?? 10000
         Task {
             let success = await self.bleManager!.connect(
-                device,
-                { address in
+                device, { address in
                     self.sendEvent(
                         withName: "onDisconnect|\(address)", body: ["address": address]
                     )
@@ -350,12 +346,11 @@ public class AbrevvaBle: RCTEventEmitter {
         let timeout = optionsSwift["timeout"] as? Int ?? nil
         Task {
             let success = await device.setNotifications(
-                characteristic.0, characteristic.1, true,
-                { value in
+                characteristic.0, characteristic.1, true, { value in
                     let key =
                         "notification|\(device.getAddress().lowercased())|"
-                            + "\(characteristic.0.uuidString.lowercased())|"
-                            + "\(characteristic.1.uuidString.lowercased())"
+                        + "\(characteristic.0.uuidString.lowercased())|"
+                        + "\(characteristic.1.uuidString.lowercased())"
 
                     if value != nil {
                         self.sendEvent(withName: key, body: ["value": dataToString(value!)])
@@ -407,11 +402,11 @@ public class AbrevvaBle: RCTEventEmitter {
         var bleDeviceData: [String: Any?] = [
             "deviceId": device.getAddress(),
             "name": device.getName(),
-            "raw": device.advertisementData?.rawData,
+            "raw": device.advertisementData?.rawData
         ]
 
         var advertismentData: [String: Any?] = [
-            "rssi": device.advertisementData?.rssi,
+            "rssi": device.advertisementData?.rssi
         ]
         if let isConnectable = device.advertisementData?.isConnectable {
             advertismentData["isConnectable"] = isConnectable
@@ -441,7 +436,7 @@ public class AbrevvaBle: RCTEventEmitter {
             "subFirmwareVersionMinor": mfData.subFirmwareVersionMinor,
             "subFirmwareVersionPatch": mfData.subFirmwareVersionPatch,
             "subComponentIdentifier": mfData.subComponentIdentifier,
-            "componentType": getComponentType(mfData.componentType),
+            "componentType": getComponentType(mfData.componentType)
         ]
 
         advertismentData["manufacturerData"] = manufacturerData
@@ -469,8 +464,7 @@ public class AbrevvaBle: RCTEventEmitter {
     }
 
     private func getBleManager(_ reject: @escaping RCTPromiseRejectBlock)
-        -> BleManager?
-    {
+    -> BleManager? {
         guard let bleManager else {
             reject("getBleManager(): not initialized", nil, nil)
             return nil
@@ -544,7 +538,7 @@ public class AbrevvaBle: RCTEventEmitter {
 
     private func getBleDeviceDict(_ device: BleDevice) -> [String: String] {
         var bleDevice = [
-            "deviceId": device.getAddress(),
+            "deviceId": device.getAddress()
         ]
         if device.getName() != nil {
             bleDevice["name"] = device.getName()
