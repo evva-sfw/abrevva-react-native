@@ -134,7 +134,7 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
       await NativeModuleBle.setSupportedEvents({
         events: [...this.eventListeners.keys(), 'onScanStop'],
       });
-      this.registerListener('onScanStop', (success: BooleanResult) => {
+      await this.registerListener('onScanStop', (success: BooleanResult) => {
         ['onScanResult', 'onScanStart', 'onScanStop'].forEach((key) => {
           this.eventListeners.get(key)?.remove();
         });

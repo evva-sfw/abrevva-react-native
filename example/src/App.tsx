@@ -24,7 +24,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('crypto')}>
-        <Text style={styles.buttonText}>Crpto Test</Text>
+        <Text style={styles.buttonText}>Crypto Test</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ble')}>
         <Text style={styles.buttonText}>Ble Test</Text>
@@ -45,7 +45,7 @@ const CryptoScreen = () => {
           text="generateKeyPair"
           onPressFunction={() => {
             AbrevvaCrypto.generateKeyPair().then((ret: any) => {
-              setResult(`Privat Key:\n${ret.privateKey}\n\nPublic Key:\n${ret.publicKey}`);
+              setResult(`Private Key:\n${ret.privateKey}\n\nPublic Key:\n${ret.publicKey}`);
             });
           }}
         />
@@ -53,7 +53,7 @@ const CryptoScreen = () => {
           text="random"
           onPressFunction={() => {
             AbrevvaCrypto.random(4).then((ret: any) => {
-              setResult(`random:\n${ret.value}\n\n`);
+              setResult(`Random:\n${ret.value}\n\n`);
             });
           }}
         />

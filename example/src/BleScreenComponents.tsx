@@ -14,47 +14,45 @@ import {
 global.Buffer = require('buffer').Buffer;
 
 export const BleScreen = () => {
-  const [statusCode, setStatusCode] = useState('none');
-  const [startScanNoftification, setStartScanNoftification] = useState(
-    'pull down to start scanning',
-  );
+  const [statusCode, setStatusCode] = useState('None');
+  const [startScanNotification, setStartScanNotification] = useState('Pull down to start scanning');
 
   return (
     <>
-      <Text style={bleStyles.scanNotification}>{startScanNoftification}</Text>
+      <Text style={bleStyles.scanNotification}>{startScanNotification}</Text>
       <ScanResults
-        props={{ setStatus: setStatusCode, setScanNoftification: setStartScanNoftification }}
+        props={{ setStatus: setStatusCode, setScanNotification: setStartScanNotification }}
       />
       <SafeAreaView style={bleStyles.status}>
-        <Text>Last received Statuscode '{statusCode}'</Text>
+        <Text>Last received status code '{statusCode}'</Text>
       </SafeAreaView>
     </>
   );
 };
 
 const ScanResults = ({ props }) => {
-  const [deviceList, setdeviceList] = useState<BleDevice[]>([]);
+  const [deviceList, setDeviceList] = useState<BleDevice[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const setStatus = props.setStatus;
-  const setScanNoftification = props.setScanNoftification;
+  const setScanNotification = props.setScanNotification;
 
   const scanRequestCallback = (data: BleDevice) => {
     if (data.advertisementData?.manufacturerData?.companyIdentifier === 2153) {
-      setdeviceList((prevDeviceList) => {
+      setDeviceList((prevDeviceList) => {
         return [data, ...prevDeviceList];
       });
     }
   };
 
   const onRefresh = async () => {
-    setStatus('none');
-    setScanNoftification('scanning ...');
+    setStatus('None');
+    setScanNotification('Scanning ...');
     setRefreshing(true);
-    setdeviceList([]);
+    setDeviceList([]);
 
     const timeout: NodeJS.Timeout = setTimeout(() => {
       setRefreshing(false);
-      setScanNoftification('');
+      setScanNotification('');
     }, 3_000);
 
     await AbrevvaBle.stopScan();
@@ -62,11 +60,11 @@ const ScanResults = ({ props }) => {
     try {
       await AbrevvaBle.startScan(
         scanRequestCallback,
-        (success: BooleanResult) => {
-          console.log(`onScanStart: ${success}`);
+        (result: BooleanResult) => {
+          console.log(`onScanStart: ${result.value}`);
         },
-        (success: BooleanResult) => {
-          console.log(`onScanStop: ${success}`);
+        (result: BooleanResult) => {
+          console.log(`onScanStop: ${result.value}`);
         },
         undefined,
         false,
@@ -79,7 +77,7 @@ const ScanResults = ({ props }) => {
   };
 
   useEffect(() => {
-    AbrevvaBle.initialize(true);
+    void AbrevvaBle.initialize(true);
   }, []);
 
   return (
