@@ -12,7 +12,6 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		39FBC3E02C64DE9800BEE979 /* AbrevvaCryptoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39FBC3DF2C64DE9800BEE979 /* AbrevvaCryptoTests.swift */; };
-		39FBC3E72C65FC2000BEE979 /* AbrevvaBleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39FBC3E62C65FC2000BEE979 /* AbrevvaBleTests.swift */; };
 		58A1C1E5635E94856D4C7662 /* Pods_ExampleAppExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6F5257F6950F20000E706A /* Pods_ExampleAppExample.framework */; };
 		7C2CCBD275D987DDA9C659B6 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 61DF2990903C4888EBB0D63C /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -40,7 +39,6 @@
 		1B6F5257F6950F20000E706A /* Pods_ExampleAppExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ExampleAppExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		39FBC3DD2C64DE9800BEE979 /* ExampleAppExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExampleAppExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		39FBC3DF2C64DE9800BEE979 /* AbrevvaCryptoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbrevvaCryptoTests.swift; sourceTree = "<group>"; };
-		39FBC3E62C65FC2000BEE979 /* AbrevvaBleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbrevvaBleTests.swift; sourceTree = "<group>"; };
 		61DF2990903C4888EBB0D63C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = ExampleAppExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		6CDCDB6EBD657F5AB82D4529 /* Pods-ExampleAppExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleAppExample.debug.xcconfig"; path = "Target Support Files/Pods-ExampleAppExample/Pods-ExampleAppExample.debug.xcconfig"; sourceTree = "<group>"; };
 		791740A1319B42B285B9B9D9 /* Pods-ExampleAppExample-ExampleAppExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleAppExample-ExampleAppExampleTests.release.xcconfig"; path = "Target Support Files/Pods-ExampleAppExample-ExampleAppExampleTests/Pods-ExampleAppExample-ExampleAppExampleTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -99,7 +97,6 @@
 			isa = PBXGroup;
 			children = (
 				39FBC3DF2C64DE9800BEE979 /* AbrevvaCryptoTests.swift */,
-				39FBC3E62C65FC2000BEE979 /* AbrevvaBleTests.swift */,
 			);
 			path = ExampleAppExampleTests;
 			sourceTree = "<group>";
@@ -397,7 +394,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				39FBC3E02C64DE9800BEE979 /* AbrevvaCryptoTests.swift in Sources */,
-				39FBC3E72C65FC2000BEE979 /* AbrevvaBleTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

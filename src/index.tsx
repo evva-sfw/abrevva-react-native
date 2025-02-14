@@ -176,9 +176,6 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
   }
 
   async disconnect(deviceId: string): Promise<void> {
-    const key = `onDisconnect|${deviceId}`;
-    this.eventListeners.get(key)?.remove();
-
     await NativeModuleBle.disconnect({ deviceId: deviceId });
   }
 
