@@ -53,7 +53,6 @@ public class AbrevvaBle: RCTEventEmitter {
     ) {
         guard let bleManager = getBleManager(reject) else { return }
         bleManager.registerStateReceiver { enabled in
-            debugPrint("REACHED CALLBACK")
             self.sendEvent(withName: "onEnabledChanged", body: ["value": enabled])
         }
         resolve(nil)

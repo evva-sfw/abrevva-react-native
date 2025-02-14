@@ -66,42 +66,42 @@ class AbrevvaBleModuleTest {
     }
 
     /* https://github.com/mockk/mockk/issues/586#issuecomment-1404973825 */
-//    @OptIn(DelicateCoroutinesApi::class)
-//    @SuppressLint("MissingPermission")
+    @OptIn(DelicateCoroutinesApi::class)
+    @SuppressLint("MissingPermission")
 //    @Test
-//    fun `startNotifications notification recieved closure should generate key correctly`() {
-//        mockkConstructor(BleDevice::class)
-//        val callbackSlot = slot<(data: ByteArray) -> Unit>()
-//        val keySlot = slot<String>()
-//        val deviceId = "e7f635ac-27ae-4bc6-a5ca-3f07872f49e9"
-//        val service = "01a660db-5dbd-488a-bd01-b42449817c82"
-//        val characteristic = "d0d71305-05b2-4add-9ea9-bcd1cc82211c"
-//        val options = WritableMapTestImplementation(
-//            mutableMapOf(
-//                "deviceId" to deviceId,
-//                "service" to service,
-//                "characteristic" to characteristic
-//            )
-//        )
-//        every { Arguments.createMap() } returns options
-//
-//        coEvery {
-//          anyConstructed<BleDevice>().setNotifications(
-//            any(),
-//            any(),
-//            capture(callbackSlot),
-//            any()
-//          )
-//        } returns true
-//
-//        every { contextMock.emitDeviceEvent(capture(keySlot), any()) } returns Unit
-//        abrevvaBleModule = AbrevvaBleModule(contextMock)
-//
-//        abrevvaBleModule.startNotifications(
-//            options, promiseMock
-//        )
-//         callbackSlot.captured.invoke(ByteArray(0))
-//
-//        assert(keySlot.captured == "notification|e7f635ac-27ae-4bc6-a5ca-3f07872f49e9|01a660db-5dbd-488a-bd01-b42449817c82|d0d71305-05b2-4add-9ea9-bcd1cc82211c")
-//    }
+    fun `startNotifications notification recieved closure should generate key correctly`() {
+        mockkConstructor(BleDevice::class)
+        val callbackSlot = slot<(data: ByteArray) -> Unit>()
+        val keySlot = slot<String>()
+        val deviceId = "e7f635ac-27ae-4bc6-a5ca-3f07872f49e9"
+        val service = "01a660db-5dbd-488a-bd01-b42449817c82"
+        val characteristic = "d0d71305-05b2-4add-9ea9-bcd1cc82211c"
+        val options = WritableMapTestImplementation(
+            mutableMapOf(
+                "deviceId" to deviceId,
+                "service" to service,
+                "characteristic" to characteristic
+            )
+        )
+        every { Arguments.createMap() } returns options
+
+        coEvery {
+          anyConstructed<BleDevice>().setNotifications(
+            any(),
+            any(),
+            capture(callbackSlot),
+            any()
+          )
+        } returns true
+
+        every { contextMock.emitDeviceEvent(capture(keySlot), any()) } returns Unit
+        abrevvaBleModule = AbrevvaBleModule(contextMock)
+
+        abrevvaBleModule.startNotifications(
+            options, promiseMock
+        )
+         callbackSlot.captured.invoke(ByteArray(0))
+
+        assert(keySlot.captured == "notification|e7f635ac-27ae-4bc6-a5ca-3f07872f49e9|01a660db-5dbd-488a-bd01-b42449817c82|d0d71305-05b2-4add-9ea9-bcd1cc82211c")
+    }
 }
