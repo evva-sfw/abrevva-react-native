@@ -62,13 +62,14 @@ class ExampleClass {
    
     await AbrevvaBle.initialize()
     await AbrevvaBle.startScan(
-    (device: BleDevice) => {
-      this.devices.push(device);
-    }, (success: boolean) => {
-      console.log(`Scan started, success: ${success}`);
-    }, (success: boolean) => {
-      console.log(`Scan stopped, success: ${success}`);
-    });
+      (device: BleDevice) => {
+        this.devices.push(device);
+      }, (success: boolean) => {
+        console.log(`Scan started, success: ${success}`);
+      }, (success: boolean) => {
+        console.log(`Scan stopped, success: ${success}`);
+      }
+    );
   }
 }
 ```
@@ -136,11 +137,11 @@ For the component disengage you have to provide access credentials to the EVVA c
 
 ```typescript
 const status = await AbrevvaBle.disengage(
-  'deviceId',
-  'mobileId',
-  'mobileDeviceKey',
-  'mobileGroupId',
-  'mobileAccessData',
+  device.deviceId,
+  'mobileId',         // sha256-hashed hex-encoded version of `xsMobileId` found in blob data.
+  'mobileDeviceKey',  // mobile device key string from `xsMOBDK` found in blob data.
+  'mobileGroupId',    // mobile group id string from `xsMOBGID` found in blob data.
+  'mobileAccessData', // access data string from `mediumDataFrame` found in blob data.
   false,
 );
 ```
