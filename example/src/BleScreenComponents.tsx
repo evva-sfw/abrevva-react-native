@@ -37,11 +37,9 @@ const ScanResults = ({ props }) => {
   const setScanNotification = props.setScanNotification;
 
   const scanRequestCallback = (data: BleDevice) => {
-    if (data.advertisementData?.manufacturerData?.companyIdentifier === 2153) {
-      setDeviceList((prevDeviceList) => {
-        return [data, ...prevDeviceList];
-      });
-    }
+    setDeviceList((prevDeviceList) => {
+      return [data, ...prevDeviceList];
+    });
   };
 
   const onRefresh = async () => {
