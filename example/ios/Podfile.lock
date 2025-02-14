@@ -1,6 +1,6 @@
 PODS:
-  - abrevva-react-native (3.0.0):
-    - AbrevvaSDK (= 3.0.4)
+  - abrevva-react-native (4.0.0):
+    - AbrevvaSDK (= 3.0.5)
     - CocoaMQTT
     - CryptoSwift
     - DoubleConversion
@@ -23,7 +23,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - AbrevvaSDK (3.0.4):
+  - AbrevvaSDK (3.0.5):
     - CocoaMQTT
     - CryptoSwift
   - boost (1.83.0)
@@ -1446,8 +1446,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  abrevva-react-native: 7ca56c1e4a3234e18ae34e385022b546f92190c0
-  AbrevvaSDK: 23cf514f40b2fc3ec7b03eb41a455131bb380a32
+  abrevva-react-native: b3f650593cbe8c23340b36df61b943e4f0e4aa0f
+  AbrevvaSDK: 4596dce6e36cce39c23a6a66efeaf257ac2ec147
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   CocoaMQTT: 1f206228b29318eabdacad0c2e4e88575922c27a
   CryptoSwift: e64e11850ede528a02a0f3e768cec8e9d92ecb90
@@ -1520,6 +1520,6 @@ SPEC CHECKSUMS:
   SwiftLint: c1de071d9d08c8aba837545f6254315bc900e211
   Yoga: bd92064a0d558be92786820514d74fc4dddd1233
 
-PODFILE CHECKSUM: 4b7b9745bd3069b0dfcee04d1901c81317f4fcf9
+PODFILE CHECKSUM: 0909d207adaecfc8c6a9a5c300bf5084f055e51f
 
 COCOAPODS: 1.14.3
