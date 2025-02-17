@@ -24,73 +24,16 @@ import com.facebook.react.bridge.ReadableMap
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanResult
 import java.util.UUID
+
 
 class AbrevvaBleModule(reactContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactContext) {
     private var manager: BleManager = BleManager(reactContext)
-    private var aliases: Array<String>
-
-    init {
-        aliases = arrayOf()
-    }
 
     @ReactMethod
-    fun initialize(options: ReadableMap, promise: Promise) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            var neverForLocation = false
-            try {
-                neverForLocation = options.getBoolean("androidNeverForLocation")
-            } catch (_: Exception) {
-            }
-
-            this.aliases = if (neverForLocation) {
-                arrayOf(
-                    android.Manifest.permission.BLUETOOTH_SCAN,
-                    android.Manifest.permission.BLUETOOTH_CONNECT,
-                )
-            } else {
-                arrayOf(
-                    android.Manifest.permission.BLUETOOTH_SCAN,
-                    android.Manifest.permission.BLUETOOTH_CONNECT,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                )
-            }
-        } else {
-            this.aliases = arrayOf(
-                android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.BLUETOOTH,
-                android.Manifest.permission.BLUETOOTH_ADMIN,
-            )
-        }
-
-        this.aliases.forEach {
-            if (ContextCompat.checkSelfPermission(
-                    reactApplicationContext,
-                    it
-                ) == PackageManager.PERMISSION_DENIED
-            ) {
-                ActivityCompat.requestPermissions(
-                    currentActivity!!,
-                    this.aliases,
-                    1
-                )
-            }
-        }
-        promise.resolve(null)
-    }
-
-    private fun runInitialization(options: ReadableMap, promise: Promise) {
-        if (!currentActivity!!.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            return promise.reject(Exception("runInitialization(): BLE is not supported"))
-        }
-
-        if (!manager.isBleEnabled()) {
-            return promise.reject(Exception("runInitialization(): BLE is not available"))
-        }
-        promise.resolve("success")
+    fun checkSdkVersion(promise: Promise){
+      promise.resolve(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
     }
 
     @ReactMethod

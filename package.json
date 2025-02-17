@@ -104,5 +104,8 @@
     "tabWidth": 2,
     "trailingComma": "es5",
     "useTabs": false
+  },
+  "dependencies": {
+    "react-native-permissions": "^5.2.5"
   }
 }
