@@ -106,8 +106,7 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
 
         val macFilter: String? = options.getString("macFilter")
         val allowDuplicates: Boolean = options.getBoolean("allowDuplicates")
-
-
+        
         this.manager.startScan(
             { device: BleDevice ->
                 reactApplicationContext.emitDeviceEvent("onScanResult", getBleDeviceData(device))
