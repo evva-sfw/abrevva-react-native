@@ -234,7 +234,7 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
         val key = Hex.decode(options.getString("key") ?: "")
         val salt = Hex.decode(options.getString("salt") ?: "")
         val info = Hex.decode(options.getString("info") ?: "")
-        val length = options.getInt("length") ?: 0
+        val length = options.getInt("length")
 
         val derived: ByteArray = HKDF.derive(key, salt, info, length)
         if (derived.isEmpty()) {
