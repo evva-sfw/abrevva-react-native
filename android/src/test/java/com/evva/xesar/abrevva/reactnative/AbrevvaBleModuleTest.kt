@@ -3,10 +3,7 @@ package com.evva.xesar.abrevva.reactnative
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
 import android.content.Context
-import android.os.Handler
-import android.os.ParcelUuid
 import com.evva.xesar.abrevva.ble.BleDevice
-import com.evva.xesar.abrevva.ble.BleManager
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -19,19 +16,9 @@ import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import io.mockk.slot
-import io.mockk.spyk
 import io.mockk.unmockkAll
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import no.nordicsemi.android.common.core.DataByteArray
-import no.nordicsemi.android.kotlin.ble.core.ServerDevice
-import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanRecord
-import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanResult
-import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanResultData
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 
 class AbrevvaBleModuleTest {
     private lateinit var abrevvaBleModule: AbrevvaBleModule
@@ -66,10 +53,9 @@ class AbrevvaBleModuleTest {
     }
 
     /* https://github.com/mockk/mockk/issues/586#issuecomment-1404973825 */
-    @OptIn(DelicateCoroutinesApi::class)
     @SuppressLint("MissingPermission")
-//    @Test
-    fun `startNotifications notification recieved closure should generate key correctly`() {
+    // @Test
+    fun `startNotifications notification received closure should generate key correctly`() {
         mockkConstructor(BleDevice::class)
         val callbackSlot = slot<(data: ByteArray) -> Unit>()
         val keySlot = slot<String>()
@@ -86,12 +72,12 @@ class AbrevvaBleModuleTest {
         every { Arguments.createMap() } returns options
 
         coEvery {
-          anyConstructed<BleDevice>().setNotifications(
-            any(),
-            any(),
-            capture(callbackSlot),
-            any()
-          )
+            anyConstructed<BleDevice>().setNotifications(
+                any(),
+                any(),
+                capture(callbackSlot),
+                any()
+            )
         } returns true
 
         every { contextMock.emitDeviceEvent(capture(keySlot), any()) } returns Unit
@@ -100,7 +86,7 @@ class AbrevvaBleModuleTest {
         abrevvaBleModule.startNotifications(
             options, promiseMock
         )
-         callbackSlot.captured.invoke(ByteArray(0))
+        callbackSlot.captured.invoke(ByteArray(0))
 
         assert(keySlot.captured == "notification|e7f635ac-27ae-4bc6-a5ca-3f07872f49e9|01a660db-5dbd-488a-bd01-b42449817c82|d0d71305-05b2-4add-9ea9-bcd1cc82211c")
     }
