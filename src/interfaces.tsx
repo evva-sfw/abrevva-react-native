@@ -197,6 +197,7 @@ export interface AbrevvaBLEInterface {
     deviceId: string,
     service: string,
     characteristic: string,
+    timeout: number,
     callback: (event: StringResult) => void,
   ): Promise<void>;
   stopNotifications(deviceId: string, service: string, characteristic: string): Promise<void>;

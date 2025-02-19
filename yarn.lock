@@ -1922,6 +1922,7 @@ __metadata:
     react: 18.2.0
     react-native: 0.74.3
     react-native-builder-bob: ^0.30.0
+    react-native-permissions: ^5.2.5
     release-it: ^17.6.0
     typescript: ^5.2.2
   peerDependencies:
@@ -2486,13 +2487,13 @@ __metadata:
   linkType: hard
 
 "@octokit/request-error@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@octokit/request-error@npm:5.1.0"
+  version: 5.1.1
+  resolution: "@octokit/request-error@npm:5.1.1"
   dependencies:
     "@octokit/types": ^13.1.0
     deprecation: ^2.0.0
     once: ^1.4.0
-  checksum: 2cdbb8e44072323b5e1c8c385727af6700e3e492d55bc1e8d0549c4a3d9026914f915866323d371b1f1772326d6e902341c872679cc05c417ffc15cadf5f4a4e
+  checksum: 17d0b3f59c2a8a285715bfe6a85168d9c417aa7a0ff553b9be4198a3bc8bb00384a3530221a448eb19f8f07ea9fc48d264869624f5f84fa63a948a7af8cddc8c
   languageName: node
   linkType: hard
 
@@ -10774,6 +10775,20 @@ __metadata:
     react-native-windows:
       optional: true
   checksum: 0be9bb9a5c13b501d0a3006efc3aa5c0b5b211456ee04718297f4e522532f3527f1daa220bd67d3b82d819ed8fdab8f64b7d6e0d7b768c1fd1d8ec9122d94316
+  languageName: node
+  linkType: hard
+
+"react-native-permissions@npm:^5.2.5":
+  version: 5.2.5
+  resolution: "react-native-permissions@npm:5.2.5"
+  peerDependencies:
+    react: ">=18.1.0"
+    react-native: ">=0.70.0"
+    react-native-windows: ">=0.70.0"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: d51221017070145ae16d8dee06f69ebe89419ce179e5b096cdfe8fe89309c9b2c36005aa194e2b52b9f5fabb9b411a511780ebba4523d108733218b031be222c
   languageName: node
   linkType: hard
 

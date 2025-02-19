@@ -3,6 +3,8 @@ import {
   type EmitterSubscription,
   NativeEventEmitter,
   NativeModules,
+  type Permission,
+  PermissionsAndroid,
 } from 'react-native';
 
 export * from './conversion';
@@ -79,9 +81,26 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
   }
 
   async initialize(androidNeverForLocation?: boolean): Promise<void> {
-    await NativeModuleBle.initialize(
-      this.removeUndefinedField({ androidNeverForLocation: androidNeverForLocation }),
-    );
+    if (Platform.OS === 'ios') {
+      await NativeModuleBle.initialize(
+        this.removeUndefinedField({ androidNeverForLocation: androidNeverForLocation }),
+      );
+    } else if (Platform.OS === 'android') {
+      var permissions: Permission[] = [];
+      if (await NativeModuleBle.checkSdkVersion()) {
+        permissions.push('android.permission.BLUETOOTH_SCAN');
+        permissions.push('android.permission.BLUETOOTH_CONNECT');
+        if (androidNeverForLocation) {
+          permissions.push('android.permission.ACCESS_FINE_LOCATION');
+        }
+      } else {
+        permissions = [
+          'android.permission.ACCESS_COARSE_LOCATION',
+          'android.permission.ACCESS_FINE_LOCATION',
+        ];
+      }
+      await PermissionsAndroid.requestMultiple(permissions);
+    }
   }
 
   async isEnabled(): Promise<BooleanResult> {
@@ -245,6 +264,7 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
     deviceId: string,
     service: string,
     characteristic: string,
+    timeout: number,
     callback: (event: StringResult) => void,
   ): Promise<void> {
     const key = `notification|${deviceId}|${service}|${characteristic}`.toLowerCase();
@@ -254,6 +274,7 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
         deviceId: deviceId,
         service: service,
         characteristic: characteristic,
+        timeout: timeout,
       }),
     );
   }
