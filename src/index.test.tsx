@@ -161,7 +161,7 @@ describe('AbrevvaBleModule', () => {
       });
     });
     it('should delete the Eventlistener if it was previously added', async () => {
-      await AbrevvaBle.startNotifications(deviceId, service, characteristic, () => {});
+      await AbrevvaBle.startNotifications(deviceId, service, characteristic, 10_000, () => {});
       expect(emitterSubscriptionMock.remove).toHaveBeenCalledTimes(0);
       expect(AbrevvaBleMock.stopNotifications).toHaveBeenCalledTimes(0);
       expect(AbrevvaBleMock.startNotifications).toHaveBeenCalledTimes(1);
