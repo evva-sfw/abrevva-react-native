@@ -264,6 +264,7 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
     deviceId: string,
     service: string,
     characteristic: string,
+    timeout: number,
     callback: (event: StringResult) => void,
   ): Promise<void> {
     const key = `notification|${deviceId}|${service}|${characteristic}`.toLowerCase();
@@ -273,6 +274,7 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
         deviceId: deviceId,
         service: service,
         characteristic: characteristic,
+        timeout: timeout,
       }),
     );
   }

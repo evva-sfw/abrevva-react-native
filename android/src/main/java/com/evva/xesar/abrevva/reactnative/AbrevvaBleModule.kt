@@ -304,6 +304,11 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
     @RequiresPermission(value = "android.permission.BLUETOOTH_CONNECT")
     fun startNotifications(options: ReadableMap, promise: Promise) {
         val deviceId = options.getString("deviceId") ?: ""
+        var timeout: Long = 10000
+        try {
+            timeout = options.getDouble("timeout").toLong()
+        } catch (_: Exception) {
+        }
         val characteristic =
             getCharacteristic(options, promise)
                 ?: return promise.reject(Exception("startNotifications(): bad characteristic"))
@@ -321,7 +326,9 @@ class AbrevvaBleModule(reactContext: ReactApplicationContext) :
 
                     ret.putString("value", bytesToString(data))
                     reactApplicationContext.emitDeviceEvent(key, ret)
-                })
+                },
+                timeout
+            )
             if (success) {
                 val ret = Arguments.createMap()
                 ret.putString("value", "success")
