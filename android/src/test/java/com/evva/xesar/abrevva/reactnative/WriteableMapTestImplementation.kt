@@ -8,7 +8,7 @@ import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
 import io.mockk.mockk
 
-class WritableMapTestImplementation(args: MutableMap<String, Any?> = mutableMapOf<String, Any?>()) :
+class WritableMapTestImplementation(args: MutableMap<String, Any?> = mutableMapOf()) :
     WritableMap {
     private var map = mutableMapOf<String, Any?>()
 
@@ -16,21 +16,11 @@ class WritableMapTestImplementation(args: MutableMap<String, Any?> = mutableMapO
         map = args
     }
 
-    fun print() {
-        map.forEach { key, value ->
-            println("${key}: ${value}")
-        }
-    }
-
     override fun equals(other: Any?): Boolean {
         return map == (other as WritableMapTestImplementation).getMap()
     }
 
-    fun getSize(): Int {
-        return map.size
-    }
-
-    fun getMap(): MutableMap<String, Any?> {
+    private fun getMap(): MutableMap<String, Any?> {
         return map
     }
 
@@ -120,5 +110,9 @@ class WritableMapTestImplementation(args: MutableMap<String, Any?> = mutableMapO
 
     override fun copy(): WritableMap {
         TODO("Not yet implemented")
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
     }
 }

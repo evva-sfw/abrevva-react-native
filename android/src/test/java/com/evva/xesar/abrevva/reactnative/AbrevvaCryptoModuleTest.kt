@@ -34,7 +34,7 @@ import org.junit.jupiter.params.provider.Arguments as JunitArguments
 
 class AbrevvaCryptoModuleTest {
 
-    private lateinit var abrevvaCryptoModule: com.evva.xesar.abrevva.reactnative.AbrevvaCryptoModule
+    private lateinit var abrevvaCryptoModule: AbrevvaCryptoModule
 
     private lateinit var testMap: WritableMapTestImplementation
 
@@ -60,7 +60,7 @@ class AbrevvaCryptoModuleTest {
         testMap = WritableMapTestImplementation()
         every { Arguments.createMap() } returns testMap
         every { Hex.decode(any<String>()) } returns byteArrayOf(1)
-        abrevvaCryptoModule = com.evva.xesar.abrevva.reactnative.AbrevvaCryptoModule(contextMock)
+        abrevvaCryptoModule = AbrevvaCryptoModule(contextMock)
     }
 
     @AfterEach
@@ -155,7 +155,7 @@ class AbrevvaCryptoModuleTest {
             verify { promiseMock.reject(any<Throwable>()) }
         }
 
-        fun parameterizedArgs_encrypt(): Stream<JunitArguments> {
+        private fun parameterizedArgs_encrypt(): Stream<JunitArguments> {
             return Stream.of(
                 JunitArguments.of("", "ptPath", "sharedSecret"),
                 JunitArguments.of("ctPath", "", "sharedSecret"),
@@ -215,7 +215,7 @@ class AbrevvaCryptoModuleTest {
             verify { promiseMock.reject(any<Throwable>()) }
         }
 
-        fun parameterizedArgs_decrypt(): Stream<JunitArguments> {
+        private fun parameterizedArgs_decrypt(): Stream<JunitArguments> {
             return Stream.of(
                 JunitArguments.of("", "ptPath", "sharedSecret"),
                 JunitArguments.of("ctPath", "", "sharedSecret"),
@@ -262,7 +262,7 @@ class AbrevvaCryptoModuleTest {
         @Nested
         @DisplayName("should reject if any Param is empty")
         @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-        inner class DecryptFileFromURL_ParameterizedTest {
+        inner class DecryptFileFromURLParameterizedTest {
             @ParameterizedTest
             @MethodSource("parameterizedArgs_decryptFileFromURL")
             fun `should reject if any Param is empty`(
@@ -279,7 +279,7 @@ class AbrevvaCryptoModuleTest {
                 verify { promiseMock.reject(any<Throwable>()) }
             }
 
-            fun parameterizedArgs_decryptFileFromURL(): Stream<JunitArguments> {
+            private fun parameterizedArgs_decryptFileFromURL(): Stream<JunitArguments> {
                 return Stream.of(
                     JunitArguments.of("", "url", "ptPath"),
                     JunitArguments.of("sharedSecret", "", "ptPath"),
@@ -295,7 +295,7 @@ class AbrevvaCryptoModuleTest {
         fun `decryptFileFromURL() should reject if ctPath-File is not accessible`() {
             val mockMap = mockk<ReadableMap>(relaxed = true)
             val moduleSpy =
-                spyk(com.evva.xesar.abrevva.reactnative.AbrevvaCryptoModule(contextMock))
+                spyk(AbrevvaCryptoModule(contextMock))
             every { mockMap.getString(any()) } returns "notEmpty"
             every {
                 moduleSpy.writeToFile(
@@ -313,7 +313,7 @@ class AbrevvaCryptoModuleTest {
         fun `decryptFileFromURL() should reject if decode fails`() {
             val mockMap = mockk<ReadableMap>(relaxed = true)
             val moduleSpy =
-                spyk(com.evva.xesar.abrevva.reactnative.AbrevvaCryptoModule(contextMock))
+                spyk(AbrevvaCryptoModule(contextMock))
             every { mockMap.getString(any()) } returns "notEmpty"
             every { moduleSpy.writeToFile(any(), any()) } returns Unit
             every { Hex.decode(any<String>()) } throws Exception("decryptFileFromURL() Fail Exception")
@@ -327,7 +327,7 @@ class AbrevvaCryptoModuleTest {
         fun `decryptFileFromURL() should resolve if everything works as intended`() {
             val mockMap = mockk<ReadableMap>(relaxed = true)
             val moduleSpy =
-                spyk(com.evva.xesar.abrevva.reactnative.AbrevvaCryptoModule(contextMock))
+                spyk(AbrevvaCryptoModule(contextMock))
             every { mockMap.getString(any()) } returns "notEmpty"
             every { moduleSpy.writeToFile(any(), any()) } returns Unit
             every { AesGCM.decryptFile(any(), any(), any()) } returns true
