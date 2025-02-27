@@ -37,6 +37,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ExampleAppExample/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = ExampleAppExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		1B6F5257F6950F20000E706A /* Pods_ExampleAppExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ExampleAppExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		39CF7A482D709D7B00F1D949 /* ExampleAppExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ExampleAppExample.entitlements; path = ExampleAppExample/ExampleAppExample.entitlements; sourceTree = "<group>"; };
 		39FBC3DD2C64DE9800BEE979 /* ExampleAppExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExampleAppExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		39FBC3DF2C64DE9800BEE979 /* AbrevvaCryptoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbrevvaCryptoTests.swift; sourceTree = "<group>"; };
 		61DF2990903C4888EBB0D63C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = ExampleAppExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -71,6 +72,7 @@
 		13B07FAE1A68108700A75B9A /* ExampleAppExample */ = {
 			isa = PBXGroup;
 			children = (
+				39CF7A482D709D7B00F1D949 /* ExampleAppExample.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -414,6 +416,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = ExampleAppExample/ExampleAppExample.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 47Z5RC7U2C;
 				ENABLE_BITCODE = NO;
@@ -447,6 +450,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = ExampleAppExample/ExampleAppExample.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 47Z5RC7U2C;
 				INFOPLIST_FILE = ExampleAppExample/Info.plist;
@@ -629,10 +633,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -715,10 +716,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
