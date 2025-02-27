@@ -14,6 +14,7 @@ import { Platform } from 'react-native';
 
 import {
   type AbrevvaBLEInterface,
+  type AbrevvaCodingStationInterface,
   type AbrevvaCryptoInterface,
   type BleDevice,
   type BooleanResult,
@@ -42,6 +43,38 @@ const NativeModuleBle = NativeModules.AbrevvaBle
         },
       },
     );
+
+const NativeModuleCodingStation = NativeModules.AbrevvaCodingStation
+  ? NativeModules.AbrevvaCodingStation
+  : new Proxy(
+      {},
+      {
+        get() {
+          throw new Error('Linking Error AbrevvaCodingstation');
+        },
+      },
+    );
+
+export class AbrevvaCodingStationModule implements AbrevvaCodingStationInterface {
+  registerMqttConfigForXS(url: string, clientId: string, username: string, password: string) {
+    return NativeModuleCodingStation.registerMqttConfigForXS({
+      url: url,
+      clientId: clientId,
+      username: username,
+      password: password,
+    });
+  }
+
+  connect() {
+    return NativeModuleCodingStation.connect();
+  }
+  write() {
+    return NativeModuleCodingStation.write();
+  }
+  disconnect() {
+    return NativeModuleCodingStation.disconnect();
+  }
+}
 
 export class AbrevvaBleModule implements AbrevvaBLEInterface {
   private eventListeners = new Map<string, EmitterSubscription>();
@@ -356,6 +389,7 @@ class AbrevvaCryptoModule implements AbrevvaCryptoInterface {
 
 export const AbrevvaBle = new AbrevvaBleModule();
 export const AbrevvaCrypto = new AbrevvaCryptoModule();
+export const AbrevvaCodingStation = new AbrevvaCodingStationModule();
 
 export function createAbrevvaBleInstance() {
   return new AbrevvaBleModule();

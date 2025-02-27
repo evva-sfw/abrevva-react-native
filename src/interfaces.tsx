@@ -124,6 +124,18 @@ export enum DisengageStatusType {
   Timeout = 'TIMEOUT',
 }
 
+export interface AbrevvaCodingStationInterface {
+  registerMqttConfigForXS: (
+    url: string,
+    clientId: string,
+    username: string,
+    password: string,
+  ) => Promise<void>;
+  connect: () => Promise<void>;
+  write: () => Promise<void>;
+  disconnect: () => Promise<void>;
+}
+
 export interface AbrevvaCryptoInterface {
   encrypt: (
     key: string,
