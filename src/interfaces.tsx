@@ -125,12 +125,7 @@ export enum DisengageStatusType {
 }
 
 export interface AbrevvaCodingStationInterface {
-  registerMqttConfigForXS: (
-    url: string,
-    clientId: string,
-    username: string,
-    password: string,
-  ) => Promise<void>;
+  register: (url: string, clientId: string, username: string, password: string) => Promise<void>;
   connect: () => Promise<void>;
   write: () => Promise<void>;
   disconnect: () => Promise<void>;

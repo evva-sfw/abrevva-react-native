@@ -56,8 +56,8 @@ const NativeModuleCodingStation = NativeModules.AbrevvaCodingStation
     );
 
 export class AbrevvaCodingStationModule implements AbrevvaCodingStationInterface {
-  registerMqttConfigForXS(url: string, clientId: string, username: string, password: string) {
-    return NativeModuleCodingStation.registerMqttConfigForXS({
+  register(url: string, clientId: string, username: string, password: string) {
+    return NativeModuleCodingStation.register({
       url: url,
       clientId: clientId,
       username: username,

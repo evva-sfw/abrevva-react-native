@@ -2,7 +2,7 @@
 #import <React/RCTEventEmitter.h>
 
 @interface RCT_EXTERN_MODULE(AbrevvaCodingStation, RCTEventEmitter)
-RCT_EXTERN_METHOD(registerMqttConfigForXS:(NSDictionary *)options
+RCT_EXTERN_METHOD(register:(NSDictionary *)options
                   resolver:
                   (RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)

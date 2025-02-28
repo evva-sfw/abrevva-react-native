@@ -80,13 +80,13 @@ const CodingStationScreen = () => {
       </View>
       <ScrollView style={styles.scrollView}>
         <Button
-          text="registerMqttConfigForXS"
+          text="register"
           onPressFunction={async () => {
             try {
-              await AbrevvaCodingStation.registerMqttConfigForXS(url, clientId, username, password);
-              setResult(`registerMqttConfigForXS:\nsuccess\n\n`);
+              await AbrevvaCodingStation.register(url, clientId, username, password);
+              setResult(`register:\nsuccess\n\n`);
             } catch (e) {
-              setResult(`registerMqttConfigForXS:\n${e}\n\n`);
+              setResult(`register:\n${e}\n\n`);
             }
           }}
         />

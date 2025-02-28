@@ -6,7 +6,7 @@ public class AbrevvaCodingStation: NSObject {
     private let codingStation = CodingStation()
     private var mqttConnectionOptions: MqttConnectionOptions?
 
-    @objc func registerMqttConfigForXS(
+    @objc func register(
         _ options: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock
     ) {
@@ -15,7 +15,7 @@ public class AbrevvaCodingStation: NSObject {
         }
 
         guard let url = URL(string: args["url"] as? String ?? "") else {
-            return reject( "registerMqttConfigForXS(): failed to create URL", nil, nil)
+            return reject( "register(): failed to create URL", nil, nil)
         }
         let clientId = args["clientId"] as? String ?? ""
         let username = args["username"] as? String ?? ""
@@ -37,7 +37,7 @@ public class AbrevvaCodingStation: NSObject {
         rejecter reject: @escaping RCTPromiseRejectBlock
     ) {
         if self.mqttConnectionOptions == nil {
-            return reject("connect(): No MqttConfig set. Call registerMqttConfigForXS() first.", nil, nil)
+            return reject("connect(): No MqttConfig set. Call register() first.", nil, nil)
         }
         Task {
             do {
