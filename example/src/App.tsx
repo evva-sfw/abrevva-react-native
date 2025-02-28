@@ -116,7 +116,7 @@ const CodingStationScreen = () => {
           text="disconnect"
           onPressFunction={() => {
             AbrevvaCodingStation.disconnect();
-            setResult(`connect:\nsuccess\n\n`);
+            setResult(`disconnect:\nsuccess\n\n`);
           }}
         />
       </ScrollView>

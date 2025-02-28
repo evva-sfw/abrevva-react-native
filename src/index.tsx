@@ -56,8 +56,8 @@ const NativeModuleCodingStation = NativeModules.AbrevvaCodingStation
     );
 
 export class AbrevvaCodingStationModule implements AbrevvaCodingStationInterface {
-  register(url: string, clientId: string, username: string, password: string) {
-    return NativeModuleCodingStation.register({
+  async register(url: string, clientId: string, username: string, password: string) {
+    return await NativeModuleCodingStation.register({
       url: url,
       clientId: clientId,
       username: username,
@@ -65,14 +65,14 @@ export class AbrevvaCodingStationModule implements AbrevvaCodingStationInterface
     });
   }
 
-  connect() {
-    return NativeModuleCodingStation.connect();
+  async connect(): Promise<void> {
+    return await NativeModuleCodingStation.connect();
   }
-  write() {
-    return NativeModuleCodingStation.write();
+  async write(): Promise<void> {
+    return await NativeModuleCodingStation.write();
   }
-  disconnect() {
-    return NativeModuleCodingStation.disconnect();
+  async disconnect(): Promise<void> {
+    return await NativeModuleCodingStation.disconnect();
   }
 }
 
