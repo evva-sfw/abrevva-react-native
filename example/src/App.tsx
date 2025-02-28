@@ -106,9 +106,9 @@ const CodingStationScreen = () => {
           onPressFunction={async () => {
             try {
               await AbrevvaCodingStation.write();
-              setResult(`connect:\nsuccess\n\n`);
+              setResult(`write:\nsuccess\n\n`);
             } catch (e) {
-              setResult(`connect:\n${e}\n\n`);
+              setResult(`write:\n${e}\n\n`);
             }
           }}
         />
