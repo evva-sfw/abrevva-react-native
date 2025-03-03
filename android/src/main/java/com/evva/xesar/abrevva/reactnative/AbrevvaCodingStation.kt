@@ -44,10 +44,10 @@ class AbrevvaCodingStation(reactContext: ReactApplicationContext) :
         val url: URL
         try {
            url = URL(options.getString("url") ?: "")
+            mqttConnectionOptionsTLS = AuthManager.getMqttConfigForXS(url, clientId, username, password)
         } catch (e:Exception){
-            return promise.reject(Throwable("register(): invalid url"))
+            return promise.reject(Throwable("register(): $e"))
         }
-        mqttConnectionOptionsTLS = AuthManager.getMqttConfigForXS(url, clientId, username, password)
         promise.resolve(true)
     }
 
