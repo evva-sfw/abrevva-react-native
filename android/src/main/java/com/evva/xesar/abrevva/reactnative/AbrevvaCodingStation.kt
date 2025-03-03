@@ -69,9 +69,8 @@ class AbrevvaCodingStation(reactContext: ReactApplicationContext) :
     @ReactMethod
     fun write(promise: Promise) {
         runBlocking {
-            codingStation.startTagReader(currentActivity!!,10_000) {
-                promise.resolve(true)
-            }
+            codingStation.startTagReader(currentActivity!!,10_000)
+            promise.resolve(true)
         }
     }
 
