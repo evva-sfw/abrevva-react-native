@@ -176,3 +176,29 @@ export enum DisengageStatusType {
   Timeout = "TIMEOUT",
 }
 ```
+
+### Coding Identification Media
+
+Use the CodingStation to write or update access data onto an EVVA identification medium.
+
+```typescript
+import { AbrevvaCodingStation } from '@evva/abrevva-react-native';
+
+class ExampleClass {
+    final url = '';
+    final clientId = '';
+    final username = '';
+    final password = '';
+
+  async writeMedium() {
+    try {
+      await AbrevvaCodingStation.register(url, clientId, username, password);
+      await AbrevvaCodingStation.connect();
+      await AbrevvaCodingStation.write();
+      await AbrevvaCodingStation.disconnect();
+    } catch (e) {
+      console.log(`Error: $e`);
+    }
+  }
+}
+```

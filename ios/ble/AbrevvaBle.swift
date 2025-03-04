@@ -243,7 +243,6 @@ public class AbrevvaBle: RCTEventEmitter {
         let timeout = optionsSwift["timeout"] as? Int ?? nil
         Task {
             let data = await device.read(characteristic.0, characteristic.1, timeout)
-            print("done with read")
             if data != nil {
                 resolve(["value": dataToString(data!)])
             } else {

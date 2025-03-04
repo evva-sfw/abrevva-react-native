@@ -1,7 +1,7 @@
 package com.evva.xesar.abrevva.reactnative
 
-import com.evva.xesar.abrevva.crypto.AesCCM
-import com.evva.xesar.abrevva.crypto.AesGCM
+import com.evva.xesar.abrevva.crypto.AesCcm
+import com.evva.xesar.abrevva.crypto.AesGcm
 import com.evva.xesar.abrevva.crypto.HKDF
 import com.evva.xesar.abrevva.crypto.SimpleSecureRandom
 import com.evva.xesar.abrevva.crypto.X25519Wrapper
@@ -28,7 +28,7 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
         val pt = Hex.decode(options.getString("pt") ?: "")
         val tagLength = options.getInt("tagLength")
 
-        val ct: ByteArray = AesCCM.encrypt(key, iv, adata, pt, tagLength)
+        val ct: ByteArray = AesCcm.encrypt(key, iv, adata, pt, tagLength)
         val cipherText = ByteArray(pt.size)
         val authTag = ByteArray(tagLength)
 
@@ -53,7 +53,7 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
         val ct = Hex.decode(options.getString("ct") ?: "")
         val tagLength = options.getInt("tagLength")
 
-        val pt: ByteArray = AesCCM.decrypt(key, iv, adata, ct, tagLength)
+        val pt: ByteArray = AesCcm.decrypt(key, iv, adata, ct, tagLength)
 
         if (pt.isEmpty()) {
             promise.reject(Exception("decrypt(): decryption failed"))
@@ -125,7 +125,7 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
             }
 
             val sharedKey = Hex.decode(sharedSecret)
-            val operationOk: Boolean = AesGCM.encryptFile(sharedKey, ptPath, ctPath)
+            val operationOk: Boolean = AesGcm.encryptFile(sharedKey, ptPath, ctPath)
 
             val ret = Arguments.createMap()
             ret.putBoolean("opOk", operationOk)
@@ -155,7 +155,7 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
             }
 
             val sharedKey = Hex.decode(sharedSecret)
-            val operationOk: Boolean = AesGCM.decryptFile(sharedKey, ctPath, ptPath)
+            val operationOk: Boolean = AesGcm.decryptFile(sharedKey, ctPath, ptPath)
 
             val ret = Arguments.createMap()
             ret.putBoolean("opOk", operationOk)
@@ -205,7 +205,7 @@ class AbrevvaCryptoModule(reactContext: ReactApplicationContext) :
 
         try {
             val sharedKey = Hex.decode(sharedSecret)
-            val operationOk: Boolean = AesGCM.decryptFile(sharedKey, ctPath, ptPath)
+            val operationOk: Boolean = AesGcm.decryptFile(sharedKey, ctPath, ptPath)
 
             val ret = Arguments.createMap()
             ret.putBoolean("opOk", operationOk)
