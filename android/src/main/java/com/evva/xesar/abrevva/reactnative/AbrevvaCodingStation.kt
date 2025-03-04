@@ -77,6 +77,7 @@ class AbrevvaCodingStation(reactContext: ReactApplicationContext) :
     @ReactMethod
     fun disconnect(promise: Promise) {
         codingStation.disconnect()
+        promise.resolve(true)
     }
 
     /// ActivityEventListener
