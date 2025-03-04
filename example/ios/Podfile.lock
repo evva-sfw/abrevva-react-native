@@ -1,6 +1,6 @@
 PODS:
   - abrevva-react-native (5.0.1):
-    - AbrevvaSDK (= 3.1.0)
+    - AbrevvaSDK (= 3.1.1)
     - CocoaMQTT
     - CryptoSwift
     - DoubleConversion
@@ -23,7 +23,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - AbrevvaSDK (3.1.0):
+  - AbrevvaSDK (3.1.1):
     - CocoaMQTT
     - CryptoSwift
   - boost (1.83.0)
@@ -1446,8 +1446,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  abrevva-react-native: 8000d163941bbb6176edc29ba393ae92b2a3312c
-  AbrevvaSDK: 5fc92691e76e67811fb14c16440aabb0dce80a69
+  abrevva-react-native: e4856734484fb52d0e6ce87445ed36b3c2d9871d
+  AbrevvaSDK: 623cf9ce90fe599f8a04a4c66a3aad87a0aed28a
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   CocoaMQTT: 1f206228b29318eabdacad0c2e4e88575922c27a
   CryptoSwift: e64e11850ede528a02a0f3e768cec8e9d92ecb90
