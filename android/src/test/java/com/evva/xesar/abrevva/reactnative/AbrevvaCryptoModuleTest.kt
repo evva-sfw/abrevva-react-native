@@ -1,7 +1,7 @@
 package com.evva.xesar.abrevva.reactnative
 
-import com.evva.xesar.abrevva.crypto.AesCCM
-import com.evva.xesar.abrevva.crypto.AesGCM
+import com.evva.xesar.abrevva.crypto.AesCcm
+import com.evva.xesar.abrevva.crypto.AesGcm
 import com.evva.xesar.abrevva.crypto.HKDF
 import com.evva.xesar.abrevva.crypto.SimpleSecureRandom
 import com.evva.xesar.abrevva.crypto.X25519Wrapper
@@ -50,8 +50,8 @@ class AbrevvaCryptoModuleTest {
     @BeforeEach
     fun beforeEach() {
         MockKAnnotations.init(this)
-        mockkObject(AesCCM)
-        mockkObject(AesGCM)
+        mockkObject(AesCcm)
+        mockkObject(AesGcm)
         mockkObject(X25519Wrapper)
         mockkObject(SimpleSecureRandom)
         mockkObject(HKDF)
@@ -74,7 +74,7 @@ class AbrevvaCryptoModuleTest {
         @Test
         fun `should reject if ct is empty`() {
             every { Hex.decode(any<String>()) } answers { callOriginal() }
-            every { AesCCM.encrypt(any(), any(), any(), any(), any()) } returns ByteArray(0)
+            every { AesCcm.encrypt(any(), any(), any(), any(), any()) } returns ByteArray(0)
 
             abrevvaCryptoModule.encrypt(readableMapMock, promiseMock)
 
@@ -83,7 +83,7 @@ class AbrevvaCryptoModuleTest {
 
         @Test
         fun `should resolve if ct is not empty`() {
-            every { AesCCM.encrypt(any(), any(), any(), any(), any()) } returns ByteArray(10)
+            every { AesCcm.encrypt(any(), any(), any(), any(), any()) } returns ByteArray(10)
 
             abrevvaCryptoModule.encrypt(readableMapMock, promiseMock)
 
@@ -96,7 +96,7 @@ class AbrevvaCryptoModuleTest {
     inner class DecryptTests {
         @Test
         fun `should reject if pt is empty`() {
-            every { AesCCM.decrypt(any(), any(), any(), any(), any()) } returns ByteArray(0)
+            every { AesCcm.decrypt(any(), any(), any(), any(), any()) } returns ByteArray(0)
 
             abrevvaCryptoModule.decrypt(readableMapMock, promiseMock)
 
@@ -105,7 +105,7 @@ class AbrevvaCryptoModuleTest {
 
         @Test
         fun `should resolve if pt is not empty`() {
-            every { AesCCM.decrypt(any(), any(), any(), any(), any()) } returns ByteArray(10)
+            every { AesCcm.decrypt(any(), any(), any(), any(), any()) } returns ByteArray(10)
 
             abrevvaCryptoModule.decrypt(readableMapMock, promiseMock)
 
@@ -170,7 +170,7 @@ class AbrevvaCryptoModuleTest {
         fun `should resolve if args are valid and file could be encrypted`() {
             val mapMock = mockk<WritableMap>(relaxed = true)
             every { mapMock.getString(any()) } returns "notEmpty"
-            every { AesGCM.encryptFile(any(), any(), any()) } returns true
+            every { AesGcm.encryptFile(any(), any(), any()) } returns true
 
             abrevvaCryptoModule.encryptFile(mapMock, promiseMock)
 
@@ -182,7 +182,7 @@ class AbrevvaCryptoModuleTest {
             val mapMock = mockk<WritableMap>(relaxed = true)
             every { mapMock.getString(any()) } returns "notEmpty"
             every {
-                AesGCM.encryptFile(
+                AesGcm.encryptFile(
                     any(),
                     any(),
                     any()
@@ -230,7 +230,7 @@ class AbrevvaCryptoModuleTest {
         fun `should resolve if args are valid and file could be encrypted`() {
             val mapMock = mockk<WritableMap>(relaxed = true)
             every { mapMock.getString(any()) } returns "notEmpty"
-            every { AesGCM.decryptFile(any(), any(), any()) } returns true
+            every { AesGcm.decryptFile(any(), any(), any()) } returns true
 
             abrevvaCryptoModule.decryptFile(mapMock, promiseMock)
 
@@ -242,7 +242,7 @@ class AbrevvaCryptoModuleTest {
             val mapMock = mockk<WritableMap>(relaxed = true)
             every { mapMock.getString(any()) } returns "notEmpty"
             every {
-                AesGCM.decryptFile(
+                AesGcm.decryptFile(
                     any(),
                     any(),
                     any()
@@ -330,7 +330,7 @@ class AbrevvaCryptoModuleTest {
                 spyk(AbrevvaCryptoModule(contextMock))
             every { mockMap.getString(any()) } returns "notEmpty"
             every { moduleSpy.writeToFile(any(), any()) } returns Unit
-            every { AesGCM.decryptFile(any(), any(), any()) } returns true
+            every { AesGcm.decryptFile(any(), any(), any()) } returns true
 
             moduleSpy.decryptFileFromURL(mockMap, promiseMock)
 

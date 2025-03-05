@@ -44,6 +44,10 @@ class WritableMapTestImplementation(args: MutableMap<String, Any?> = mutableMapO
         return map[p0] as Int
     }
 
+    override fun getLong(name: String): Long {
+        TODO("Not yet implemented")
+    }
+
     override fun getString(p0: String): String? {
         return map[p0] as String?
     }
@@ -64,16 +68,12 @@ class WritableMapTestImplementation(args: MutableMap<String, Any?> = mutableMapO
         return mockk<ReadableType>()
     }
 
-    override fun getEntryIterator(): MutableIterator<MutableMap.MutableEntry<String, Any>> {
-        return mockk<MutableIterator<MutableMap.MutableEntry<String, Any>>>()
-    }
-
     override fun keySetIterator(): ReadableMapKeySetIterator {
         return mockk<ReadableMapKeySetIterator>()
     }
 
-    override fun toHashMap(): HashMap<String, Any> {
-        return mockk<HashMap<String, Any>>()
+    override fun toHashMap(): java.util.HashMap<kotlin.String, kotlin.Any?> {
+        return mockk<java.util.HashMap<kotlin.String, kotlin.Any?>>()
     }
 
     override fun putNull(p0: String) {
@@ -92,6 +92,10 @@ class WritableMapTestImplementation(args: MutableMap<String, Any?> = mutableMapO
         map[p0] = p1
     }
 
+    override fun putLong(key: String, value: Long) {
+        TODO("Not yet implemented")
+    }
+
     override fun putString(p0: String, p1: String?) {
         map[p0] = p1
     }
@@ -107,6 +111,9 @@ class WritableMapTestImplementation(args: MutableMap<String, Any?> = mutableMapO
     override fun merge(p0: ReadableMap) {
         TODO("Not yet implemented")
     }
+
+    override val entryIterator: Iterator<Map.Entry<String, Any?>>
+        get() = mockk<MutableIterator<MutableMap.MutableEntry<String, Any>>>()
 
     override fun copy(): WritableMap {
         TODO("Not yet implemented")
