@@ -3,6 +3,9 @@ const pak = require('../package.json');
 
 module.exports = {
   project: {
+    android: {
+      packageName: 'exampleapp.example',
+    },
     ios: {
       automaticPodsInstallation: true,
     },
