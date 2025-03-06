@@ -144,3 +144,6 @@ android/local.properties
 
 # Exclude because this repo forces to use yarn instead of npm
 package-lock.json
+
+example/android/app/.cxx/
+example/android/build/generated/
