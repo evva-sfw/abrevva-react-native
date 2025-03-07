@@ -21,9 +21,4 @@ class MainActivity : ReactActivity() {
   override fun createReactActivityDelegate(): ReactActivityDelegate =
       DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
 
-// https://stackoverflow.com/questions/45744013/onnewintent-is-not-called-on-reactcontextbasejavamodule-react-native?rq=1
-    override fun onNewIntent(intent: Intent?) {
-        setIntent(intent)
-        super.onNewIntent(intent)
-    }
 }
