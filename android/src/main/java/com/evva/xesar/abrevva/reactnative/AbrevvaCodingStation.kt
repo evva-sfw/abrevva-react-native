@@ -51,12 +51,13 @@ class AbrevvaCodingStation(reactContext: ReactApplicationContext) :
         promise.resolve(true)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     @ReactMethod
     fun connect(promise: Promise) {
         if (mqttConnectionOptionsTLS == null) {
             return promise.reject(Exception("connect(): No MqttCredentials present. call register() first"))
         }
-        runBlocking {
+        GlobalScope.async {
             try {
                 codingStation.connect(mqttConnectionOptionsTLS!!)
             } catch (e: Exception) {
@@ -66,9 +67,10 @@ class AbrevvaCodingStation(reactContext: ReactApplicationContext) :
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     @ReactMethod
     fun write(promise: Promise) {
-        runBlocking {
+        GlobalScope.async {
             codingStation.startTagReader(currentActivity!!,10_000)
             promise.resolve(true)
         }
