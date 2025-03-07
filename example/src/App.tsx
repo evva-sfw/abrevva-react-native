@@ -1,4 +1,4 @@
-import { AbrevvaCrypto } from '@evva/abrevva-react-native';
+import { AbrevvaCodingStation, AbrevvaCrypto } from '@evva/abrevva-react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useState } from 'react';
@@ -15,6 +15,7 @@ const App = () => {
         <Stack.Screen name="home" component={HomeScreen} />
         <Stack.Screen name="crypto" component={CryptoScreen} />
         <Stack.Screen name="ble" component={BleScreen} />
+        <Stack.Screen name="CodingStation" component={CodingStationScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -28,6 +29,9 @@ const HomeScreen = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ble')}>
         <Text style={styles.buttonText}>Ble Test</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CodingStation')}>
+        <Text style={styles.buttonText}>Coding Station Test</Text>
       </TouchableOpacity>
     </View>
   );
@@ -55,6 +59,64 @@ const CryptoScreen = () => {
             AbrevvaCrypto.random(4).then((ret: any) => {
               setResult(`Random:\n${ret.value}\n\n`);
             });
+          }}
+        />
+      </ScrollView>
+    </View>
+  );
+};
+
+const CodingStationScreen = () => {
+  const url = '';
+  const clientId = '';
+  const username = '';
+  const password = '';
+
+  const [result, setResult] = useState('');
+  return (
+    <View style={styles.cryptoContainer}>
+      <View style={styles.cryptoView}>
+        <Text style={styles.cryptoText}>{result}</Text>
+      </View>
+      <ScrollView style={styles.scrollView}>
+        <Button
+          text="register"
+          onPressFunction={async () => {
+            try {
+              await AbrevvaCodingStation.register(url, clientId, username, password);
+              setResult(`register:\nsuccess\n\n`);
+            } catch (e) {
+              setResult(`register:\n${e}\n\n`);
+            }
+          }}
+        />
+        <Button
+          text="connect"
+          onPressFunction={async () => {
+            try {
+              await AbrevvaCodingStation.connect();
+              setResult(`connect:\nsuccess\n\n`);
+            } catch (e) {
+              setResult(`connect:\n${e}\n\n`);
+            }
+          }}
+        />
+        <Button
+          text="write"
+          onPressFunction={async () => {
+            try {
+              await AbrevvaCodingStation.write();
+              setResult(`write:\nsuccess\n\n`);
+            } catch (e) {
+              setResult(`write:\n${e}\n\n`);
+            }
+          }}
+        />
+        <Button
+          text="disconnect"
+          onPressFunction={() => {
+            AbrevvaCodingStation.disconnect();
+            setResult(`disconnect:\nsuccess\n\n`);
           }}
         />
       </ScrollView>

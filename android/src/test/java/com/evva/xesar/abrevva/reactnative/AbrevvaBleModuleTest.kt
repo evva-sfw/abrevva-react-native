@@ -19,6 +19,7 @@ import io.mockk.slot
 import io.mockk.unmockkAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.params.provider.Arguments as JunitArguments
 
 class AbrevvaBleModuleTest {
     private lateinit var abrevvaBleModule: AbrevvaBleModule
