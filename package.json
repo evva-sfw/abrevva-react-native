@@ -55,7 +55,7 @@
     "type": "git",
     "url": "git+https://github.com/evva-sfw/abrevva-react-native.git"
   },
-  "license": "SEE LICENSE IN <LICENSE>",
+  "license": "EVVA Software License",
   "bugs": {
     "url": "https://github.com/evva-sfw/abrevva-react-native/issues"
   },
