@@ -41,8 +41,23 @@ yarn add @evva/abrevva-react-native
 ```
 
 ### iOS
+In your app's Podfile add a `post_install` hook to resolve a nasty [CocoaPods limitation with XCFrameworks](https://github.com/CocoaPods/CocoaPods/issues/11079).
 
-Execute `bundle exec pod install` inside of your projects ios/ folder.
+```ruby
+post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false
+    )
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+      end
+    end
+  end
+```
+Execute `bundle exec pod install` inside of your projects `ios/` folder.
 
 ### Android
 
