@@ -1,28 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools">
-  
-  <uses-permission android:name="android.permission.NFC"/>
-  <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission
-    android:maxSdkVersion="30"
-    android:name="android.permission.ACCESS_COARSE_LOCATION" />
-  <uses-permission
-    android:maxSdkVersion="30"
-    android:name="android.permission.ACCESS_FINE_LOCATION" />
-  <uses-permission
-    android:maxSdkVersion="30"
-    android:name="android.permission.BLUETOOTH" />
-  <uses-permission
-    android:maxSdkVersion="30"
-    android:name="android.permission.BLUETOOTH_ADMIN" />
-  <uses-permission
-    android:name="android.permission.BLUETOOTH_SCAN"
-    android:usesPermissionFlags="neverForLocation"
-    tools:targetApi="s" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <uses-feature
-    android:name="android.hardware.bluetooth_le"
-    android:required="true" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
       android:name=".MainApplication"
@@ -30,7 +8,9 @@
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
-      android:theme="@style/AppTheme">
+      android:theme="@style/AppTheme"
+      android:usesCleartextTraffic="${usesCleartextTraffic}"
+      android:supportsRtl="true">
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"

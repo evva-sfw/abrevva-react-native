@@ -1,5 +1,0 @@
-# Github only let you load packages with authentication.
-# How to create a github token with read permissions on packages is explained here:
-# https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
-github.username=
-github.token=

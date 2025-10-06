@@ -4,8 +4,8 @@ test:
 
 test-ios:
 	xcodebuild -quiet \
-		-workspace example/ios/ExampleAppExample.xcworkspace \
-		-scheme ExampleAppExample \
+		-workspace example/ios/example.xcworkspace \
+		-scheme example \
 		-sdk iphonesimulator \
 		-destination 'platform=iOS Simulator,name=iPhone 15,OS=17.4' \
 		test || exit 1

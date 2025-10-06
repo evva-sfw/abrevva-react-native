@@ -1,0 +1,10 @@
+{
+  "extends": "@react-native/typescript-config",
+  "include": ["**/*.ts", "**/*.tsx", "src/**/*"],
+  "exclude": ["**/node_modules", "**/Pods"],
+  "compilerOptions": {
+    "paths": {
+      "@evva/abrevva-react-native": ["../src"]
+    }
+  }
+}
