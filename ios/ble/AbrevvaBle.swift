@@ -155,7 +155,8 @@ public class AbrevvaBle: RCTEventEmitter {
     func signalize(
         _ options: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock
-    ) async {
+    ) {
+        guard let bleManager = getBleManager(reject) else { return }
         guard let optionsSwift = options as? [String: Any] else {
             return reject(
                 "Failed to convert NSDictionary to Swift dictionary", nil, nil
@@ -169,7 +170,10 @@ public class AbrevvaBle: RCTEventEmitter {
             return reject("signalize(): deviceId doesnt exist", nil, nil)
         }
 
-        await resolve(["value": bleManager?.signalize(bleDevice)])
+        Task {
+            let result = await bleManager.signalize(bleDevice)
+            resolve(["value": result])
+        }
     }
 
     @objc
