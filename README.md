@@ -14,10 +14,12 @@
 > This package was renamed please use the new package name! __@evva/abrevva-react-native__
 >
 >This project is an open-source option to help developers kickstart their project with our SDK. It is not a fully-fledged product!
-Feel free to use it, or create your own solution by utilizing our SDK directly. Any contributions to this project are highly appreciated.
+Feel free to use it as is, or create your own solution by utilizing our SDK directly.
+If you decide to use this plugin, we highly encourage you to create issues/PRs if you run into any challenges someone might also face in the future.
 >
 > The Example App in this project still uses the old React Native architecture (React Native < 0.67) and is for demonstration purposes only.
-> Please do not use an outdated React Native version in your app!
+> Please always use the latest React Native version in your app! - There are CVEs in older versions. See: [CVE-2025-11953](https://nvd.nist.gov/vuln/detail/CVE-2025-11953)
+> 
 > Our package is compatible with newer React Native versions and will be available as a Turbo Module in the foreseeable future.
 
 The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.
