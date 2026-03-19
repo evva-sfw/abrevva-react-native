@@ -421,6 +421,7 @@
 				DEVELOPMENT_TEAM = 47Z5RC7U2C;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ExampleAppExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -454,6 +455,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 47Z5RC7U2C;
 				INFOPLIST_FILE = ExampleAppExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
