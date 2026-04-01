@@ -1,5 +1,5 @@
 PODS:
-  - AbrevvaReactNative (0.1.0):
+  - AbrevvaReactNative (5.1.7):
     - AbrevvaSDK (= 3.4.2)
     - CocoaMQTT
     - CryptoSwift
@@ -2210,7 +2210,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AbrevvaReactNative: dfee508b718a9c156746b652be60bcb60175df62
+  AbrevvaReactNative: 7ff13bcb8cff171b870f5f752fbe541474fd1540
   AbrevvaSDK: aa2c9cbd1a07717519476eae4fb4f69834c5fa3a
   CocoaMQTT: 2889e233a2427ed012d67c9f50c91053f7c1faf6
   CryptoSwift: e64e11850ede528a02a0f3e768cec8e9d92ecb90
@@ -2294,4 +2294,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 6c81a4d547d713f2f1895479822b0fb51ba31eed
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2
