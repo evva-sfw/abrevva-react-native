@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "types": ["jest"],
     "rootDir": ".",
     "paths": {
       "@evva/abrevva-react-native": ["./src/index"]

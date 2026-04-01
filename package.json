@@ -123,7 +123,12 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^@evva/abrevva-react-native$": "<rootDir>/src/index.tsx"
+    },
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.ts"]
   },
   "prettier": {
     "quoteProps": "consistent",
