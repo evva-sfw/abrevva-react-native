@@ -1,7 +1,9 @@
 import type { HybridObject } from 'react-native-nitro-modules';
 
-export interface AbrevvaCodingStationImpl
-  extends HybridObject<{ ios: 'swift'; android: 'kotlin' }> {
+export interface AbrevvaCodingStationImpl extends HybridObject<{
+  ios: 'swift';
+  android: 'kotlin';
+}> {
   _register(
     url: string,
     clientId: string,

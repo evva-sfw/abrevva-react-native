@@ -11,8 +11,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { BleDevice } from '../../src/interfaces';
 
-global.Buffer = require('buffer').Buffer;
-
 export const BleScreen = () => {
   const [statusCode, setStatusCode] = useState('None');
 
@@ -46,7 +44,7 @@ const ScanResults = ({ props }) => {
     setRefreshing(true);
     setDeviceList([]);
 
-    const timeout: NodeJS.Timeout = setTimeout(() => {
+    const timeout = setTimeout(() => {
       setRefreshing(false);
     }, 3_000);
 

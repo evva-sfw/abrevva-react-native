@@ -1,6 +1,6 @@
 {
   "name": "@evva/abrevva-react-native",
-  "version": "6.0.0",
+  "version": "5.1.7",
   "author": "EVVA Sicherheitstechnologie GmbH",
   "description": "The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.",
   "main": "./lib/module/index.js",
@@ -63,17 +63,16 @@
     "access": "public"
   },
   "devDependencies": {
-    "@eslint/compat": "^2.0.3",
-    "@eslint/eslintrc": "^3.3.5",
-    "@eslint/js": "^10.0.1",
+    "@eslint/compat": "^1.1.1",
+    "@eslint/eslintrc": "^2.1.4",
+    "@eslint/js": "^9.13.0",
     "@evilmartians/lefthook": "^2.1.4",
     "@react-native/babel-preset": "^0.84.1",
-    "@react-native/eslint-config": "^0.84.1",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
     "del-cli": "^7.0.0",
-    "eslint": "^10.1.0",
-    "eslint-config-prettier": "^10.1.8",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.5.5",
     "jest": "^30.3.0",
     "nitrogen": "^0.35.2",
@@ -141,5 +140,9 @@
       "eslint"
     ],
     "version": "0.57.2"
+  },
+  "dependencies": {
+    "@commitlint/config-conventional": "^20.5.0",
+    "@react-native/eslint-config": "^0.84.1"
   }
 }
