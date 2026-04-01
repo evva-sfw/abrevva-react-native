@@ -1,9 +1,20 @@
-import { AbrevvaCodingStation, AbrevvaCrypto } from '@evva/abrevva-react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
+import {
+  AbrevvaCodingStation,
+  AbrevvaCrypto,
+} from '@evva/abrevva-react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { BleScreen } from './BleScreenComponents';
 
 const Stack = createNativeStackNavigator();
@@ -23,17 +34,28 @@ const App = () => {
 
 const HomeScreen = ({ navigation }) => {
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('crypto')}>
-        <Text style={styles.buttonText}>Crypto Test</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ble')}>
-        <Text style={styles.buttonText}>Ble Test</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CodingStation')}>
-        <Text style={styles.buttonText}>Coding Station Test</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaProvider>
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('crypto')}
+        >
+          <Text style={styles.buttonText}>Crypto Test</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('ble')}
+        >
+          <Text style={styles.buttonText}>Ble Test</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('CodingStation')}
+        >
+          <Text style={styles.buttonText}>Coding Station Test</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaProvider>
   );
 };
 
@@ -48,17 +70,17 @@ const CryptoScreen = () => {
         <Button
           text="generateKeyPair"
           onPressFunction={() => {
-            AbrevvaCrypto.generateKeyPair().then((ret: any) => {
-              setResult(`Private Key:\n${ret.privateKey}\n\nPublic Key:\n${ret.publicKey}`);
-            });
+            const ret = AbrevvaCrypto.generateKeyPair();
+            setResult(
+              `Private Key:\n${ret.privateKey}\n\nPublic Key:\n${ret.publicKey}`
+            );
           }}
         />
         <Button
           text="random"
           onPressFunction={() => {
-            AbrevvaCrypto.random(4).then((ret: any) => {
-              setResult(`Random:\n${ret.value}\n\n`);
-            });
+            const ret = AbrevvaCrypto.random(4);
+            setResult(`Random:\n${ret}\n\n`);
           }}
         />
       </ScrollView>
@@ -83,7 +105,12 @@ const CodingStationScreen = () => {
           text="register"
           onPressFunction={async () => {
             try {
-              await AbrevvaCodingStation.register(url, clientId, username, password);
+              await AbrevvaCodingStation.register(
+                url,
+                clientId,
+                username,
+                password
+              );
               setResult(`register:\nsuccess\n\n`);
             } catch (e) {
               setResult(`register:\n${e}\n\n`);

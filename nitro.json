@@ -1,0 +1,49 @@
+{
+  "cxxNamespace": [
+    "abrevvareactnative"
+  ],
+  "ios": {
+    "iosModuleName": "AbrevvaReactNative"
+  },
+  "android": {
+    "androidNamespace": [
+      "abrevvareactnative"
+    ],
+    "androidCxxLibName": "abrevvareactnative"
+  },
+  "autolinking": {
+    "AbrevvaBleImpl": {
+      "ios": {
+        "language": "swift",
+        "implementationClassName": "AbrevvaBleImpl"
+      },
+      "android": {
+        "language": "kotlin",
+        "implementationClassName": "AbrevvaBleImpl"
+      }
+    },
+    "AbrevvaCryptoImpl": {
+      "ios": {
+        "language": "swift",
+        "implementationClassName": "AbrevvaCryptoImpl"
+      },
+      "android": {
+        "language": "kotlin",
+        "implementationClassName": "AbrevvaCryptoImpl"
+      }
+    },
+    "AbrevvaCodingStationImpl": {
+      "ios": {
+        "language": "swift",
+        "implementationClassName": "AbrevvaCodingStationImpl"
+      },
+      "android": {
+        "language": "kotlin",
+        "implementationClassName": "AbrevvaCodingStationImpl"
+      }
+    }
+  },
+  "ignorePaths": [
+    "node_modules"
+  ]
+}

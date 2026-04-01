@@ -11,16 +11,14 @@
 </p>
 
 > [!IMPORTANT]
-> This package was renamed please use the new package name! __@evva/abrevva-react-native__
+> This project is an open-source option to help developers kickstart their project with our SDK. It is not a fully-fledged product!
+> Feel free to use it as is, or create your own solution by utilizing our SDK directly.
+> If you decide to use this plugin, we highly encourage you to create issues/PRs if you run into any challenges someone might also face in the future.
+> The Example App is for demonstration purpose only and we might be slow on updates.
+> Please always use the latest React Native version in your own app! - There are CVEs in older versions. See: [CVE-2025-11953](https://nvd.nist.gov/vuln/detail/CVE-2025-11953)
 >
->This project is an open-source option to help developers kickstart their project with our SDK. It is not a fully-fledged product!
-Feel free to use it as is, or create your own solution by utilizing our SDK directly.
-If you decide to use this plugin, we highly encourage you to create issues/PRs if you run into any challenges someone might also face in the future.
->
-> The Example App in this project still uses the old React Native architecture (React Native < 0.67) and is for demonstration purposes only.
-> Please always use the latest React Native version in your app! - There are CVEs in older versions. See: [CVE-2025-11953](https://nvd.nist.gov/vuln/detail/CVE-2025-11953)
-> 
-> Our package is compatible with newer React Native versions and will be available as a Turbo Module in the foreseeable future.
+> With Version 6.0.0+ we fully migrated to the new React Native Architecture using [Nitro Modules](https://github.com/mrousavy/nitro). ( Turbo Module under the hood.)
+> React Native stopped supporting their Legacy Architecture in 0.82, theirfor we'll also no longer support it.
 
 The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.
 
@@ -38,27 +36,30 @@ The EVVA React-Native Module is a collection of tools to work with electronical 
 
 ## Requirements
 
-- react-native <= 0.74.3
+- react-native >= 0.84.1
 - Java 17+ (Android)
 - Android SDK (Android)
-- Android 10+ (API level 29+) (Android)
-- iOS 15.0+ (iOS)
+- Android 10+ (API level 30+) (Android)
+- iOS 16.0+ (iOS)
 
 ## Installation
 
 Set up an app with a matching ReactNative version:
+
 ```
-$ npx @react-native-community/cli init MyApp --version 0.74.3
+$ npx @react-native-community/cli init MyApp --version 0.84.1
 ```
 
-Add Abrevva to your project:
+Add Abrevva & Nitro Modules to your project:
+
 ```
-$ npm i @evva/abrevva-react-native
+$ yarn add @evva/abrevva-react-native react-native-nitro-modules
 ```
 
 ### Android
 
 Set the minimum SDK version to 29 in your module's build gradle:
+
 ```groovy
 minSdkVersion = 29
 compileSdkVersion = 35
@@ -66,6 +67,7 @@ targetSdkVersion = 35
 ```
 
 Depending on the used ReactNative version you might need to adjust the AGP version in your module-level `build.gradle` based on potential warnings:
+
 ```groovy
 dependencies {
     classpath("com.android.tools.build:gradle:8.3.0")
@@ -73,12 +75,12 @@ dependencies {
 ```
 
 In your app's Manifest file add any needed install-time permissions:
+
 ```xml
 <!-- Scan and connect to BLE components -->
 <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
 <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
-                 android:usesPermissionFlags="neverForLocation"
-                 tools:targetApi="s"/>
+                 android:usesPermissionFlags="neverForLocation"/>
 <uses-permission android:maxSdkVersion="30"
                  android:name="android.permission.BLUETOOTH"/>
 <uses-permission android:maxSdkVersion="30"
@@ -93,6 +95,7 @@ In your app's Manifest file add any needed install-time permissions:
 ```
 
 In your app-level `build.gradle` you might want to exclude META-INF files to avoid gradle build issues:
+
 ```groovy
 packagingOptions {
     resources.excludes.add("META-INF/*")
@@ -102,6 +105,7 @@ packagingOptions {
 Finally perform a gradle sync.
 
 ### iOS
+
 In your app's Podfile add a `post_install` hook to resolve a nasty [CocoaPods limitation with XCFrameworks](https://github.com/CocoaPods/CocoaPods/issues/11079).
 
 ```ruby
@@ -118,9 +122,20 @@ post_install do |installer|
     end
   end
 ```
-Execute `bundle exec pod install` inside of your projects `ios/` folder.
 
-## Examples
+In your app's Podfile add these 4 lines at the top of your target before the react native configuration to ensures, that all AbrevvaSDK dependencies will be dynamically linked.
+
+```ruby
+target 'AbrevvaReactNativeExample' do
+  use_frameworks!
+  pod 'CocoaMQTT'
+  pod 'MqttCocoaAsyncSocket'
+  pod 'CryptoSwift'
+  ...
+end
+```
+
+Execute `bundle exec pod install` inside of your projects `ios/` folder.
 
 ### Initialize and scan for EVVA components
 
@@ -129,18 +144,20 @@ import { AbrevvaBle } from '@evva/abrevva-react-native';
 
 class ExampleClass {
   private devices: BleDevice[];
-  
+
   async startScan(event: any) {
     this.devices = [];
-   
+
     await AbrevvaBle.initialize();
     await AbrevvaBle.startScan(
       (device: BleDevice) => {
         this.devices.push(device);
-      }, (success: boolean) => {
-        console.log(`Scan started, success: ${success}`);
-      }, (success: boolean) => {
-        console.log(`Scan stopped, success: ${success}`);
+      },
+      (error?: Error) => {
+        console.log(`Scan started, error: ${error ? 'yes' : 'no'}`);
+      },
+      (error?: Error) => {
+        console.log(`Scan stopped, success: ${error ? 'yes' : 'no'}`);
       }
     );
   }
@@ -174,14 +191,14 @@ export interface BleDeviceAdvertisementData {
 }
 
 export interface BleDeviceManufacturerData {
-  companyIdentifier?: string;
+  companyIdentifier?: number;
   version?: number;
-  componentType?: "handle" | "escutcheon" | "cylinder" | "wallreader" | "emzy" | "iobox" | "unknown";
+  componentType?: ComponentType;
   mainFirmwareVersionMajor?: number;
   mainFirmwareVersionMinor?: number;
   mainFirmwareVersionPatch?: number;
   componentHAL?: string;
-  batteryStatus?: "battery-full" | "battery-empty";
+  batteryStatus?: BatteryStatus;
   mainConstructionMode?: boolean;
   subConstructionMode?: boolean;
   isOnline?: boolean;
@@ -201,7 +218,7 @@ export interface BleDeviceManufacturerData {
 With the signalize method you can localize EVVA components. On a successful signalization the component will emit a melody indicating its location.
 
 ```typescript
-const success = (await AbrevvaBle.signalize('deviceId')).value;
+const success = await AbrevvaBle.signalize('deviceId');
 ```
 
 ### Perform disengage on EVVA components
@@ -209,44 +226,46 @@ const success = (await AbrevvaBle.signalize('deviceId')).value;
 For the component disengage you have to provide access credentials to the EVVA component. Those are generally acquired in the form of access media metadata from the Xesar software.
 
 ```typescript
-const status = await AbrevvaBle.disengage(
+const xvnResponse = await AbrevvaBle.disengageWithXvnResponse(
   device.deviceId,
-  'mobileId',         // sha256-hashed hex-encoded version of `xsMobileId` found in blob data.
-  'mobileDeviceKey',  // mobile device key string from `xsMOBDK` found in blob data.
-  'mobileGroupId',    // mobile group id string from `xsMOBGID` found in blob data.
+  'mobileId', // sha256-hashed hex-encoded version of `xsMobileId` found in blob data.
+  'mobileDeviceKey', // mobile device key string from `xsMOBDK` found in blob data.
+  'mobileGroupId', // mobile group id string from `xsMOBGID` found in blob data.
   'mobileAccessData', // access data string from `mediumDataFrame` found in blob data.
-  false,
+  false
 );
+
+console.log(`DisengageStatus=${xvnResponse.disengageStatusType}`);
+console.log(`XvnData?=${xvnResponse.xvnData}`);
 ```
 
 There are several access status types upon attempting the component disengage.
 
 ```typescript
-export enum DisengageStatusType {
+export type DisengageStatusType =
   /// Component
-  Authorized = "AUTHORIZED",
-  AuthorizedPermanentEngage = "AUTHORIZED_PERMANENT_ENGAGE",
-  AuthorizedPermanentDisengage = "AUTHORIZED_PERMANENT_DISENGAGE",
-  AuthorizedBatteryLow = "AUTHORIZED_BATTERY_LOW",
-  AuthorizedOffline = "AUTHORIZED_OFFLINE",
-  Unauthorized = "UNAUTHORIZED",
-  UnauthorizedOffline = "UNAUTHORIZED_OFFLINE",
-  SignalLocalization = "SIGNAL_LOCALIZATION",
-  MediumDefectOnline = "MEDIUM_DEFECT_ONLINE",
-  MediumBlacklisted = "MEDIUM_BLACKLISTED",
-  Error = "ERROR",
+  | 'AUTHORIZED'
+  | 'AUTHORIZED_PERMANENT_ENGAGE'
+  | 'AUTHORIZED_PERMANENT_DISENGAGE'
+  | 'AUTHORIZED_BATTERY_LOW'
+  | 'AUTHORIZED_OFFLINE'
+  | 'UNAUTHORIZED'
+  | 'UNAUTHORIZED_OFFLINE'
+  | 'SIGNAL_LOCALIZATION'
+  | 'MEDIUM_DEFECT_ONLINE'
+  | 'MEDIUM_BLACKLISTED'
+  | 'ERROR'
 
   /// Interface
-  UnableToConnect = "UNABLE_TO_CONNECT",
-  UnableToSetNotifications = "UNABLE_TO_SET_NOTIFICATIONS",
-  UnableToReadChallenge = "UNABLE_TO_READ_CHALLENGE",
-  UnableToWriteMDF = "UNABLE_TO_WRITE_MDF",
-  AccessCipherError = "ACCESS_CIPHER_ERROR",
-  BleAdapterDisabled = "BLE_ADAPTER_DISABLED",
-  UnknownDevice = "UNKNOWN_DEVICE",
-  UnknownStatusCode = "UNKNOWN_STATUS_CODE",
-  Timeout = "TIMEOUT",
-}
+  | 'UNABLE_TO_CONNECT'
+  | 'UNABLE_TO_SET_NOTIFICATIONS'
+  | 'UNABLE_TO_READ_CHALLENGE'
+  | 'UNABLE_TO_WRITE_MDF'
+  | 'ACCESS_CIPHER_ERROR'
+  | 'BLE_ADAPTER_DISABLED'
+  | 'UNKNOWN_DEVICE'
+  | 'UNKNOWN_STATUS_CODE'
+  | 'TIMEOUT';
 ```
 
 ### Coding Identification Media
@@ -267,7 +286,7 @@ class ExampleClass {
       await AbrevvaCodingStation.register(url, clientId, username, password);
       await AbrevvaCodingStation.connect();
       await AbrevvaCodingStation.write();
-      await AbrevvaCodingStation.disconnect();
+      AbrevvaCodingStation.disconnect();
     } catch (e) {
       console.log(`Error: $e`);
     }

@@ -147,3 +147,25 @@ android/local.properties
 
 # Exclude because this repo forces to use yarn instead of npm
 package-lock.json
+
+# React Native Nitro Modules
+nitrogen/
+
+# Android/IJ
+#
+.classpath
+.cxx
+.gradle
+.idea
+.project
+.settings
+local.properties
+android.iml
+
+# Turborepo
+.turbo/
+
+# React Native Codegen
+ios/generated
+android/generated
+example/android/build/
