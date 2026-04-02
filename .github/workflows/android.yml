@@ -57,7 +57,7 @@ jobs:
       - run: |
           corepack enable
           cat ./src/AbrevvaBle.nitro.ts
-          yarn nitrogen && cd example && yarn install 
+          yarn run nitrogen && cd example && yarn install 
 
       - name: Cache Gradle
         uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
