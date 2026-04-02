@@ -56,7 +56,7 @@ jobs:
           key: node-modules
       - run: |
           corepack enable
-          pwd
+          ls
           yarn nitrogen && cd example && yarn install 
 
       - name: Cache Gradle
