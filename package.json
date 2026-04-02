@@ -4,14 +4,13 @@
   "author": "EVVA Sicherheitstechnologie GmbH",
   "description": "The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.",
   "main": "./lib/module/index.js",
-  "types": "./lib/typescript/src/index.d.ts",
+  "types": "./lib/typescript/commonjs/src/index.d.ts",
   "exports": {
     ".": {
       "source": "./src/index.tsx",
-      "types": "./lib/typescript/src/index.d.ts",
+      "types": "./lib/typescript/commonjs/src/index.d.ts",
       "default": "./lib/module/index.js"
-    },
-    "./package.json": "./package.json"
+    }
   },
   "files": [
     "src",
@@ -128,7 +127,9 @@
       "^@evva/abrevva-react-native$": "<rootDir>/src/index.tsx"
     },
     "testEnvironment": "node",
-    "setupFilesAfterEnv": ["<rootDir>/jest.setup.ts"]
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.ts"
+    ]
   },
   "prettier": {
     "quoteProps": "consistent",
