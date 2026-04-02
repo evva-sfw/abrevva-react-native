@@ -37,7 +37,7 @@
     "example": "yarn workspace @evva/abrevva-react-native-example",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build",
-    "nitrogen": "npx nitrogen",
+    "nitrogen": "npx nitrogen --log-level=debug",
     "typecheck": "tsc",
     "test": "jest",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
