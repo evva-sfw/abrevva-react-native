@@ -56,7 +56,7 @@ jobs:
           key: node-modules
       - run: |
           corepack enable
-          ls
+          cat ./src/AbrevvaBle.nitro.ts
           yarn nitrogen && cd example && yarn install 
 
       - name: Cache Gradle
