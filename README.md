@@ -18,7 +18,7 @@
 > Please always use the latest React Native version in your own app! - There are CVEs in older versions. See: [CVE-2025-11953](https://nvd.nist.gov/vuln/detail/CVE-2025-11953)
 >
 > With Version 6.0.0+ we fully migrated to the new React Native Architecture using [Nitro Modules](https://github.com/mrousavy/nitro). ( Turbo Module under the hood.)
-> React Native stopped supporting their Legacy Architecture in 0.82, theirfor we'll also no longer support it.
+> React Native stopped supporting their Legacy Architecture in 0.82, therefore we'll also no longer support it.
 
 The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.
 
@@ -61,16 +61,16 @@ $ yarn add @evva/abrevva-react-native react-native-nitro-modules
 Set the minimum SDK version to 29 in your module's build gradle:
 
 ```groovy
-minSdkVersion = 29
-compileSdkVersion = 35
-targetSdkVersion = 35
+minSdkVersion = 30
+compileSdkVersion = 36
+targetSdkVersion = 36
 ```
 
 Depending on the used ReactNative version you might need to adjust the AGP version in your module-level `build.gradle` based on potential warnings:
 
 ```groovy
 dependencies {
-    classpath("com.android.tools.build:gradle:8.3.0")
+    classpath("com.android.tools.build:gradle:8.7.2")
     ...
 ```
 
@@ -276,10 +276,10 @@ Use the CodingStation to write or update access data onto an EVVA identification
 import { AbrevvaCodingStation } from '@evva/abrevva-react-native';
 
 class ExampleClass {
-    final url = '';
-    final clientId = '';
-    final username = '';
-    final password = '';
+  final url = '';
+  final clientId = '';
+  final username = '';
+  final password = '';
 
   async writeMedium() {
     try {
