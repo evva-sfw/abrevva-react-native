@@ -7,9 +7,12 @@ import android.provider.Settings
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.RequiresPermission
 import androidx.core.net.toUri
-import com.evva.xesar.abrevva.ble.BleDeviceAdvertisementData
-import com.evva.xesar.abrevva.ble.BleManager
+import com.evva.xesar.abrevva.ble.BleDeviceAdvertisementData as AbrevvaBleDeviceAdvertisementData
+import com.evva.xesar.abrevva.ble.BleManager as AbrevvaBleManager
+import com.evva.xesar.abrevva.disengage.DisengageStatusType as AbrevvaDisengageStatusType
 import com.evva.xesar.abrevva.ble.BleWriteType
+import com.evva.xesar.abrevva.ble.BleDevice as AbrevvaBleDevice
+
 import com.evva.xesar.abrevva.util.bytesToString
 import com.evva.xesar.abrevva.util.stringToBytes
 import com.facebook.proguard.annotations.DoNotStrip
@@ -23,10 +26,11 @@ import java.util.UUID
 
 const val DEFAULT_TIMEOUT: Long = 10_000
 
+
 @DoNotStrip
 class AbrevvaBleImpl : HybridAbrevvaBleImplSpec() {
-  private var manager: BleManager = requireNotNull(
-    NitroModules.applicationContext?.let { BleManager(it) }
+  private var manager: AbrevvaBleManager = requireNotNull(
+    NitroModules.applicationContext?.let { AbrevvaBleManager(it) }
   ) { "Application context is required to initialize manager" }
   override fun initialize(androidNeverForLocation: Boolean?): Promise<Unit> {
     return Promise.resolved()
@@ -66,7 +70,7 @@ class AbrevvaBleImpl : HybridAbrevvaBleImplSpec() {
     activity.startActivity(intent)
   }
 
-  private fun convertAdvertismentData(aData: BleDeviceAdvertisementData?): com.margelo.nitro.abrevvareactnative.BleDeviceAdvertisementData? {
+  private fun convertAdvertismentData(aData: AbrevvaBleDeviceAdvertisementData?): BleDeviceAdvertisementData? {
     if (aData == null) {
       return null
     }
@@ -74,7 +78,7 @@ class AbrevvaBleImpl : HybridAbrevvaBleImplSpec() {
     val mData = aData.manufacturerData
 
     if (mData == null) {
-      return com.margelo.nitro.abrevvareactnative.BleDeviceAdvertisementData(
+      return BleDeviceAdvertisementData(
         aData.rssi.toDouble(),
         aData.isConnectable,
         null
@@ -102,7 +106,7 @@ class AbrevvaBleImpl : HybridAbrevvaBleImplSpec() {
       mData.subComponentIdentifier
     )
 
-    return com.margelo.nitro.abrevvareactnative.BleDeviceAdvertisementData(
+    return BleDeviceAdvertisementData(
       aData.rssi.toDouble(),
       aData.isConnectable,
       manData
@@ -115,26 +119,26 @@ class AbrevvaBleImpl : HybridAbrevvaBleImplSpec() {
 
   fun getDisengageStatusType(value: com.evva.xesar.abrevva.disengage.DisengageStatusType): DisengageStatusType {
     return when (value) {
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.ERROR -> DisengageStatusType.ERROR
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.AUTHORIZED -> DisengageStatusType.AUTHORIZED
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.AUTHORIZED_PERMANENT_ENGAGE -> DisengageStatusType.AUTHORIZED_PERMANENT_ENGAGE
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.AUTHORIZED_PERMANENT_DISENGAGE -> DisengageStatusType.AUTHORIZED_PERMANENT_DISENGAGE
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.AUTHORIZED_BATTERY_LOW -> DisengageStatusType.AUTHORIZED_BATTERY_LOW
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.AUTHORIZED_OFFLINE -> DisengageStatusType.AUTHORIZED_OFFLINE
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.UNAUTHORIZED -> DisengageStatusType.UNAUTHORIZED
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.UNAUTHORIZED_OFFLINE -> DisengageStatusType.UNAUTHORIZED_OFFLINE
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.SIGNAL_LOCALIZATION -> DisengageStatusType.SIGNAL_LOCALIZATION
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.MEDIUM_DEFECT_ONLINE -> DisengageStatusType.MEDIUM_DEFECT_ONLINE
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.MEDIUM_BLACKLISTED -> DisengageStatusType.MEDIUM_BLACKLISTED
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.UNABLE_TO_CONNECT -> DisengageStatusType.UNABLE_TO_CONNECT
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.UNABLE_TO_SET_NOTIFICATIONS -> DisengageStatusType.UNABLE_TO_SET_NOTIFICATIONS
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.UNABLE_TO_READ_CHALLENGE -> DisengageStatusType.UNABLE_TO_READ_CHALLENGE
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.UNABLE_TO_WRITE_MDF -> DisengageStatusType.UNABLE_TO_WRITE_MDF
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.ACCESS_CIPHER_ERROR -> DisengageStatusType.ACCESS_CIPHER_ERROR
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.BLE_ADAPTER_DISABLED -> DisengageStatusType.BLE_ADAPTER_DISABLED
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.UNKNOWN_DEVICE -> DisengageStatusType.UNKNOWN_DEVICE
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.TIMEOUT -> DisengageStatusType.TIMEOUT
-      com.evva.xesar.abrevva.disengage.DisengageStatusType.UNKNOWN_STATUS_CODE -> DisengageStatusType.UNKNOWN_STATUS_CODE
+        AbrevvaDisengageStatusType.ERROR -> DisengageStatusType.ERROR
+        AbrevvaDisengageStatusType.AUTHORIZED -> DisengageStatusType.AUTHORIZED
+        AbrevvaDisengageStatusType.AUTHORIZED_PERMANENT_ENGAGE -> DisengageStatusType.AUTHORIZED_PERMANENT_ENGAGE
+        AbrevvaDisengageStatusType.AUTHORIZED_PERMANENT_DISENGAGE -> DisengageStatusType.AUTHORIZED_PERMANENT_DISENGAGE
+        AbrevvaDisengageStatusType.AUTHORIZED_BATTERY_LOW -> DisengageStatusType.AUTHORIZED_BATTERY_LOW
+        AbrevvaDisengageStatusType.AUTHORIZED_OFFLINE -> DisengageStatusType.AUTHORIZED_OFFLINE
+        AbrevvaDisengageStatusType.UNAUTHORIZED -> DisengageStatusType.UNAUTHORIZED
+        AbrevvaDisengageStatusType.UNAUTHORIZED_OFFLINE -> DisengageStatusType.UNAUTHORIZED_OFFLINE
+        AbrevvaDisengageStatusType.SIGNAL_LOCALIZATION -> DisengageStatusType.SIGNAL_LOCALIZATION
+        AbrevvaDisengageStatusType.MEDIUM_DEFECT_ONLINE -> DisengageStatusType.MEDIUM_DEFECT_ONLINE
+        AbrevvaDisengageStatusType.MEDIUM_BLACKLISTED -> DisengageStatusType.MEDIUM_BLACKLISTED
+        AbrevvaDisengageStatusType.UNABLE_TO_CONNECT -> DisengageStatusType.UNABLE_TO_CONNECT
+        AbrevvaDisengageStatusType.UNABLE_TO_SET_NOTIFICATIONS -> DisengageStatusType.UNABLE_TO_SET_NOTIFICATIONS
+        AbrevvaDisengageStatusType.UNABLE_TO_READ_CHALLENGE -> DisengageStatusType.UNABLE_TO_READ_CHALLENGE
+        AbrevvaDisengageStatusType.UNABLE_TO_WRITE_MDF -> DisengageStatusType.UNABLE_TO_WRITE_MDF
+        AbrevvaDisengageStatusType.ACCESS_CIPHER_ERROR -> DisengageStatusType.ACCESS_CIPHER_ERROR
+        AbrevvaDisengageStatusType.BLE_ADAPTER_DISABLED -> DisengageStatusType.BLE_ADAPTER_DISABLED
+        AbrevvaDisengageStatusType.UNKNOWN_DEVICE -> DisengageStatusType.UNKNOWN_DEVICE
+        AbrevvaDisengageStatusType.TIMEOUT -> DisengageStatusType.TIMEOUT
+        AbrevvaDisengageStatusType.UNKNOWN_STATUS_CODE -> DisengageStatusType.UNKNOWN_STATUS_CODE
     }
   }
 
@@ -148,7 +152,7 @@ class AbrevvaBleImpl : HybridAbrevvaBleImplSpec() {
   ) {
 
     manager.startScan(
-      { device: com.evva.xesar.abrevva.ble.BleDevice ->
+      { device: AbrevvaBleDevice ->
         val bleDevice: BleDevice = BleDevice(
           device.address,
           device.localName,

@@ -3,6 +3,9 @@ import CoreBluetooth
 import Foundation
 
 typealias NitroPromise<T> = NitroModules.Promise<T>
+typealias AbrevvaBleMangager = AbrevvaSDK.BleManager
+typealias AbrevvaBleDevice = AbrevvaSDK.BleDevice
+
 
 enum AbrevvaBleError: Error {
     case Initialize(_ message: String)
@@ -17,12 +20,12 @@ enum AbrevvaBleError: Error {
 class AbrevvaBleImpl: HybridAbrevvaBleImplSpec {
 
   
-  private var bleManager: BleManager?
-  private var bleDeviceMap = [String: AbrevvaSDK.BleDevice]()
+  private var bleManager: AbrevvaBleMangager?
+    private var bleDeviceMap = [String: AbrevvaBleDevice]()
   
   func initialize(androidNeverForLocation: Bool?) throws -> NitroModules.Promise<Void> {
     let promise = NitroPromise<Void>()
-    bleManager = BleManager { success, message in
+    bleManager = AbrevvaBleMangager { success, message in
       debugPrint("bleManager init", success)
 
       if success {
