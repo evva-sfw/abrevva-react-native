@@ -56,6 +56,12 @@ Add Abrevva & Nitro Modules to your project:
 $ yarn add @evva/abrevva-react-native react-native-nitro-modules
 ```
 
+If you insist on using the Legacy react-native Architecture:
+```
+$ yarn add @evva/abrevva-react-native@5.1.7
+```
+
+
 ### Android
 
 Set the minimum SDK version to 29 in your module's build gradle:
