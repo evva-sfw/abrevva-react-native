@@ -136,7 +136,7 @@ lib/
 example/.bundle/
 example/ios/build/
 example/ios/Pods/
-example/ios/ExampleAppExample.xcworkspace/xcuserdata/*
+example/ios/AbrevvaReactNativeExample.xcworkspace/xcuserdata/*
 **/*/.gradle/
 example/android/app/build/
 example/vendor/
