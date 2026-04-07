@@ -106,47 +106,42 @@ class AbrevvaCryptoImpl: HybridAbrevvaCryptoImplSpec {
     )
   }
   
-  func decryptFileFromURL(sharedSecret: String, ptPath: String, url: String) throws -> Bool {
-    let sharedSecret = [UInt8](
-      hex: "0x" + sharedSecret)
-    var result: (Data, URLResponse)?
-    var e: Error?
-    let semaphore = DispatchSemaphore(value: 0)
-    
-    
-    Task {
-      do {
-        guard let url = URL(string: url) else {
-          throw CryptoError.DecryptFileFromURLNetworkError
+    func decryptFileFromURL(sharedSecret: String, ptPath: String, url: String) throws -> NitroModules.Promise<Bool> {
+        let sharedSecret = [UInt8](
+            hex: "0x" + sharedSecret)
+        var result: (Data, URLResponse)?
+        var e: Error?
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        let promise = Promise<Bool>()
+        Task {
+            do {
+                guard let url = URL(string: url) else {
+                    throw CryptoError.DecryptFileFromURLNetworkError
+                }
+                result = try await URLSession.shared.data(from: url)
+            } catch {
+                e = error
+            }
+            semaphore.signal()
         }
-        result = try await URLSession.shared.data(from: url)
-      } catch {
-        e = error
-      }
-      semaphore.signal()
+        semaphore.wait()
+        
+        if e != nil {
+            return Promise.rejected(withError: CryptoError.DecryptFileFromURLNetworkError)
+        }
+        
+        guard  let httpResult = result, let httpResponse = httpResult.1 as? HTTPURLResponse else {
+            return Promise.rejected(withError: CryptoError.DecryptFileFromURLNoResponseDataError)
+        }
+        
+        if httpResponse.statusCode == 200 {
+            promise.resolve(withResult: self.AesGcmImpl.decryptFile(key: sharedSecret, data: httpResult.0, pathPt: ptPath))
+        } else if  httpResponse.statusCode == 404 {
+            return Promise.rejected(withError: CryptoError.DecryptFileFromURLNotFoundError)
+        }
+        return Promise.rejected(withError: CryptoError.DecryptFileFromURLInaccessibleError)
     }
-    
-    semaphore.wait()
-    
-    if e != nil {
-      throw CryptoError.DecryptFileFromURLNetworkError
-    }
-    
-    guard  let httpResult = result, let httpResponse = httpResult.1 as? HTTPURLResponse else {
-      throw CryptoError.DecryptFileFromURLNoResponseDataError
-      
-    }
-    
-    if httpResponse.statusCode == 200 {
-      return self.AesGcmImpl.decryptFile(key: sharedSecret, data: httpResult.0, pathPt: ptPath)
-      
-    } else if  httpResponse.statusCode == 404 {
-      throw CryptoError.DecryptFileFromURLNotFoundError
-    }
-    else {
-      throw CryptoError.DecryptFileFromURLInaccessibleError
-    }
-  }
   
   func random(numBytes: Double) -> String {
     return SimpleSecureRandomImpl.random(Int(numBytes)).toHexString()

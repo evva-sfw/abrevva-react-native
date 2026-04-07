@@ -33,7 +33,7 @@ export interface AbrevvaCryptoImpl extends HybridObject<{
     sharedSecret: string,
     ptPath: string,
     url: string
-  ): boolean;
+  ): Promise<boolean>;
   random(numBytes: number): HexString;
   derive(key: string, salt: string, info: string, length: number): HexString;
   computeED25519PublicKey(privateKey: Base64String): Base64String;

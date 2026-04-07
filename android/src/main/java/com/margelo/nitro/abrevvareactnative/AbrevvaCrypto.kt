@@ -6,6 +6,10 @@ import com.evva.xesar.abrevva.crypto.HKDF
 import com.evva.xesar.abrevva.crypto.SimpleSecureRandom
 import com.evva.xesar.abrevva.crypto.X25519Wrapper
 import com.facebook.proguard.annotations.DoNotStrip
+import com.margelo.nitro.core.Promise
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.bouncycastle.util.encoders.Base64
 import org.bouncycastle.util.encoders.Hex
 import java.io.BufferedInputStream
@@ -170,64 +174,85 @@ class AbrevvaCryptoImpl : HybridAbrevvaCryptoImplSpec() {
     }
   }
 
-  override fun decryptFileFromURL(
+    override fun decryptFileFromURL(
     sharedSecret: String,
     ptPath: String,
     url: String
-  ): Boolean {
-    val sharedSecretByte: ByteArray
-    try {
-      sharedSecretByte = Hex.decode(sharedSecret)
-    } catch (e: Exception) {
-      throw CryptoException(CryptoError.DecryptFileFromURLInvalidArgumentError, e)
+  ): Promise<Boolean> {
+        val promise = Promise<Boolean>()
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val sharedSecretByte: ByteArray
+            try {
+                sharedSecretByte = Hex.decode(sharedSecret)
+            } catch (e: Exception) {
+                promise.reject(
+                    CryptoException(
+                        CryptoError.DecryptFileFromURLInvalidArgumentError,
+                        e
+                    )
+                )
+                return@launch
+            }
+
+            val ctPath = Paths.get(ptPath).parent.toString() + "/blob"
+
+            val file = File(ctPath)
+            val uri: URL
+            val connection: HttpURLConnection
+            val statusCode: Int
+
+            try {
+                uri = URL(url)
+                connection = uri.openConnection() as HttpURLConnection
+                statusCode = connection.responseCode
+            } catch (e: Exception) {
+                promise.reject(CryptoException(CryptoError.DecryptFileFromURLNetworkError, e))
+                return@launch
+            }
+            try {
+                when (statusCode) {
+                    200 -> {
+                        val inputStream = connection.inputStream
+                        val bufferedInputStream = BufferedInputStream(inputStream)
+                        val outputStream = FileOutputStream(file)
+                        val dataBuffer = ByteArray(4096)
+                        var bytesRead: Int
+
+                        while (bufferedInputStream.read(dataBuffer, 0, 4096)
+                                .also { bytesRead = it } != -1
+                        ) {
+                            outputStream.write(dataBuffer, 0, bytesRead)
+                        }
+                        outputStream.flush()
+                        outputStream.close()
+                    }
+
+                    404 -> {
+                        promise.reject(CryptoException(CryptoError.DecryptFileFromURLNotFoundError))
+                        return@launch
+                    }
+
+                    else -> {
+                        promise.reject(CryptoException(CryptoError.DecryptFileFromURLInaccessibleError))
+                        return@launch
+
+                    }
+                }
+            } catch (e: IOException) {
+                promise.reject(
+                    CryptoException(
+                        CryptoError.DecryptFileFromURLNoResponseDataError,
+                        e
+                    )
+                )
+                return@launch
+            }
+            promise.resolve(AesGcm.decryptFile(sharedSecretByte, ctPath, ptPath))
+        }.start()
+        return promise
     }
-
-    val ctPath = Paths.get(ptPath).parent.toString() + "/blob"
-
-    val file = File(ctPath)
-    val uri: URL
-    val connection: HttpURLConnection
-    val statusCode: Int
-
-    try {
-      uri = URL(url)
-      connection = uri.openConnection() as HttpURLConnection
-      statusCode = connection.responseCode
-    } catch (e: Exception) {
-      throw CryptoException(CryptoError.DecryptFileFromURLNetworkError, e)
-    }
-    try {
-      when (statusCode) {
-        200 -> {
-          val inputStream = connection.inputStream
-          val bufferedInputStream = BufferedInputStream(inputStream)
-          val outputStream = FileOutputStream(file)
-          val dataBuffer = ByteArray(4096)
-          var bytesRead: Int
-
-          while (bufferedInputStream.read(dataBuffer, 0, 4096)
-              .also { bytesRead = it } != -1
-          ) {
-            outputStream.write(dataBuffer, 0, bytesRead)
-          }
-          outputStream.flush()
-          outputStream.close()
-        }
-
-        404 -> {
-          throw CryptoException(CryptoError.DecryptFileFromURLNotFoundError)
-        }
-
-        else -> {
-          throw CryptoException(CryptoError.DecryptFileFromURLInaccessibleError)
-        }
-      }
-    } catch (e: IOException) {
-      throw CryptoException(CryptoError.DecryptFileFromURLNoResponseDataError, e)
-    }
-
-    return AesGcm.decryptFile(sharedSecretByte, ctPath, ptPath)
-  }
 
   override fun random(numBytes: Double): String {
     try {
