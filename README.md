@@ -141,6 +141,8 @@ target 'AbrevvaReactNativeExample' do
 end
 ```
 
+Ensure you've added the 'Bluetooth' & 'NFC' Capabilities to your app.
+
 Execute `bundle exec pod install` inside of your projects `ios/` folder.
 
 ### Initialize and scan for EVVA components

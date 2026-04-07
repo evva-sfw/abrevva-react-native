@@ -88,10 +88,11 @@ class AbrevvaBleImpl: HybridAbrevvaBleImplSpec {
   func startScan(onScanResult: @escaping (BleDevice) -> Void, onScanStart: (((any Error)?) -> Void)?, onScanStop: (((any Error)?) -> Void)?, macFilter: String?, allowDuplicates: Bool?, timeout: Double?) throws {
 
     let bleManager = try getBleManager()
+    self.bleDeviceMap = [:]
 
     bleManager.startScan(
       { device in
-        
+        self.bleDeviceMap[device.getAddress()] = device
         let bleDevice = BleDevice.init(
           deviceId: device.address,
           name: device.getName(),
