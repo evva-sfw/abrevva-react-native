@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "types": ["jest"],
     "rootDir": ".",
     "paths": {
       "@evva/abrevva-react-native": ["./src/index"]
@@ -28,7 +29,5 @@
     "verbatimModuleSyntax": true,
     "useDefineForClassFields": false
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

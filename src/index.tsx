@@ -1,248 +1,114 @@
-import {
-  DeviceEventEmitter,
-  type EmitterSubscription,
-  NativeEventEmitter,
-  NativeModules,
-  type Permission,
-  PermissionsAndroid,
-} from 'react-native';
+import { NitroModules } from 'react-native-nitro-modules';
 
-export * from './conversion';
-export type * from './interfaces';
+import { PermissionsAndroid, Platform, type Permission } from 'react-native';
+import type { AbrevvaBleImpl } from './AbrevvaBle.nitro';
+import type { AbrevvaCodingStationImpl } from './AbrevvaCodingStation.nitro';
+import type { AbrevvaCryptoImpl } from './AbrevvaCrypto.nitro';
+import type { BleDevice, DisengageStatusType, XvnResponse } from './interfaces';
 
-import { Platform } from 'react-native';
+const AbrevvaBleHybridObject =
+  NitroModules.createHybridObject<AbrevvaBleImpl>('AbrevvaBleImpl');
+const AbrevvaCryptoHybridObject =
+  NitroModules.createHybridObject<AbrevvaCryptoImpl>('AbrevvaCryptoImpl');
+const AbrevvaCodingStationHybridObject =
+  NitroModules.createHybridObject<AbrevvaCodingStationImpl>(
+    'AbrevvaCodingStationImpl'
+  );
 
-import {
-  type AbrevvaBLEInterface,
-  type AbrevvaCodingStationInterface,
-  type AbrevvaCryptoInterface,
-  type BleDevice,
-  type BooleanResult,
-  DisengageStatusType,
-  type StringResult,
-} from './interfaces';
-
-const NativeModuleCrypto = NativeModules.AbrevvaCrypto
-  ? NativeModules.AbrevvaCrypto
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error('Linking Error AbrevvaCrypto');
-        },
-      },
-    );
-
-const NativeModuleBle = NativeModules.AbrevvaBle
-  ? NativeModules.AbrevvaBle
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error('Linking Error AbrevvaBle');
-        },
-      },
-    );
-
-const NativeModuleCodingStation = NativeModules.AbrevvaCodingStation
-  ? NativeModules.AbrevvaCodingStation
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error('Linking Error AbrevvaCodingstation');
-        },
-      },
-    );
-
-export class AbrevvaCodingStationModule implements AbrevvaCodingStationInterface {
-  async register(url: string, clientId: string, username: string, password: string) {
-    return await NativeModuleCodingStation.register({
-      url: url,
-      clientId: clientId,
-      username: username,
-      password: password,
-    });
-  }
-
-  async connect(): Promise<void> {
-    return await NativeModuleCodingStation.connect();
-  }
-  async write(): Promise<void> {
-    return await NativeModuleCodingStation.write();
-  }
-  async disconnect(): Promise<void> {
-    return await NativeModuleCodingStation.disconnect();
-  }
-}
-
-export class AbrevvaBleModule implements AbrevvaBLEInterface {
-  private eventListeners = new Map<string, EmitterSubscription>();
-  private readonly eventEmitter: NativeEventEmitter | undefined;
-
-  constructor() {
-    this.eventEmitter = Platform.select({
-      ios: new NativeEventEmitter(NativeModuleBle),
-      android: DeviceEventEmitter,
-    });
-    if (this.eventEmitter === undefined) {
-      throw new Error('this platform is not supported');
-    }
-  }
-
-  private removeUndefinedField(obj: any) {
-    for (let propName in obj) {
-      obj[propName] ?? delete obj[propName];
-    }
-    return obj;
-  }
-
-  private async registerListener(key: string, callback: any) {
-    this.eventListeners.get(key)?.remove();
-    await NativeModuleBle.setSupportedEvents({ events: [...this.eventListeners.keys(), key] });
-    const listener = this.eventEmitter!.addListener(key, (data) => {
-      callback(data);
-    });
-    this.eventListeners.set(key, listener);
-  }
-
-  private removeListener(key: string) {
-    if (this.eventListeners.get(key)) {
-      this.eventListeners.get(key)?.remove();
-      NativeModuleBle.setSupportedEvents({ events: [...this.eventListeners.keys()] });
-    }
-  }
-
+class _AbrevvaBle {
   async initialize(androidNeverForLocation?: boolean): Promise<void> {
-    if (Platform.OS === 'ios') {
-      await NativeModuleBle.initialize(
-        this.removeUndefinedField({ androidNeverForLocation: androidNeverForLocation }),
-      );
-    } else if (Platform.OS === 'android') {
+    if (Platform.OS === 'android') {
       var permissions: Permission[] = [];
-      if (await NativeModuleBle.checkSdkVersion()) {
-        permissions.push('android.permission.BLUETOOTH_SCAN');
-        permissions.push('android.permission.BLUETOOTH_CONNECT');
-        if (androidNeverForLocation) {
-          permissions.push('android.permission.ACCESS_FINE_LOCATION');
-        }
-      } else {
-        permissions = [
-          'android.permission.ACCESS_COARSE_LOCATION',
-          'android.permission.ACCESS_FINE_LOCATION',
-        ];
+
+      permissions.push(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN);
+      permissions.push(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT);
+      if (androidNeverForLocation) {
+        permissions.push(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
       }
       await PermissionsAndroid.requestMultiple(permissions);
+    } else {
+      await AbrevvaBleHybridObject.initialize();
     }
   }
 
-  async isEnabled(): Promise<BooleanResult> {
-    return await NativeModuleBle.isEnabled();
+  isEnabled(): boolean {
+    return AbrevvaBleHybridObject.isEnabled();
   }
 
-  async isLocationEnabled(): Promise<BooleanResult> {
-    return await NativeModuleBle.isLocationEnabled();
+  isLocationEnabled(): boolean {
+    return AbrevvaBleHybridObject.isLocationEnabled();
   }
 
-  async startEnabledNotifications(callback: (result: BooleanResult) => void): Promise<void> {
-    await this.registerListener('onEnabledChanged', callback);
-    await NativeModuleBle.startEnabledNotifications();
+  startEnabledNotifications(callback: (result: boolean) => void): void {
+    AbrevvaBleHybridObject.startEnabledNotifications(callback);
   }
 
-  async stopEnabledNotifications(): Promise<void> {
-    this.removeListener('onEnabledChanges');
-    await NativeModuleBle.stopEnabledNotifications();
+  stopEnabledNotifications(): void {
+    AbrevvaBleHybridObject.stopEnabledNotifications();
   }
 
-  async openLocationSettings(): Promise<void> {
-    await NativeModuleBle.openLocationSettings();
+  openLocationSettings(): void {
+    AbrevvaBleHybridObject.openLocationSettings();
   }
 
-  async openBluetoothSettings(): Promise<void> {
-    await NativeModuleBle.openBluetoothSettings();
+  openBluetoothSettings(): void {
+    AbrevvaBleHybridObject.openBluetoothSettings();
   }
 
-  async openAppSettings(): Promise<void> {
-    await NativeModuleBle.openAppSettings();
+  openAppSettings(): void {
+    AbrevvaBleHybridObject.openAppSettings();
   }
 
-  async startScan(
+  startScan(
     onScanResult: (result: BleDevice) => void,
-    onScanStart: (success: BooleanResult) => void,
-    onScanStop: (success: BooleanResult) => void,
+    onScanStart: (error?: Error) => void,
+    onScanStop: (error?: Error) => void,
     macFilter?: string,
     allowDuplicates?: boolean,
-    timeout?: number,
-  ): Promise<void> {
-    if (onScanResult) {
-      await this.registerListener('onScanResult', onScanResult);
-    }
-
-    if (onScanStart) {
-      await this.registerListener('onScanStart', onScanStart);
-    }
-
-    if (onScanStop) {
-      await NativeModuleBle.setSupportedEvents({
-        events: [...this.eventListeners.keys(), 'onScanStop'],
-      });
-      await this.registerListener('onScanStop', (success: BooleanResult) => {
-        ['onScanResult', 'onScanStart', 'onScanStop'].forEach((key) => {
-          this.eventListeners.get(key)?.remove();
-        });
-        onScanStop(success);
-      });
-    }
-
-    await NativeModuleBle.startScan(
-      this.removeUndefinedField({
-        macFilter: macFilter,
-        allowDuplicates: allowDuplicates,
-        timeout: timeout,
-      }),
+    timeout?: number
+  ): void {
+    AbrevvaBleHybridObject.startScan(
+      onScanResult,
+      onScanStart,
+      onScanStop,
+      macFilter,
+      allowDuplicates,
+      timeout
     );
   }
 
-  async stopScan(): Promise<void> {
-    await NativeModuleBle.stopScan();
+  stopScan(): void {
+    AbrevvaBleHybridObject.stopScan();
   }
 
   async connect(
     deviceId: string,
-    onDisconnect: (address: string) => void,
-    timeout?: number,
+    onDisconnect?: (address: string) => void,
+    timeout?: number
   ): Promise<void> {
-    if (onDisconnect) {
-      const key = `onDisconnect|${deviceId}`;
-      this.eventListeners.get(key)?.remove();
-      const listener = this.eventEmitter!.addListener(key, (address) => {
-        onDisconnect(address.value);
-      });
-      this.eventListeners.set(key, listener);
-    }
-
-    await NativeModuleBle.connect({
-      deviceId: deviceId,
-      timeout: timeout,
-    });
+    await AbrevvaBleHybridObject.connect(
+      deviceId,
+      onDisconnect ?? function () {},
+      timeout
+    );
   }
 
-  async disconnect(deviceId: string): Promise<void> {
-    await NativeModuleBle.disconnect({ deviceId: deviceId });
+  async disconnect(deviceId: string): Promise<boolean> {
+    return await AbrevvaBleHybridObject.disconnect(deviceId);
   }
 
   async read(
     deviceId: string,
     service: string,
     characteristic: string,
-    timeout?: number,
-  ): Promise<StringResult> {
-    return await NativeModuleBle.read({
-      deviceId: deviceId,
-      service: service,
-      characteristic: characteristic,
-      timeout: timeout,
-    });
+    timeout?: number
+  ): Promise<string> {
+    return await AbrevvaBleHybridObject.read(
+      deviceId,
+      service,
+      characteristic,
+      timeout
+    );
   }
 
   async write(
@@ -250,47 +116,57 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
     service: string,
     characteristic: string,
     value: string,
-    timeout?: number,
-  ): Promise<void> {
-    return await NativeModuleBle.write({
-      deviceId: deviceId,
-      service: service,
-      characteristic: characteristic,
-      value: value,
-      timeout: timeout,
-    });
+    timeout?: number
+  ): Promise<boolean> {
+    return await AbrevvaBleHybridObject.write(
+      deviceId,
+      service,
+      characteristic,
+      value,
+      timeout
+    );
   }
 
-  async signalize(deviceId: string): Promise<BooleanResult> {
-    return await NativeModuleBle.signalize({ deviceId: deviceId });
+  async signalize(deviceId: string): Promise<boolean> {
+    return await AbrevvaBleHybridObject.signalize(deviceId);
   }
-
+  /**
+   * @deprecated Use disengageWithXvnResponse() instead.
+   */
   async disengage(
     deviceId: string,
     mobileId: string,
     mobileDeviceKey: string,
     mobileGroupId: string,
     mobileAccessData: string,
-    isPermanentRelease: boolean,
+    isPermanentRelease: boolean
   ): Promise<DisengageStatusType> {
-    const status = (
-      await NativeModuleBle.disengage({
-        deviceId: deviceId,
-        mobileId: mobileId,
-        mobileDeviceKey: mobileDeviceKey,
-        mobileGroupId: mobileGroupId,
-        mobileAccessData: mobileAccessData,
-        isPermanentRelease: isPermanentRelease,
-      })
-    ).value;
+    return await AbrevvaBleHybridObject.disengage(
+      deviceId,
+      mobileId,
+      mobileDeviceKey,
+      mobileGroupId,
+      mobileAccessData,
+      isPermanentRelease
+    );
+  }
 
-    let result: DisengageStatusType;
-    if (Object.values(DisengageStatusType).some((val: string) => val === status)) {
-      result = status as DisengageStatusType;
-    } else {
-      result = DisengageStatusType.Error;
-    }
-    return result;
+  async disengageWithXvnResponse(
+    deviceId: string,
+    mobileId: string,
+    mobileDeviceKey: string,
+    mobileGroupId: string,
+    mobileAccessData: string,
+    isPermanentRelease: boolean
+  ): Promise<XvnResponse> {
+    return await AbrevvaBleHybridObject.disengageWithXvnResponse(
+      deviceId,
+      mobileId,
+      mobileDeviceKey,
+      mobileGroupId,
+      mobileAccessData,
+      isPermanentRelease
+    );
   }
 
   async startNotifications(
@@ -298,99 +174,108 @@ export class AbrevvaBleModule implements AbrevvaBLEInterface {
     service: string,
     characteristic: string,
     timeout: number,
-    callback: (event: StringResult) => void,
-  ): Promise<void> {
-    const key = `notification|${deviceId}|${service}|${characteristic}`.toLowerCase();
-    await this.registerListener(key, callback);
-    return await NativeModuleBle.startNotifications(
-      this.removeUndefinedField({
-        deviceId: deviceId,
-        service: service,
-        characteristic: characteristic,
-        timeout: timeout,
-      }),
+    callback: (event: string) => void
+  ): Promise<boolean> {
+    return await AbrevvaBleHybridObject.startNotifications(
+      deviceId,
+      service,
+      characteristic,
+      timeout,
+      callback
     );
   }
 
   async stopNotifications(
     deviceId: string,
     service: string,
-    characteristic: string,
-  ): Promise<void> {
-    const key = `notification|${deviceId}|${service}|${characteristic}`.toLowerCase();
-    this.removeListener(key);
-    return NativeModuleBle.stopNotifications({
-      deviceId: deviceId,
-      service: service,
-      characteristic: characteristic,
-    });
+    characteristic: string
+  ): Promise<boolean> {
+    return await AbrevvaBleHybridObject.stopNotifications(
+      deviceId,
+      service,
+      characteristic
+    );
   }
 }
 
-class AbrevvaCryptoModule implements AbrevvaCryptoInterface {
-  encrypt(key: string, iv: string, adata: string, pt: string, tagLength?: number) {
-    return NativeModuleCrypto.encrypt({
-      key: key,
-      iv: iv,
-      adata: adata,
-      pt: pt,
-      tagLength: tagLength,
-    });
+class _AbrevvaCodingStation {
+  async register(
+    url: string,
+    clientId: string,
+    username: string,
+    password: string
+  ) {
+    return await AbrevvaCodingStationHybridObject._register(
+      url,
+      clientId,
+      username,
+      password
+    );
   }
-  decrypt(key: string, iv: string, adata: string, ct: string, tagLength?: number) {
-    return NativeModuleCrypto.decrypt({
-      key: key,
-      iv: iv,
-      adata: adata,
-      ct: ct,
-      tagLength: tagLength,
-    });
+
+  async connect(): Promise<void> {
+    return await AbrevvaCodingStationHybridObject.connect();
+  }
+  async write(): Promise<void> {
+    return await AbrevvaCodingStationHybridObject.write();
+  }
+  disconnect(): void {
+    AbrevvaCodingStationHybridObject.disconnect();
+  }
+}
+
+class _AbrevvaCrypto {
+  encrypt(
+    key: string,
+    iv: string,
+    adata: string,
+    pt: string,
+    tagLength?: number
+  ) {
+    return AbrevvaCryptoHybridObject.encrypt(key, iv, adata, pt, tagLength);
+  }
+  decrypt(
+    key: string,
+    iv: string,
+    adata: string,
+    ct: string,
+    tagLength?: number
+  ) {
+    return AbrevvaCryptoHybridObject.decrypt(key, iv, adata, ct, tagLength);
   }
   generateKeyPair() {
-    return NativeModuleCrypto.generateKeyPair();
+    return AbrevvaCryptoHybridObject.generateKeyPair();
   }
 
   computeSharedSecret(key: string, peerPublicKey: string) {
-    return NativeModuleCrypto.computeSharedSecret({ key: key, peerPublicKey: peerPublicKey });
+    return AbrevvaCryptoHybridObject.computeSharedSecret(key, peerPublicKey);
   }
 
   encryptFile(sharedSecret: string, ptPath: string, ctPath: string) {
-    return NativeModuleCrypto.encryptFile({
-      sharedSecret: sharedSecret,
-      ptPath: ptPath,
-      ctPath: ctPath,
-    });
+    return AbrevvaCryptoHybridObject.encryptFile(sharedSecret, ptPath, ctPath);
   }
 
   decryptFile(sharedSecret: string, ptPath: string, ctPath: string) {
-    return NativeModuleCrypto.decryptFile({
-      sharedSecret: sharedSecret,
-      ptPath: ptPath,
-      ctPath: ctPath,
-    });
+    return AbrevvaCryptoHybridObject.decryptFile(sharedSecret, ptPath, ctPath);
   }
 
   decryptFileFromURL(sharedSecret: string, ptPath: string, url: string) {
-    return NativeModuleCrypto.decryptFileFromURL({
-      sharedSecret: sharedSecret,
-      ptPath: ptPath,
-      url: url,
-    });
+    return AbrevvaCryptoHybridObject.decryptFileFromURL(
+      sharedSecret,
+      ptPath,
+      url
+    );
   }
 
   random(numBytes: number) {
-    return NativeModuleCrypto.random({ numBytes: numBytes });
+    return AbrevvaCryptoHybridObject.random(numBytes);
   }
 
   derive(key: string, salt: string, info: string, length: number) {
-    return NativeModuleCrypto.derive({ key: key, salt: salt, info: info, length: length });
+    return AbrevvaCryptoHybridObject.derive(key, salt, info, length);
   }
 }
 
-export const AbrevvaBle = new AbrevvaBleModule();
-export const AbrevvaCrypto = new AbrevvaCryptoModule();
-export const AbrevvaCodingStation = new AbrevvaCodingStationModule();
-
-export function createAbrevvaBleInstance() {
-  return new AbrevvaBleModule();
-}
+export const AbrevvaCrypto = new _AbrevvaCrypto();
+export const AbrevvaBle = new _AbrevvaBle();
+export const AbrevvaCodingStation = new _AbrevvaCodingStation();

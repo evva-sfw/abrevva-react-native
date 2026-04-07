@@ -1,27 +1,25 @@
-import { AbrevvaBle, type BleDevice, type BooleanResult } from '@evva/abrevva-react-native';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { AbrevvaBle } from '@evva/abrevva-react-native';
+import { useEffect, useState } from 'react';
 import {
-  Dimensions,
   FlatList,
   RefreshControl,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
-
-global.Buffer = require('buffer').Buffer;
+import { SafeAreaView } from 'react-native-safe-area-context';
+import type { BleDevice } from '../../src/interfaces';
 
 export const BleScreen = () => {
   const [statusCode, setStatusCode] = useState('None');
-  const [startScanNotification, setStartScanNotification] = useState('Pull down to start scanning');
 
   return (
     <>
-      <Text style={bleStyles.scanNotification}>{startScanNotification}</Text>
       <ScanResults
-        props={{ setStatus: setStatusCode, setScanNotification: setStartScanNotification }}
+        props={{
+          setStatus: setStatusCode,
+        }}
       />
       <SafeAreaView style={bleStyles.status}>
         <Text>Last received status code '{statusCode}'</Text>
@@ -34,7 +32,6 @@ const ScanResults = ({ props }) => {
   const [deviceList, setDeviceList] = useState<BleDevice[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const setStatus = props.setStatus;
-  const setScanNotification = props.setScanNotification;
 
   const scanRequestCallback = (data: BleDevice) => {
     setDeviceList((prevDeviceList) => {
@@ -44,29 +41,27 @@ const ScanResults = ({ props }) => {
 
   const onRefresh = async () => {
     setStatus('None');
-    setScanNotification('Scanning ...');
     setRefreshing(true);
     setDeviceList([]);
 
-    const timeout: NodeJS.Timeout = setTimeout(() => {
+    const timeout = setTimeout(() => {
       setRefreshing(false);
-      setScanNotification('');
     }, 3_000);
 
-    await AbrevvaBle.stopScan();
+    AbrevvaBle.stopScan();
 
     try {
-      await AbrevvaBle.startScan(
+      AbrevvaBle.startScan(
         scanRequestCallback,
-        (result: BooleanResult) => {
-          console.log(`onScanStart: ${result.value}`);
+        (err?: Error) => {
+          console.log(`onScanStart: ${err}`);
         },
-        (result: BooleanResult) => {
-          console.log(`onScanStop: ${result.value}`);
+        (err?: Error) => {
+          console.log(`onScanStop: ${err}`);
         },
         undefined,
         false,
-        10_000,
+        10_000
       );
     } catch (err) {
       console.log(err);
@@ -75,16 +70,23 @@ const ScanResults = ({ props }) => {
   };
 
   useEffect(() => {
-    void AbrevvaBle.initialize(true);
+    AbrevvaBle.initialize(true);
   }, []);
 
   return (
     <FlatList
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-      style={bleStyles.row}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      style={scanViewStyle.flatListContainer}
       data={deviceList}
+      ListEmptyComponent={
+        <View style={scanViewStyle.emptyComponentView}>
+          <Text>{refreshing ? 'Refreshing...' : 'Pull down to refresh'}</Text>
+        </View>
+      }
       renderItem={(listRenderItem) => (
-        <SafeAreaView style={bleStyles.BleScanResult}>
+        <View style={scanViewStyle.safeAreaItem}>
           <TouchableOpacity
             onPress={async () => {
               const result = await AbrevvaBle.disengage(
@@ -93,38 +95,54 @@ const ScanResults = ({ props }) => {
                 'mobileDeviceKey',
                 'mobileGroupId',
                 'mobileAccessData',
-                true,
+                true
               );
               console.log(`Disengage Status: ${result}`);
             }}
           >
-            <Text>{listRenderItem.item.advertisementData?.manufacturerData?.identifier}</Text>
+            <Text style={scanViewStyle.deviceText}>
+              {
+                listRenderItem.item.advertisementData?.manufacturerData
+                  ?.identifier
+              }
+            </Text>
           </TouchableOpacity>
-        </SafeAreaView>
+        </View>
       )}
     />
   );
 };
 
 const bleStyles = StyleSheet.create({
-  scanNotification: {
-    margin: 'auto',
-    color: 'black',
-    marginVertical: 10,
-  },
-  BleScanResult: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    height: 60,
-    borderColor: 'thistle',
-    borderWidth: 1,
-    width: Dimensions.get('window').width,
-  },
-  row: {},
   status: {
     height: 100,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+});
+
+const scanViewStyle = StyleSheet.create({
+  flatListContainer: {
+    flex: 1,
+  },
+  safeAreaItem: {
+    height: 50,
+    width: '100%',
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#cccccc',
+    borderWidth: 1,
+  },
+  deviceText: {
+    color: 'black',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  emptyComponentView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 70,
   },
 });

@@ -1,108 +1,134 @@
-import com.android.Version
-
 buildscript {
-    def kotlin_version = rootProject.ext.has("kotlinVersion") ? rootProject.ext.get("kotlinVersion") : project.properties["AbrevvaReactNative_kotlinVersion"]
+  ext.AbrevvaReactNative = [
+    kotlinVersion: "2.0.21",
+    minSdkVersion: 30,
+    compileSdkVersion: 36,
+    targetSdkVersion: 36
+  ]
 
-    repositories {
-        google()
-        mavenCentral()
+  ext.getExtOrDefault = { prop ->
+    if (rootProject.ext.has(prop)) {
+      return rootProject.ext.get(prop)
     }
 
-    dependencies {
-        classpath "com.android.tools.build:gradle:8.3.0"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
+    return AbrevvaReactNative[prop]
+  }
+
+  repositories {
+    google()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath "com.android.tools.build:gradle:8.7.2"
+    // noinspection DifferentKotlinGradleVersion
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
+  }
 }
 
-def isNewArchitectureEnabled() {
-    return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
+def reactNativeArchitectures() {
+  def value = rootProject.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
+apply from: '../nitrogen/generated/android/abrevvareactnative+autolinking.gradle'
 
-if (isNewArchitectureEnabled()) {
-    apply plugin: "com.facebook.react"
-}
-
-def getExtOrDefault(name) {
-    return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties["AbrevvaReactNative_" + name]
-}
-
-def getExtOrIntegerDefault(name) {
-    return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["AbrevvaReactNative_" + name]).toInteger()
-}
-
-static def supportsNamespace() {
-    def parsed = Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')
-    def major = parsed[0].toInteger()
-    def minor = parsed[1].toInteger()
-
-    // Namespace support was added in 7.3.0
-    return (major == 7 && minor >= 3) || major >= 8
-}
+apply plugin: "com.facebook.react"
 
 android {
-    if (supportsNamespace()) {
-        namespace "com.evva.xesar.abrevva.reactnative"
+  namespace "com.margelo.nitro.abrevvareactnative"
 
-        sourceSets {
-            main {
-                manifest.srcFile "src/main/AndroidManifestNew.xml"
-            }
+  compileSdkVersion getExtOrDefault("compileSdkVersion")
+
+  defaultConfig {
+    minSdkVersion getExtOrDefault("minSdkVersion")
+    targetSdkVersion getExtOrDefault("targetSdkVersion")
+
+    externalNativeBuild {
+      cmake {
+        cppFlags "-frtti -fexceptions -Wall -fstack-protector-all"
+        arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+        abiFilters (*reactNativeArchitectures())
+
+        buildTypes {
+          debug {
+            cppFlags "-O1 -g"
+          }
+          release {
+            cppFlags "-O2"
+          }
         }
+      }
     }
+  }
 
-    compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
-
-    defaultConfig {
-        minSdkVersion getExtOrIntegerDefault("minSdkVersion")
-        targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
-
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
     }
+  }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
+  packagingOptions {
+    excludes = [
+      "META-INF",
+      "META-INF/**",
+      "**/libc++_shared.so",
+      "**/libfbjni.so",
+      "**/libjsi.so",
+      "**/libfolly_json.so",
+      "**/libfolly_runtime.so",
+      "**/libglog.so",
+      "**/libhermes.so",
+      "**/libhermes-executor-debug.so",
+      "**/libhermes_executor.so",
+      "**/libreactnative.so",
+      "**/libreactnativejni.so",
+      "**/libturbomodulejsijni.so",
+      "**/libreact_nativemodule_core.so",
+      "**/libjscexecutor.so"
+    ]
+  }
 
-    lintOptions {
-        disable "GradleCompatible"
-    }
+  buildFeatures {
+    buildConfig true
+    prefab true
+  }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+  buildTypes {
+    release {
+      minifyEnabled false
     }
-    testOptions {
-        unitTests.all {
-            useJUnitPlatform()
-        }
+  }
+
+  lint {
+    disable "GradleCompatible"
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+  sourceSets {
+    main {
+      manifest.srcFile "src/main/AndroidManifest.xml"
+      // Exclude safe-area-context, screens, and gesture-handler codegen files to avoid duplicates
+      java {
+        exclude '**/com/facebook/react/viewmanagers/*SafeArea*'
+        exclude '**/com/facebook/react/viewmanagers/*Screen*'
+        exclude '**/com/facebook/react/viewmanagers/RNS*'
+        exclude '**/com/facebook/react/viewmanagers/RNGesture*'
+        exclude '**/com/facebook/fbreact/specs/*SafeArea*'
+        exclude '**/com/facebook/fbreact/specs/*Screen*'
+        exclude '**/com/facebook/fbreact/specs/*Gesture*'
+      }
     }
+  }
 }
-
-repositories {
-    google()
-    mavenLocal()
-    mavenCentral()
-}
-
-def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-    implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "3.2.3"
-
-    implementation "com.facebook.react:react-native:0.20.1"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
-
-    testImplementation("androidx.test:core-ktx:1.6.1")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.12.0")
-    testImplementation("org.junit.platform:junit-platform-suite-engine:1.12.0")
-    testImplementation("io.mockk:mockk:1.13.11")
-
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+  implementation group: "com.evva.xesar", name: "abrevva-sdk-android", version: "4.1.0"
+  implementation "com.facebook.react:react-android"
+  implementation project(":react-native-nitro-modules")
 }
