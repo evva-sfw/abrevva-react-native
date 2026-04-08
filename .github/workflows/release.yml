@@ -72,11 +72,6 @@ jobs:
       - name: Install dependencies
         run: corepack enable && yarn install
 
-      - name: Authenticate with registry
-        run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Run release-it
         run: npx release-it ${{ github.event.inputs.input_version }} --ci
         env:
@@ -85,4 +80,4 @@ jobs:
       - name: Attest
         uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v1.4.4
         with:
-          subject-path: '${{ github.workspace }}/*.tgz'
+          subject-path: "${{ github.workspace }}/*.tgz"
