@@ -29,9 +29,6 @@ module.exports = {
   },
   hooks: {
     "after:bump": [
-      "echo ${version} > version",
-      "rm -f *.tgz",
-      "yarn pack --out '%s_%v.tgz'",
     ]
   },
   plugins: {

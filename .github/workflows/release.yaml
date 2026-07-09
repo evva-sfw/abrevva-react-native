@@ -21,10 +21,35 @@ jobs:
       new-tag: ${{ steps.version.outputs.new-tag }}
     steps:
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      # Create Github App Token
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
         with:
-          fetch-depth: 0
-          ssh-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
+          # required
+          # Appid from this app: https://evva.ghe.com/apps/p-lehner/evva-bee
+          client-id: ${{ vars.GLOBAL_APP_EVVA_BEE_APP_ID }}
+          # Private key from vault https://vault.service.consul:8200/ui/vault/secrets/secret/show/infrastructure/services/external/github-enterprise/github-apps/evva-bee
+          private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
+
+      # Get GitHub App User ID
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_HOST: github.com
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-tags: true
+          token: ${{ steps.app-token.outputs.token }}
+          ref: main
       
       # Install node dependencies (releaseit + autochangelog)
       - name: Install node dependencies
@@ -43,7 +68,6 @@ jobs:
             NEW_TAG=$(cat version)
             echo "new-tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
 
-
   publish:
     needs: bump-version
     runs-on: ubuntu-latest
@@ -51,7 +75,6 @@ jobs:
       contents: write
       id-token: write
       attestations: write
-      packages: write # Is this actually required?
     steps:
         
       - name: Harden Runner
@@ -59,29 +82,46 @@ jobs:
         with:
           egress-policy: audit
           
-
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      # Create Github App Token
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
         with:
-          fetch-depth: 0
-          fetch-tags: true
-          ref: main
-          ssh-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
+          # required
+          # Appid from this app: https://evva.ghe.com/apps/p-lehner/evva-bee
+          client-id: ${{ vars.GLOBAL_APP_EVVA_BEE_APP_ID }}
+          # Private key from vault https://vault.service.consul:8200/ui/vault/secrets/secret/show/infrastructure/services/external/github-enterprise/github-apps/evva-bee
+          private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
 
-          
+      # Get GitHub App User ID
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_HOST: github.com
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-tags: true
+          token: ${{ steps.app-token.outputs.token }}
+          ref: main
+
       - name: Debug inputs
         run: |
           echo "Type of release:${{ github.event.inputs.input_version }} from user ${GITHUB_ACTOR}"
           git config --list
-
-###################################################################################          
-
+     
       - name: Update version in package.json files for build
         id: update-version
         env:
             VERSION_TYPE: ${{ github.event.inputs.input_version }}
-            BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
             NEW_TAG: ${{ needs.bump-version.outputs.new-tag }}
-                # Files to be modified are copied to temp location so repo is returned to original state after build is complete
+            # Files to be modified are copied to temp location so repo is returned to original state after build is complete
         run: |
             echo '::group:: Preparing files with updated versions'
             echo "New version will be $NEW_TAG"
@@ -100,7 +140,6 @@ jobs:
             cat ${{ github.workspace }}/package-lock.json
             echo '::endgroup::'
  
-################################################################################# Below is original release flow
       - name: Setup Node.js
         uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
@@ -139,8 +178,10 @@ jobs:
       - name: Install dependencies
         run: corepack enable && yarn install
 
-
-#########################################################################
+      - name: Package files to .tgz
+        run: |
+          rm -f *.tgz
+          yarn pack --out '%s_%v.tgz'
 
     # Return repo to original checked out state
       - name: Remove created files and return to original repo state
@@ -151,15 +192,12 @@ jobs:
     # Create Github release - use --no-npm.publish so the release it uses git tags instead
       - name: Run release-it only create release on github
         env:
-          BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+          BOT_GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           npx release-it ${{ github.event.inputs.input_version }} --ci
 
-
-########################################################################## Below from original release flow
       - name: Attest
         uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v1.4.4
         with:
           subject-path: "${{ github.workspace }}/*.tgz"
 
-##############################################################################
