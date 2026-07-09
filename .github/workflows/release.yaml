@@ -20,38 +20,11 @@ jobs:
     outputs:
       new-tag: ${{ steps.version.outputs.new-tag }}
     steps:
-      # Create Github App Token
-      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        id: app-token
-        with:
-          # required
-          # Appid from this app: https://evva.ghe.com/apps/p-lehner/evva-bee
-          client-id: "5302"
-          # Private key from vault https://vault.service.consul:8200/ui/vault/secrets/secret/show/infrastructure/services/external/github-enterprise/github-apps/evva-bee
-          private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
 
-      # Get GitHub App User ID
-      - name: Get GitHub App User ID
-        id: get-user-id
-        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          GH_HOST: evva.ghe.com
-      - run: |
-          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
-          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
-
-      # Copy repo to action runner
-      - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
-          fetch-tags: true
-          token: ${{ steps.app-token.outputs.token }}
-          ref: main
-          # Make sure the value of GITHUB_TOKEN will persist in repo's config for release-it to use it later
-          # In this case it is a short lived app-token, so its ok
-          persist-credentials: true
+          fetch-depth: 0
+          ssh-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
       
       # Install node dependencies (releaseit + autochangelog)
       - name: Install node dependencies
@@ -62,7 +35,7 @@ jobs:
         id: version
         env:
           VERSION_TYPE: ${{ github.event.inputs.input_version }}
-          BOT_GITHUB_TOKEN:  ${{ steps.app-token.outputs.token }}
+          BOT_GITHUB_TOKEN:  ${{ secrets.BOT_GITHUB_TOKEN }}
         # Files to be modified are copied to temp location so repo is returned to original state after build is complete
         run: |
             npx release-it ${{ github.event.inputs.input_version }} --no-git.commit --no-git.tag --no-git.push --no-github.release --ci
@@ -86,17 +59,14 @@ jobs:
         with:
           egress-policy: audit
           
-      - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-depth: 0
           fetch-tags: true
-          token: ${{ steps.app-token.outputs.token }}
           ref: main
-          # Make sure the value of GITHUB_TOKEN will persist in repo's config for release-it to use it later
-          # In this case it is a short lived app-token, so its ok
-          persist-credentials: true
-          ssh-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }} # IS THIS REQUIRED? WAS FROM OLD RELEASE WORKFLOW
+          ssh-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
+
           
       - name: Debug inputs
         run: |
@@ -105,34 +75,11 @@ jobs:
 
 ###################################################################################          
 
-      # Create Github App Token
-      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        id: app-token
-        with:
-          # required
-          # Appid from this app: https://evva.ghe.com/apps/p-lehner/evva-bee
-          client-id: "5302"
-          # Private key from vault https://vault.service.consul:8200/ui/vault/secrets/secret/show/infrastructure/services/external/github-enterprise/github-apps/evva-bee
-          private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
-
-      # Get GitHub App User ID
-      - name: Get GitHub App User ID
-        id: get-user-id
-        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          GH_HOST: evva.ghe.com
-      - run: |
-          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
-          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
-
-      # Copy repo to action runner
-
       - name: Update version in package.json files for build
         id: update-version
         env:
             VERSION_TYPE: ${{ github.event.inputs.input_version }}
-            BOT_GITHUB_TOKEN:  ${{ steps.app-token.outputs.token }}
+            BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
             NEW_TAG: ${{ needs.bump-version.outputs.new-tag }}
                 # Files to be modified are copied to temp location so repo is returned to original state after build is complete
         run: |
@@ -204,7 +151,7 @@ jobs:
     # Create Github release - use --no-npm.publish so the release it uses git tags instead
       - name: Run release-it only create release on github
         env:
-          BOT_GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
         run: |
           npx release-it ${{ github.event.inputs.input_version }} --ci
 
