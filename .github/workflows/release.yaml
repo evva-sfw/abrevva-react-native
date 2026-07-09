@@ -21,12 +21,12 @@ jobs:
       new-tag: ${{ steps.version.outputs.new-tag }}
     steps:
       # Create Github App Token
-      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: app-token
         with:
           # required
           # Appid from this app: https://evva.ghe.com/apps/p-lehner/evva-bee
-          app-id: "5302"
+          client-id: "5302"
           # Private key from vault https://vault.service.consul:8200/ui/vault/secrets/secret/show/infrastructure/services/external/github-enterprise/github-apps/evva-bee
           private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
 
@@ -43,7 +43,7 @@ jobs:
 
       # Copy repo to action runner
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
           fetch-tags: true
@@ -87,7 +87,7 @@ jobs:
           egress-policy: audit
           
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
           fetch-tags: true
@@ -106,12 +106,12 @@ jobs:
 ###################################################################################          
 
       # Create Github App Token
-      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: app-token
         with:
           # required
           # Appid from this app: https://evva.ghe.com/apps/p-lehner/evva-bee
-          app-id: "5302"
+          client-id: "5302"
           # Private key from vault https://vault.service.consul:8200/ui/vault/secrets/secret/show/infrastructure/services/external/github-enterprise/github-apps/evva-bee
           private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
 
