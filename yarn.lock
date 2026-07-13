@@ -8744,7 +8744,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-node@npm:30.4.1":
+"jest-environment-node@npm:30.4.1, jest-environment-node@npm:^30.4.1":
   version: 30.4.1
   resolution: "jest-environment-node@npm:30.4.1"
   dependencies:
