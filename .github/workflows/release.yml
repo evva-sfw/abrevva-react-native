@@ -127,18 +127,14 @@ jobs:
             echo "New version will be $NEW_TAG"
             mkdir -p /tmp/abrevva-react-native
             cp ${{ github.workspace }}/package.json /tmp/abrevva-react-native/package.json
-            cp ${{ github.workspace }}/package-lock.json /tmp/abrevva-react-native/package-lock.json
+   
 
             jq --arg version "$NEW_TAG" '.version = $version' ${{ github.workspace }}/package.json > temp.json && mv temp.json ${{ github.workspace }}/package.json
-            jq --arg version "$NEW_TAG" '.version = $version' ${{ github.workspace }}/package-lock.json > temp.json && mv temp.json ${{ github.workspace }}/package-lock.json
-            jq --arg version "$NEW_TAG" '.packages[""].version = $version' ${{ github.workspace }}/package-lock.json > temp.json && mv temp.json ${{ github.workspace }}/package-lock.json
             echo '::endgroup::'
             echo '::group:: Reading package.json'
             cat ${{ github.workspace }}/package.json
             echo '::endgroup::'
-            echo '::group:: Reading package-lock.json'
-            cat ${{ github.workspace }}/package-lock.json
-            echo '::endgroup::'
+
  
       - name: Setup Node.js
         uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
@@ -187,7 +183,6 @@ jobs:
       - name: Remove created files and return to original repo state
         run: |
           cp /tmp/abrevva-react-native/package.json ${{ github.workspace }}/package.json 
-          cp /tmp/abrevva-react-native/package-lock.json ${{ github.workspace }}/package-lock.json 
 
     # Create Github release - use --no-npm.publish so the release it uses git tags instead
       - name: Run release-it only create release on github
