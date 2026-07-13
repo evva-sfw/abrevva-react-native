@@ -63,7 +63,7 @@ jobs:
           BOT_GITHUB_TOKEN:  ${{ secrets.BOT_GITHUB_TOKEN }}
         # Files to be modified are copied to temp location so repo is returned to original state after build is complete
         run: |
-            npx release-it ${{ github.event.inputs.input_version }} --no-git.commit --no-git.tag --no-git.push --no-github.release --ci
+            npx release-it ${{ github.event.inputs.input_version }} --no-git.commit --no-git.tag --no-git.push --no-github.release --ci --no-npm.publish
             echo "New version will be $(cat version)"
             NEW_TAG=$(cat version)
             echo "new-tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
