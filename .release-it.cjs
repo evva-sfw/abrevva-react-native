@@ -29,6 +29,7 @@ module.exports = {
   },
   hooks: {
     "after:bump": [
+      "echo ${version} > version"
     ]
   },
   plugins: {
