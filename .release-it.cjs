@@ -5,9 +5,7 @@ module.exports = {
     tag: true,
     push: true,
     tagAnnotation: "Release ${version}",
-    tagName: "${version}",
-    commitArgs: "-S",
-    tagArgs: "-s"
+    tagName: "${version}"
   },
   github: {
     release: true,
