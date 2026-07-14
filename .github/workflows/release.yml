@@ -187,7 +187,7 @@ jobs:
     # Create Github release - use --no-npm.publish so the release it uses git tags instead
       - name: Run release-it only create release on github
         env:
-          BOT_GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          BOT_GITHUB_TOKEN: ${{ github.token }}
         run: |
           npx release-it ${{ github.event.inputs.input_version }} --ci
 
