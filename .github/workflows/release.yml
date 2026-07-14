@@ -246,7 +246,7 @@ jobs:
         env:
           NEW_TAG: ${{ needs.bump-version.outputs.new-tag }}
         run: |
-          jq --arg version "$NEW_TAG" '.version = $version' ${{ github.workspace }}/package.json 
+          jq --arg version "$NEW_TAG" '.version = $version' package.json > temp.json && mv temp.json package.json
 
 
       - name: Commit & Push changes
