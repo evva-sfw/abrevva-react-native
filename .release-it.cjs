@@ -27,9 +27,6 @@ module.exports = {
       "--provenance"
     ]
   },
-  publishConfig: {
-    registry: "https://registry.npmjs.org"
-  },
   hooks: {
     "after:bump": [
       "echo ${version} > version"
