@@ -71,6 +71,7 @@
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
     "auto-changelog": "^2.5.0",
+    "commitlint": "^21.2.1",
     "del-cli": "^7.0.0",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^9.1.0",
