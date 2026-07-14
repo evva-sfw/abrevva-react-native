@@ -16,6 +16,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 permissions: {}
 jobs:
   bump-version:
+    if:  github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       new-tag: ${{ steps.version.outputs.new-tag }}
@@ -26,9 +27,8 @@ jobs:
         id: app-token
         with:
           # required
-          # Appid from this app: https://evva.ghe.com/apps/p-lehner/evva-bee
+    
           client-id: ${{ vars.GLOBAL_APP_EVVA_BEE_APP_ID }}
-          # Private key from vault https://vault.service.consul:8200/ui/vault/secrets/secret/show/infrastructure/services/external/github-enterprise/github-apps/evva-bee
           private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
 
       # Get GitHub App User ID
@@ -68,6 +68,32 @@ jobs:
             NEW_TAG=$(cat version)
             echo "new-tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
 
+      - name: Update version in package.json files for build
+        id: update-version
+        env:
+            NEW_TAG: ${{ steps.version.outputs.new-tag }}
+            # Files to be modified are copied to temp location so repo is returned to original state after build is complete
+        run: |
+            echo '::group:: Preparing files with updated versions'
+            echo "New version will be $NEW_TAG"
+            mkdir -p /tmp/abrevva-react-native
+            cp ${{ github.workspace }}/package.json /tmp/abrevva-react-native/package.json
+            jq --arg version "$NEW_TAG" '.version = $version' ${{ github.workspace }}/package.json > temp.json && mv temp.json ${{ github.workspace }}/package.json
+            echo '::endgroup::'
+            echo '::group:: Reading package.json'
+            cat ${{ github.workspace }}/package.json
+            echo '::endgroup::'
+
+      - name: Commit & Push changes
+        uses: iarekylew00t/verified-bot-commit@126a6a11889ab05bcff72ec2403c326cd249b84c # v2.3.0
+        with:
+          ref: main 
+          token:  ${{ steps.app-token.outputs.token }}
+          message: "docs: updated version in package files"
+          files: |
+            package.json
+
+
   publish:
     needs: bump-version
     runs-on: ubuntu-latest
@@ -89,7 +115,6 @@ jobs:
           # required
           # Appid from this app: https://evva.ghe.com/apps/p-lehner/evva-bee
           client-id: ${{ vars.GLOBAL_APP_EVVA_BEE_APP_ID }}
-          # Private key from vault https://vault.service.consul:8200/ui/vault/secrets/secret/show/infrastructure/services/external/github-enterprise/github-apps/evva-bee
           private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
 
       # Get GitHub App User ID
@@ -115,22 +140,6 @@ jobs:
         run: |
           echo "Type of release:${{ github.event.inputs.input_version }} from user ${GITHUB_ACTOR}"
           git config --list
-
-      - name: Update version in package.json files for build
-        id: update-version
-        env:
-            NEW_TAG: ${{ needs.bump-version.outputs.new-tag }}
-            # Files to be modified are copied to temp location so repo is returned to original state after build is complete
-        run: |
-            echo '::group:: Preparing files with updated versions'
-            echo "New version will be $NEW_TAG"
-            mkdir -p /tmp/abrevva-react-native
-            cp ${{ github.workspace }}/package.json /tmp/abrevva-react-native/package.json
-            jq --arg version "$NEW_TAG" '.version = $version' ${{ github.workspace }}/package.json > temp.json && mv temp.json ${{ github.workspace }}/package.json
-            echo '::endgroup::'
-            echo '::group:: Reading package.json'
-            cat ${{ github.workspace }}/package.json
-            echo '::endgroup::'
 
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -194,7 +203,7 @@ jobs:
 
   
   update-changelog:
-    needs: [bump-version, publish]
+    needs: publish
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -205,7 +214,6 @@ jobs:
         id: app-token
         with:
           # required
-          # Appid from this app: https://evva.ghe.com/apps/p-lehner/evva-bee
           client-id: ${{ vars.GLOBAL_APP_EVVA_BEE_APP_ID }}
           # Private key from vault https://vault.service.consul:8200/ui/vault/secrets/secret/show/infrastructure/services/external/github-enterprise/github-apps/evva-bee
           private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
@@ -242,13 +250,6 @@ jobs:
           npx auto-changelog -c .auto-changelog
           cat CHANGELOG.md
 
-      - name: Update package.json to include new version
-        env:
-          NEW_TAG: ${{ needs.bump-version.outputs.new-tag }}
-        run: |
-          jq --arg version "$NEW_TAG" '.version = $version' package.json > temp.json && mv temp.json package.json
-
-
       - name: Commit & Push changes
         uses: iarekylew00t/verified-bot-commit@126a6a11889ab05bcff72ec2403c326cd249b84c # v2.3.0
         with:
@@ -257,4 +258,4 @@ jobs:
           message: "docs: Updated changelog"
           files: |
             CHANGELOG.md
-            package.json
+            
