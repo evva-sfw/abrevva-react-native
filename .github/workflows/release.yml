@@ -163,9 +163,23 @@ jobs:
         run: |
           cp /tmp/abrevva-react-native/package.json ${{ github.workspace }}/package.json
 
-    # Check npm version
-      - name: Check npm version
-        run: npm --version
+      - name: Create Signed Tag via GH CLI
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
+        run: |
+          # Step 1: Create the Annotated Tag Object (GitHub will sign this)
+          TAG_OBJECT_SHA=$(gh api repos/${{ github.repository }}/git/tags \
+            -f tag="$TAG_NAME" \
+            -f message="Release $TAG_NAME" \
+            -f object="${{ github.sha }}" \
+            -f type="commit" \
+            --jq '.sha')
+
+          # Step 2: Create the reference pointing to the Tag Object SHA
+          gh api repos/${{ github.repository }}/git/refs \
+            -f ref="refs/tags/$TAG_NAME" \
+            -f sha="$TAG_OBJECT_SHA"
 
     # Create Github release - use --no-npm.publish so the release it uses git tags instead
       - name: Run release-it only create release on github
