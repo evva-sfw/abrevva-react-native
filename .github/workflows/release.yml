@@ -161,6 +161,10 @@ jobs:
         run: |
           cp /tmp/abrevva-react-native/package.json ${{ github.workspace }}/package.json 
 
+    # Check npm version
+      - name: Check npm version
+        run: npm --version  
+
     # Create Github release - use --no-npm.publish so the release it uses git tags instead
       - name: Run release-it only create release on github
         env:
