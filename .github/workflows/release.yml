@@ -137,6 +137,8 @@ jobs:
         uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
           node-version: lts/*
+          registry-url: 'https://registry.npmjs.org'
+
 
       - name: Cache node_modules
         id: node-modules
@@ -170,7 +172,7 @@ jobs:
         env:
           BOT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx release-it ${{ github.event.inputs.input_version }} --ci
+          npx release-it ${{ github.event.inputs.input_version }} --ci --config .release-it.cjs
 
       - name: Attest
         uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v1.4.4
