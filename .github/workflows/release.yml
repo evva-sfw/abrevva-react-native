@@ -165,11 +165,6 @@ jobs:
           rm -f *.tgz
           yarn pack --out '%s_%v.tgz'
 
-    # Return repo to original checked out state
-      - name: Remove created files and return to original repo state
-        run: |
-          cp /tmp/abrevva-react-native/package.json ${{ github.workspace }}/package.json
-
       - name: Create Signed Tag via GH CLI
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
