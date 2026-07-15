@@ -168,7 +168,7 @@ jobs:
       - name: Publish to npm
         run: yarn npm publish --provenance
 
-      - name: Create Signed Tag via GH CLI
+      - name: Create Signed Tag via GH CLI and fetch tags
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
@@ -180,6 +180,7 @@ jobs:
             -f body="Release $TAG_NAME" \
             -F draft=false \
             -F prerelease=false
+          git fetch --tags
 
       - name: Generate release notes and put in Github temporary location
         run: yarn git-cliff --current --output ${{ runner.temp }}/RELEASE_NOTES.md
