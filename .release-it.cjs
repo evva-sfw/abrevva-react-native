@@ -19,6 +19,7 @@ module.exports = {
     publish: true,
     skipChecks: true,
     ignoreVersion: true,
+    allowSameVersion: true,
     publishArgs: [
       "--provenance"
     ]
