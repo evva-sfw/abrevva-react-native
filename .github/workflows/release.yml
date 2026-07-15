@@ -178,8 +178,8 @@ jobs:
             -f target_commitish="${{ github.sha }}" \
             -f name="$TAG_NAME" \
             -f body="Release $TAG_NAME" \
-            -f draft=false \
-            -f prerelease=false
+            -F draft=false \
+            -F prerelease=false
 
       - name: Generate release notes and put in Github temporary location
         run: yarn git-cliff --current --output ${{ runner.temp }}/RELEASE_NOTES.md
