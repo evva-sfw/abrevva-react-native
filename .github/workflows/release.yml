@@ -67,7 +67,7 @@ jobs:
             NEW_TAG=$(cat version)
             echo "new-tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
 
-      - name: Update version in package.json files for build
+      - name: Update version in package.json and commit changes
         id: update-version
         env:
             NEW_TAG: ${{ steps.version.outputs.new-tag }}
