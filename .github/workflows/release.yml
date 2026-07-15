@@ -159,39 +159,43 @@ jobs:
 
       - name: Install dependencies
         run: corepack enable && yarn install --immutable
+
       - name: Package files to .tgz
         run: |
           rm -f *.tgz
           yarn pack --out '%s_%v.tgz'
+
+      - name: Publish to npm
+        run: yarn npm publish --provenance
 
       - name: Create Signed Tag via GH CLI
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
         run: |
-          # Step 1: Create the Annotated Tag Object (GitHub will sign this)
-          TAG_OBJECT_SHA=$(gh api repos/${{ github.repository }}/git/tags \
-            -f tag="$TAG_NAME" \
-            -f message="Release $TAG_NAME" \
-            -f object="${{ github.sha }}" \
-            -f type="commit" \
-            --jq '.sha')
+          gh api repos/evva-sfw/abrevva-react-native/releases \
+            -f tag_name="$TAG_NAME" \
+            -f target_commitish="${{ github.sha }}" \
+            -f name="$TAG_NAME" \
+            -f body="Release $TAG_NAME" \
+            -f draft=false \
+            -f prerelease=false
 
-          # Step 2: Create the reference pointing to the Tag Object SHA
-          gh api repos/${{ github.repository }}/git/refs \
-            -f ref="refs/tags/$TAG_NAME" \
-            -f sha="$TAG_OBJECT_SHA"
+      - name: Generate release notes and put in Github temporary location
+        run: yarn git-cliff --current --output ${{ runner.temp }}/RELEASE_NOTES.md
 
-      - name: Run release-it only create release on github
-        env:
-          BOT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a release on Github
         run: |
-          npx release-it ${{ needs.bump-version.outputs.new-tag }} --ci --config .release-it.cjs
+          gh release create ${{ needs.bump-version.outputs.new-tag}} \
+          *.tgz \
+          -F ${{ runner.temp }}/RELEASE_NOTES.md \
+          -t "Release ${{ needs.bump-version.outputs.new-tag}}"
 
       - name: Attest
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
         with:
           subject-path: "${{ github.workspace }}/*.tgz"
+
 
   update-changelog:
     needs: publish
@@ -233,12 +237,13 @@ jobs:
         with:
           node-version: lts/*
 
-      - name: Install node dependencies
-        run: npm ci
+        # Install yarn dependencies (releaseit + autochangelog)
+      - name: Install dependencies
+        run: corepack enable && yarn install --immutable
 
       - name: Generate changelog
         run: |
-          npx auto-changelog -c .auto-changelog
+          yarn auto-changelog -c .auto-changelog
           cat CHANGELOG.md
 
       - name: Commit & Push changes
