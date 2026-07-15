@@ -52,7 +52,7 @@ jobs:
 
       # Install yarn dependencies (releaseit + autochangelog)
       - name: Install dependencies
-        run: corepack enable && yarn install --frozen-lockfile
+        run: corepack enable && yarn install --immutable
 
       # Get the latest tag info, increment it accordingly, update the package.json file so it is built with new version
       - name: Update version info for build
