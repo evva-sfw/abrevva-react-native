@@ -52,7 +52,7 @@ jobs:
 
       # Install yarn dependencies (releaseit + autochangelog)
       - name: Install dependencies
-        run: corepack enable && yarn install --frozen-lockfile
+        run: corepack enable && yarn install --immutable
 
       # Get the latest tag info, increment it accordingly, update the package.json file so it is built with new version
       - name: Update version info for build
@@ -86,7 +86,7 @@ jobs:
       - name: Commit & Push changes
         uses: iarekylew00t/verified-bot-commit@126a6a11889ab05bcff72ec2403c326cd249b84c # v2.3.0
         with:
-          ref: main 
+          ref: main
           token:  ${{ steps.app-token.outputs.token }}
           message: "docs: updated version in package files"
           files: |
@@ -134,6 +134,7 @@ jobs:
           fetch-tags: true
           token: ${{ steps.app-token.outputs.token }}
           ref: main
+          persist-credentials: true # This is needed for release it to use it later
 
       - name: Debug inputs
         run: |
@@ -158,32 +159,11 @@ jobs:
           key: node-modules
 
       - name: Install dependencies
-        run: corepack enable && yarn install --frozen-lockfile
-
+        run: corepack enable && yarn install --immutable
       - name: Package files to .tgz
         run: |
           rm -f *.tgz
           yarn pack --out '%s_%v.tgz'
-
-      - name: Create Signed Tag via GH CLI
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
-        run: |
-          # Step 1: Create the Annotated Tag Object (GitHub will sign this)
-          TAG_OBJECT_SHA=$(gh api repos/${{ github.repository }}/git/tags \
-            -f tag="$TAG_NAME" \
-            -f message="Release $TAG_NAME" \
-            -f object="${{ github.sha }}" \
-            -f type="commit" \
-            --jq '.sha')
-
-          # Step 2: Create the reference pointing to the Tag Object SHA
-          gh api repos/${{ github.repository }}/git/refs \
-            -f ref="refs/tags/$TAG_NAME" \
-            -f sha="$TAG_OBJECT_SHA"
-
-    # Create Github release - use --no-npm.publish so the release it uses git tags instead
       - name: Run release-it only create release on github
         env:
           BOT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -195,7 +175,6 @@ jobs:
         with:
           subject-path: "${{ github.workspace }}/*.tgz"
 
-  
   update-changelog:
     needs: publish
     runs-on: ubuntu-latest
@@ -247,9 +226,8 @@ jobs:
       - name: Commit & Push changes
         uses: iarekylew00t/verified-bot-commit@126a6a11889ab05bcff72ec2403c326cd249b84c # v2.3.0
         with:
-          ref: main 
+          ref: main
           token:  ${{ steps.app-token.outputs.token }}
           message: "docs: Updated changelog"
           files: |
             CHANGELOG.md
-            
