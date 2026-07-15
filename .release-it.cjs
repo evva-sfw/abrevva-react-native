@@ -18,6 +18,7 @@ module.exports = {
   npm: {
     publish: true,
     skipChecks: true,
+    ignoreVersion: true,
     publishArgs: [
       "--provenance"
     ]
