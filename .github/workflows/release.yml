@@ -176,7 +176,7 @@ jobs:
           gh api repos/evva-sfw/abrevva-react-native/releases \
             -f tag_name="$TAG_NAME" \
             -f target_commitish="${{ github.sha }}" \
-            -f name="$TAG_NAME" \
+            -f name="Release $TAG_NAME" \
             -f body="Release $TAG_NAME" \
             -F draft=false \
             -F prerelease=false
@@ -185,7 +185,10 @@ jobs:
       - name: Generate release notes and put in Github temporary location
         run: yarn git-cliff --current --output ${{ runner.temp }}/RELEASE_NOTES.md
 
-      - name: Create a release on Github
+      - name: Delete release but keep tag
+        run: gh release delete ${{ needs.bump-version.outputs.new-tag}} --yes
+
+      - name: Create a release on Github with release notes and provenance
         run: |
           gh release create ${{ needs.bump-version.outputs.new-tag}} \
           *.tgz \
