@@ -40,8 +40,7 @@
     "nitrogen": "npx nitrogen --log-level=debug",
     "typecheck": "tsc",
     "test": "jest",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "release": "release-it"
+    "lint": "eslint \"**/*.{js,ts,tsx}\""
   },
   "keywords": [
     "react-native",
@@ -67,10 +66,8 @@
     "@eslint/js": "^9.13.0",
     "@evilmartians/lefthook": "^2.1.4",
     "@react-native/babel-preset": "^0.84.1",
-    "@release-it/conventional-changelog": "^11.0.0",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
-    "auto-changelog": "^2.5.0",
     "commitlint": "^21.2.1",
     "del-cli": "^7.0.0",
     "eslint": "^9.15.0",
@@ -85,7 +82,6 @@
     "react-native": "^0.84.1",
     "react-native-builder-bob": "^0.40.18",
     "react-native-nitro-modules": "^0.35.2",
-    "release-it": "^20.0.0",
     "turbo": "^2.8.20",
     "typescript": "^6.0.2"
   },
