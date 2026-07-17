@@ -49,9 +49,27 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           ref: main
 
+      # Check required git cliff files present in repo
+      - name: Check required git cliff files in repo
+        run: |
+          if [[ ! -z "$USER_INPUT_VERSION" ]] ; then
+            echo "Type of release:"$USER_INPUT_VERSION" from user ${GITHUB_ACTOR}"
+          else
+            echo "User did not select release type. It will be automatically determined..."
+          fi
+
       # Install yarn dependencies (git-cliff)
       - name: Install dependencies
         run: corepack enable && yarn install --immutable
+
+      - name: Declare release type
+        env:
+          USER_INPUT_VERSION: "${{ github.event.inputs.input_version }}"
+        run: |
+          if [[ ! -z "$USER_INPUT_VERSION"]]; then;
+            echo "Type of release:"$USER_INPUT_VERSION" from user ${GITHUB_ACTOR}"
+          else
+            echo "User did not select release type. Will be automatically determined..."
 
       # Get the latest tag info, increment it accordingly, update the package.json file so it is built with new version
       - name: Update version info for build
@@ -65,7 +83,6 @@ jobs:
             echo "new-tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Update version in package.json and commit changes
-        id: update-version
         env:
             NEW_TAG: ${{ steps.version.outputs.new-tag }}
         run: |
@@ -129,12 +146,7 @@ jobs:
           fetch-tags: true
           token: ${{ steps.app-token.outputs.token }}
           ref: main
-          persist-credentials: true # This is needed for release it to use it later
 
-      - name: Debug inputs
-        run: |
-          echo "Type of release:${{ github.event.inputs.input_version }} from user ${GITHUB_ACTOR}"
-          git config --list
 
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -227,7 +239,7 @@ jobs:
         with:
           node-version: lts/*
 
-        # Install yarn dependencies (releaseit + autochangelog)
+        # Install yarn dependencies
       - name: Install dependencies
         run: corepack enable && yarn install --immutable
 
