@@ -41,37 +41,49 @@ jobs:
           git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
           git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
 
-
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-depth: 0 # For git-cliff to generate full logs
           fetch-tags: true
           token: ${{ steps.app-token.outputs.token }}
           ref: main
 
-      # Install yarn dependencies (releaseit + autochangelog)
+      # Check required git cliff files present in repo
+      - name: Check required git cliff files in repo
+        run: |
+          if [[ ! -f cliff.toml || ! -f cliff-changelog.toml ]]; then
+            echo "Error: Both cliff.toml and cliff-changelog.toml files must be present in repo root"
+            exit 1
+          fi
+
+      # Install yarn dependencies (git-cliff)
       - name: Install dependencies
         run: corepack enable && yarn install --immutable
 
+      - name: Declare release type
+        env:
+          USER_INPUT_VERSION: "${{ github.event.inputs.input_version }}"
+        run: |
+          if [[ ! -z "$USER_INPUT_VERSION" ]] ; then
+            echo "Type of release:"$USER_INPUT_VERSION" from user ${GITHUB_ACTOR}"
+          else
+            echo "User did not select release type. It will be automatically determined..."
+          fi
       # Get the latest tag info, increment it accordingly, update the package.json file so it is built with new version
       - name: Update version info for build
         id: version
         env:
           VERSION_TYPE: ${{ github.event.inputs.input_version }}
-          BOT_GITHUB_TOKEN:  ${{ secrets.BOT_GITHUB_TOKEN }}
-        # Files to be modified are copied to temp location so repo is returned to original state after build is complete
         run: |
-            npx release-it ${{ github.event.inputs.input_version }} --no-git.commit --no-git.tag --no-git.push --no-github.release --ci --no-npm
+            yarn dlx -q git-cliff --bump ${{ github.event.inputs.input_version }} --bumped-version > version
             echo "New version will be $(cat version)"
             NEW_TAG=$(cat version)
             echo "new-tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Update version in package.json and commit changes
-        id: update-version
         env:
             NEW_TAG: ${{ steps.version.outputs.new-tag }}
-            # Files to be modified are copied to temp location so repo is returned to original state after build is complete
         run: |
             echo '::group:: Preparing files with updated versions'
             echo "New version will be $NEW_TAG"
@@ -91,7 +103,6 @@ jobs:
           message: "chore: updated version in package files"
           files: |
             package.json
-
 
   publish:
     needs: bump-version
@@ -130,16 +141,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-depth: 0 # For git cliff to be able to generate the full changelog
           fetch-tags: true
           token: ${{ steps.app-token.outputs.token }}
           ref: main
-          persist-credentials: true # This is needed for release it to use it later
 
-      - name: Debug inputs
-        run: |
-          echo "Type of release:${{ github.event.inputs.input_version }} from user ${GITHUB_ACTOR}"
-          git config --list
 
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -168,41 +174,36 @@ jobs:
       - name: Publish to npm
         run: yarn npm publish --provenance
 
-      - name: Create Signed Tag via GH CLI
+      - name: Create Signed Tag via GH CLI and fetch new tag
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
         run: |
-          gh api repos/evva-sfw/abrevva-react-native/releases \
-            -f tag_name="$TAG_NAME" \
-            -f target_commitish="${{ github.sha }}" \
-            -f name="$TAG_NAME" \
-            -f body="Release $TAG_NAME" \
-            -F draft=false \
-            -F prerelease=false
+          gh release create "$TAG_NAME" --target $(git rev-parse HEAD) --notes "Generating..." --title "$TAG_NAME" *.tgz
+          git fetch --tags
 
       - name: Generate release notes and put in Github temporary location
-        run: yarn git-cliff --current --output ${{ runner.temp }}/RELEASE_NOTES.md
+        env:
+          TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
+        run: yarn git-cliff -c cliff.toml --current --output ${{ runner.temp }}/RELEASE_NOTES.md
 
-      - name: Create a release on Github
+      - name: Create a release on Github with release notes and provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
         run: |
-          gh release create ${{ needs.bump-version.outputs.new-tag}} \
-          *.tgz \
-          -F ${{ runner.temp }}/RELEASE_NOTES.md \
-          -t "Release ${{ needs.bump-version.outputs.new-tag}}"
+          gh release edit "$TAG_NAME" --notes-file "${{ runner.temp }}/RELEASE_NOTES.md" --latest
 
       - name: Attest
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
         with:
           subject-path: "${{ github.workspace }}/*.tgz"
 
-
   update-changelog:
     needs: publish
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       # Create Github App Token
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
@@ -227,7 +228,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-depth: 0 # For git-cliff to be able to generate the full changelog
           fetch-tags: true
           token: ${{ steps.app-token.outputs.token }}
           ref: main
@@ -237,13 +238,13 @@ jobs:
         with:
           node-version: lts/*
 
-        # Install yarn dependencies (releaseit + autochangelog)
+        # Install yarn dependencies
       - name: Install dependencies
         run: corepack enable && yarn install --immutable
 
-      - name: Generate changelog
+      - name: Generate changelog using git cliff and cliff-changelog config
         run: |
-          yarn auto-changelog -c .auto-changelog
+          yarn dlx git-cliff -c cliff-changelog.toml -o CHANGELOG.md
           cat CHANGELOG.md
 
       - name: Commit & Push changes
